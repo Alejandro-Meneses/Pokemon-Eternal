@@ -1,0 +1,234 @@
+.game-container {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    gap: 15px; /* Espaciado entre las tarjetas */
+    flex-wrap: nowrap; /* Evita que las tarjetas se envuelvan */
+    padding: 20px;
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    overflow-x: auto; /* Permite desplazamiento horizontal si no caben todas */
+  }
+  
+  .pokemon-card {
+    background-color: var(--theme-bg, #f5f5f5); /* Usa el color de fondo principal */
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 10px; /* Reduce el padding */
+    text-align: center;
+    max-width: 200px; /* Reduce el ancho máximo */
+    width: 200px; /* Ancho fijo para todas las tarjetas */
+    color: white;
+  }
+  
+  .pokemon-name {
+    font-size: 1.2rem; /* Reduce el tamaño del texto */
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  
+  .pokemon-image {
+    width: 120px; /* Reduce el tamaño de la imagen */
+    height: 120px;
+    margin-bottom: 8px;
+  }
+  
+  .pokemon-info {
+    text-align: left;
+    font-size: 0.8rem; /* Reduce el tamaño del texto */
+  }
+  
+  .pokemon-stats {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+  }
+  
+  .pokemon-stats li {
+    margin: 3px 0; /* Reduce el margen entre estadísticas */
+    font-weight: bold;
+    font-size: 0.75rem; /* Texto más pequeño */
+  }
+  
+  .pokemon-types {
+    display: flex;
+    justify-content: center;
+    gap: 5px; /* Reduce el espacio entre los tipos */
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+  }
+  
+  .pokemon-types li {
+    padding: 3px 6px; /* Más compacto */
+    border-radius: 4px;
+    color: #ffffff;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.7rem; /* Texto más pequeño */
+  }
+  
+  /* Colores para los tipos */
+  .type-electric {
+    background-color: #f8d030;
+  }
+  
+  .type-fire {
+    background-color: #f08030;
+  }
+  
+  .type-water {
+    background-color: #6890f0;
+  }
+  
+  .type-grass {
+    background-color: #78c850;
+  }
+  
+  .type-ice {
+    background-color: #98d8d8;
+  }
+  
+  .type-fighting {
+    background-color: #c03028;
+  }
+  
+  .type-poison {
+    background-color: #a040a0;
+  }
+  
+  .type-ground {
+    background-color: #e0c068;
+  }
+  
+  .type-flying {
+    background-color: #a890f0;
+  }
+  
+  .type-psychic {
+    background-color: #f85888;
+  }
+  
+  .type-bug {
+    background-color: #a8b820;
+  }
+  
+  .type-rock {
+    background-color: #b8a038;
+  }
+  
+  .type-ghost {
+    background-color: #705898;
+  }
+  
+  .type-dragon {
+    background-color: #7038f8;
+  }
+  
+  .type-dark {
+    background-color: #705848;
+  }
+  
+  .type-steel {
+    background-color: #b8b8d0;
+  }
+  
+  .type-fairy {
+    background-color: #ee99ac;
+  }
+  
+  /* Colores para los tipos */
+  .type-electric {
+    background-color: #f8d030;
+  }
+  
+  .type-fire {
+    background-color: #f08030;
+  }
+  
+  .type-water {
+    background-color: #6890f0;
+  }
+  
+  .type-grass {
+    background-color: #78c850;
+  }
+  
+  .type-ice {
+    background-color: #98d8d8;
+  }
+  
+  .type-fighting {
+    background-color: #c03028;
+  }
+  
+  .type-poison {
+    background-color: #a040a0;
+  }
+  
+  .type-ground {
+    background-color: #e0c068;
+  }
+  
+  .type-flying {
+    background-color: #a890f0;
+  }
+  
+  .type-psychic {
+    background-color: #f85888;
+  }
+  
+  .type-bug {
+    background-color: #a8b820;
+  }
+  
+  .type-rock {
+    background-color: #b8a038;
+  }
+  
+  .type-ghost {
+    background-color: #705898;
+  }
+  
+  .type-dragon {
+    background-color: #7038f8;
+  }
+  
+  .type-dark {
+    background-color: #705848;
+  }
+  
+  .type-steel {
+    background-color: #b8b8d0;
+  }
+  
+  .type-fairy {
+    background-color: #ee99ac;
+  }
+  .toggle-button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #2a75bb; /* Azul Pokémon */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    z-index: 10; /* Asegúrate de que el botón esté por encima de otros elementos */
+        position: relative; /* Necesario para aplicar z-index */
+        z-index: 1000;
+        pointer-events: auto;
+    
+        
+}
+  
+  .toggle-button:hover {
+    background-color: #1a4a7a; /* Azul más oscuro */
+  }
+  
+  .game-container {
+    position: relative; /* Asegúrate de que el contenedor no bloquee el botón */
+    z-index: 1;
+  }

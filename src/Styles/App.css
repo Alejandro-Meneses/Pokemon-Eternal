@@ -29,7 +29,7 @@ img {
 body {
   font-family: var(--body-font);
   color: var(--body-color);
-  background-image: url(https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1950&q=80);
+  background-image: url("https://images.steamusercontent.com/ugc/1764817883953329346/B26C8EC1623A0241BE14620F7AFCA2A733CCDADE/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"); ;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -63,7 +63,7 @@ body:before {
   max-width: 1240px;
   max-height: 900px;
   min-width: 1000px;
-  min-height: 700px;
+  min-height: 400px;
   height: 95vh;
   display: flex;
   overflow: hidden;
@@ -77,15 +77,11 @@ body:before {
 
 /* Sidebar Styles */
 .sidebar {
-  width: 220px;
-  height: 100%;
-  padding: 30px;
+  width: 225px; /* Ancho fijo para el sidebar */
   display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  transition-duration: 0.2s;
-  overflow-y: auto;
-  overflow-x: hidden;
+  flex-direction: column; /* Alinea los elementos verticalmente */
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 
@@ -302,6 +298,7 @@ body:before {
   flex-direction: column;
   padding: 0 30px 30px;
   flex-grow: 1;
+  flex: 1;
   overflow: auto;
 }
 

@@ -1,0 +1,55 @@
+.board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+  }
+  
+  .board-row {
+    display: flex;
+  }
+  
+  .cell {
+    width: 48px;
+    height: 48px;
+    image-rendering: pixelated;
+  }
+  
+  /* Tipos de terreno */
+  .grass {
+    background-image: url('../images/Grass.jpeg');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: top left;
+    image-rendering: pixelated;
+  }
+  
+  
+  .wall {
+    background-image: url('../images/Wall.jpeg');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: top left;
+    image-rendering: pixelated;
+  }
+  
+  
+  .floor {
+    background-image: url('../images/Floor.jpeg');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: top left;
+    image-rendering: pixelated;
+  }
+  
+  .player {
+    width: 100%;
+    height: 100%;
+    background-image: url('../images/Wall.jpeg'); /* Asegúrate de tener esta imagen */
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    image-rendering: pixelated;
+    z-index: 5;
+  }
+  
