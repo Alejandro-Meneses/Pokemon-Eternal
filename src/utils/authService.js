@@ -6,6 +6,12 @@ export const register = async (userData) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(userData),
   });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Error al registrar");
+  }
+
   return response.json();
 };
 
@@ -15,5 +21,11 @@ export const login = async (userData) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(userData),
   });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Error al iniciar sesión");
+  }
+
   return response.json();
 };

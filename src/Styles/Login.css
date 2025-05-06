@@ -1,0 +1,144 @@
+/* Fondo con imagen */
+body {
+  margin: 0;
+  padding: 0;
+  background-image: url(https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1950&q=80);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+/* Contenedor del formulario */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 10;
+}
+
+/* Estilo tipo tarjeta para el formulario */
+.login-container form {
+  background-color: rgba(30, 30, 47, 0.9); /* oscuro semitransparente */
+  padding: 40px 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  z-index: 11;
+}
+
+/* Título */
+.login-container h1 {
+  font-size: 2rem;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+/* Inputs */
+.login-container input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 8px;
+  background-color: #2e2e3e;
+  color: #ffffff;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.login-container input::placeholder {
+  color: #aaa;
+}
+
+/* Botón */
+.login-container button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-container button:hover {
+  background-color: #0056b3;
+}
+
+/* Habilitar interactividad dentro del contenedor */
+body {
+  pointer-events: none;
+}
+
+.login-container,
+.login-container * {
+  pointer-events: auto;
+}
+
+/* Contenedor de la contraseña */
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Campo de entrada dentro del contenedor */
+.password-container input {
+  flex: 1;
+  padding-right: 40px; /* Espacio para el ícono */
+  box-sizing: border-box;
+}
+
+/* Ícono de mostrar/ocultar contraseña */
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #808191;
+}
+
+.toggle-password:hover {
+  color: #000;
+}
+
+/* Mensaje de error */
+.error-message {
+  color: #ff4d4d;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Enlace para alternar entre login y registro */
+.auth-toggle {
+  margin-top: 20px;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.auth-toggle a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.auth-toggle a:hover {
+  text-decoration: underline;
+}
