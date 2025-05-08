@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../../Styles/Login.css"; // Reutiliza el mismo CSS que el login
 import { register } from "../../utils/authService";
-import { useNavigate } from "react-router-dom"; // Importa useNavigate
+import { useNavigate, Link } from "react-router-dom"; // Importa useNavigate
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Importa el componente de Font Awesome
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons"; // Importa los íconos necesarios
 
