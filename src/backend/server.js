@@ -34,10 +34,21 @@ app.use("/api/auth", authRoutes);
 
 // Connect to MongoDB
 mongoose
-  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("MongoDB conectado"))
-  .catch((err) => console.error(err));
-
+.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000, // Tiempo de espera antes de fallar
+  socketTimeoutMS: 45000, // Tiempo de espera para operaciones de socket
+  family: 4 // Forzar IPv4
+})
+.then(() => console.log("MongoDB conectado"))
+.catch((err) => {
+  console.error("Error conectando a MongoDB:", err.message);
+  // Mostrar más información sobre el error
+  if (err.reason) {
+    console.error("Razón:", err.reason);
+  }
+});
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
