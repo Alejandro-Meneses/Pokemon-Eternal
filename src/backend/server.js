@@ -6,29 +6,23 @@ const authRoutes = require("./routes/auth");
 
 const app = express();
 
-// Configuración CORS ampliada
-
-
-// Configuración CORS primero (antes de cualquier ruta)
+// Configuración CORS mejorada con dominios específicos
 app.use(cors({
-  origin: '\\*', // Temporal mientras solucionamos el problema
+  origin: ['https://pokemon-eternal.onrender.com', 'http://localhost:3000'],
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// AÑADE ESTA LÍNEA - Crucial para manejar preflight OPTIONS
-app.options('\\*', (req, res) => {
-  // Establecer encabezados manualmente
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.sendStatus(200);
-});
+// Manejadores OPTIONS específicos para cada ruta que necesita CORS
+app.options('/api/auth/login', cors());
+app.options('/api/auth/register', cors());
+app.options('/api/test', cors());
 
-// Resto de middlewares
+// Middleware para procesar JSON
 app.use(express.json());
 
-// Middleware de diagnóstico
+// Middleware de diagnóstico para ver las solicitudes en los logs
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path}`);
   next();
@@ -42,7 +36,18 @@ app.get('/api/test', (req, res) => {
 // Rutas de autenticación
 app.use("/api/auth", authRoutes);
 
-// Connect to MongoDB
+// Middleware para manejar rutas no encontradas
+app.use((req, res) => {
+  res.status(404).json({ error: 'Ruta no encontrada' });
+});
+
+// Middleware para manejar errores
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ error: 'Error interno del servidor' });
+});
+
+// Conexión a MongoDB
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -58,6 +63,6 @@ mongoose
     if (err.reason) console.error("Razón:", err.reason);
   });
 
-// Start server
+// Inicio del servidor
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
