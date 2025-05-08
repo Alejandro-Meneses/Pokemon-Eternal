@@ -1,0 +1,26 @@
+services:
+  - name: pokemon-eternal-api
+    type: web
+    plan: free
+    runtime: node
+    buildCommand: npm install
+    startCommand: node src/backend/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: PORT
+        value: 10000
+
+  - name: pokemon-eternal-frontend
+    type: web
+    plan: free
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://pokemon-eternal-api.onrender.com

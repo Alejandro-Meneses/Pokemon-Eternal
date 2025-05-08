@@ -1,5 +1,8 @@
-const API_URL = "http://localhost:5000/api/auth";
-export const register = async (userData) => {
+// Modifica la URL para que sea dinámica:
+const API_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://pokemon-eternal-api.onrender.com/api/auth'
+  : 'http://localhost:5000/api/auth';
+  export const register = async (userData) => {
   const response = await fetch(`${API_URL}/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
