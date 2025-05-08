@@ -2,11 +2,27 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
+const cors = require("cors");
 
 const router = express.Router();
-// Añade estos manejadores OPTIONS al principio del archivo
+
+// Obtén las opciones CORS del archivo principal
+const corsOptions = {
+  origin: [
+    'https://pokemon-eternal.onrender.com', 
+    'http://localhost:3000',
+    'https://proyecto-pokemon.onrender.com'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+// Maneja OPTIONS para la ruta de registro
+router.options("/register", cors(corsOptions));
+
 // Register
-router.post("/register", async (req, res) => {
+router.post("/register", cors(corsOptions), async (req, res) => {
   const { username, email, password } = req.body;
   try {
     // Verifica que todos los campos estén presentes
@@ -28,12 +44,16 @@ router.post("/register", async (req, res) => {
     await user.save();
     res.status(201).json({ message: "Usuario registrado con éxito" });
   } catch (error) {
+    console.error("Error en registro:", error);
     res.status(500).json({ error: error.message });
   }
 });
 
+// Maneja OPTIONS para la ruta de login
+router.options("/login", cors(corsOptions));
+
 // Login
-router.post("/login", async (req, res) => {
+router.post("/login", cors(corsOptions), async (req, res) => {
   const { email, password } = req.body;
   try {
     // Verifica que los campos estén presentes
@@ -62,6 +82,7 @@ router.post("/login", async (req, res) => {
       user: { id: user._id, username: user.username, email: user.email },
     });
   } catch (error) {
+    console.error("Error en login:", error);
     res.status(500).json({ error: error.message });
   }
 });
