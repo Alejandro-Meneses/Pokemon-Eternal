@@ -7,8 +7,26 @@ const authRoutes = require("./routes/auth");
 const app = express();
 
 // Middleware
-app.use(cors());
+// Reemplaza la línea app.use(cors()) con:
+app.use(cors({
+  origin: 'http://localhost:3000', // URL exacta de tu frontend
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
+
+// AÑADE ESTA RUTA DE PRUEBA
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'API funcionando correctamente' });
+});
+
+// Middleware de registro para depuración
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
 
 // Routes
 app.use("/api/auth", authRoutes);

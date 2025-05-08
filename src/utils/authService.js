@@ -1,5 +1,4 @@
 const API_URL = "http://localhost:5000/api/auth";
-
 export const register = async (userData) => {
   const response = await fetch(`${API_URL}/register`, {
     method: "POST",
@@ -27,5 +26,6 @@ export const login = async (userData) => {
     throw new Error(errorData.error || "Error al iniciar sesión");
   }
 
+  // AÑADIR ESTA LÍNEA
   return response.json();
 };
