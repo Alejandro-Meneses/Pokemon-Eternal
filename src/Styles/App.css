@@ -27,7 +27,7 @@ html {
 body {
   font-family: var(--body-font);
   color: var(--body-color);
-  background-image: url("https://images.steamusercontent.com/ugc/1764817883953329346/B26C8EC1623A0241BE14620F7AFCA2A733CCDADE/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"); ;
+  background-image: url("../images/Fondo.jpeg"); ;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
