@@ -19,7 +19,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // 🔁 Preflight universal: responde a todas las OPTIONS correctamente
-app.options('/*', cors(corsOptions));
+app.options('/*splat', cors(corsOptions));
 
 // Middleware de diagnóstico
 app.use((req, res, next) => {
