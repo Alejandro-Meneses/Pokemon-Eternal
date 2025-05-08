@@ -1,0 +1,323 @@
+/* Contenedor principal */
+.battle-container {
+    width: 90%; /* Ocupa el 90% del ancho de la pantalla */
+    max-width: 80vw; /* Máximo ancho relativo al viewport */
+    height: 70vh; /* Altura relativa al viewport */
+    margin: 0 auto; /* Centrado horizontal */
+    background: linear-gradient(to top, #cceabb, #a1d0f0);
+    border: 0.3vw solid #333; /* Borde responsivo */
+    border-radius: 1vw; /* Bordes redondeados responsivos */
+    position: relative;
+    overflow: hidden; /* Asegura que nada se salga del contenedor */
+}
+
+/* Sección del Pokémon rival */
+.rival-section {
+    position: absolute;
+    top: 8vh; /* Más centrado verticalmente */
+    right: 3vw; /* Más cerca del borde derecho */
+    text-align: right;
+}
+
+.rival-sprite {
+    height: 20vh; /* Altura relativa al viewport */
+    width: auto; /* Mantiene la proporción */
+    margin-left: -1vw; /* Espacio entre la imagen y la barra */
+}
+
+.rival-info {
+    position: absolute;
+    top: 0;
+    right: 65%; /* Movido más a la derecha (era 110%) */
+    border-radius: 0.5vw; /* Bordes redondeados responsivos */
+    padding: 1vh; /* Más espacio interno */
+    text-align: left;
+    width: 15vw; /* Ancho responsivo */
+}
+
+/* Sección del Pokémon del jugador */
+.player-section {
+    position: absolute;
+    bottom: 14vh; /* Movido más arriba */
+    left: 1vw; /* Movido más a la izquierda */
+    text-align: left;
+}
+
+.player-sprite {
+    height: 20vh; /* Altura relativa al viewport */
+    width: auto; /* Mantiene la proporción */
+    margin-right: 1vw; /* Espacio entre la imagen y la barra */
+    margin-top: 1vh; /* Espacio entre la imagen y la barra */
+}
+
+/* Información del Pokémon del jugador */
+.player-info {
+    position: absolute;
+    bottom: 20%; /* Mueve el nombre más arriba */
+    left: 75%; /* Ajustado para compensar que el sprite está más a la izquierda */
+    border-radius: 0.5vw; /* Bordes redondeados responsivos */
+    padding: 1vh; /* Más espacio interno */
+    text-align: left;
+    width: 15vw; /* Ancho responsivo */
+}
+
+/* Barra de vida del jugador */
+.player-hp-bar-container {
+    display: flex; /* Alinea la imagen y la barra en línea */
+    align-items: center; /* Centra verticalmente los elementos */
+    justify-content: flex-start; /* Alinea los elementos al inicio (izquierda) */
+    background-color: transparent; /* Sin fondo */
+    height: 2vh; /* Altura de la barra */
+    width: 80%; /* Ancho total del contenedor */
+    margin-top: 0.5vh;
+}
+
+.player-hp-bar-container .hp-icon {
+    height: 4vh; /* Tamaño del ícono igual a la altura de la barra */
+    width: auto; /* Mantiene la proporción */
+    margin-right: -0.5vw; /* Espacio entre la imagen y la barra */
+    flex-shrink: 0; /* Evita que el ícono se reduzca */
+    z-index: 1;
+    filter: drop-shadow(0.1vw 0.1vw 0.3vw rgba(0, 0, 0, 0.5)); /* Sombra negra suave */
+}
+
+/* Barra de vida del rival */
+.rival-hp-bar-container {
+    display: flex; /* Alinea la imagen y la barra en línea */
+    align-items: center; /* Centra verticalmente los elementos */
+    justify-content: flex-end; /* Alinea los elementos al final (derecha) */
+    background-color: transparent; /* Sin fondo */
+    height: 2vh; /* Altura de la barra */
+    width: 80%; /* Ancho total del contenedor */
+    margin-top: 0.5vh;
+}
+
+.rival-hp-bar-container .hp-icon {
+    height: 4vh; /* Tamaño del ícono igual a la altura de la barra */
+    width: auto; /* Mantiene la proporción */
+    margin-left: -0.5vw; /* Espacio entre la barra y la imagen */
+    flex-shrink: 0; /* Evita que el ícono se reduzca */
+    filter: drop-shadow(0.1vw 0.1vw 0.3vw rgba(0, 0, 0, 0.5)); /* Sombra negra suave */
+}
+
+/* Barra de vida */
+.hp-bar {
+    background-color: #4caf50; /* Color verde de la barra */
+    height: 100%; /* Ocupa toda la altura del contenedor */
+    border-radius: 0.5vw; /* Bordes redondeados */
+    flex-grow: 1; /* La barra ocupa el espacio restante */
+    transition: width 0.3s ease; /* Animación al cambiar el ancho */
+    box-shadow: 0.1vw 0.1vw 0.5vw rgba(0, 0, 0, 0.8); /* Sombra negra suave */
+}
+
+/* Nombre del Pokémon */
+.pokemon-name {
+    font-weight: bold;
+    font-size: 2.2vh; /* Tamaño de fuente más grande */
+    margin: 0;
+    margin-bottom: 1.2vh; /* Espacio debajo del nombre */
+    margin-left: 3vh;
+    text-transform: uppercase; /* Todo en mayúsculas */
+    text-shadow: 0.1vw 0.1vw 0.3vw rgba(0, 0, 0, 0.5); /* Sombra negra suave */
+}
+
+/* Contenedor de los botones de acción */
+/* Contenedor de los botones de acción */
+.action-buttons {
+    position: absolute;
+    bottom: 2vh; /* Posicionado en la parte inferior */
+    right: 2vw; /* Posicionado en la parte derecha */
+    width: 15vw; /* Aumentamos el ancho para botones más grandes */
+    z-index: 2;
+    pointer-events: auto; /* Permite la interacción con los botones */
+}
+
+/* Estilos generales para todos los botones de acción */
+.action-buttons .btn {
+    font-size: 14px !important; /* Aumentamos el tamaño de fuente */
+    font-weight: bold !important;
+    padding: 8px 6px !important; /* Mayor padding para botones más grandes */
+    white-space: nowrap; /* Evita que el texto se rompa en múltiples líneas */
+    overflow: hidden; /* Oculta el texto que excede el botón */
+    text-overflow: ellipsis; /* Muestra puntos suspensivos si el texto es demasiado largo */
+    position: relative; /* Para el tooltip */
+}
+
+/* Estilos base para todos los botones de movimientos */
+.action-buttons .btn-move {
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s ease;
+    border-width: 3px;
+    border-style: solid;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.action-buttons .btn-move:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.3);
+}
+
+.action-buttons .btn-move:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos específicos por tipo de Pokémon */
+.action-buttons .btn-normal {
+    background-color: #A8A878;
+    border-color: #8A8A59;
+}
+
+.action-buttons .btn-fighting {
+    background-color: #C03028;
+    border-color: #9D2721;
+}
+
+.action-buttons .btn-flying {
+    background-color: #A890F0;
+    border-color: #8A70D8;
+}
+
+.action-buttons .btn-poison {
+    background-color: #A040A0;
+    border-color: #803380;
+}
+
+.action-buttons .btn-ground {
+    background-color: #E0C068;
+    border-color: #BDA53C;
+}
+
+.action-buttons .btn-rock {
+    background-color: #B8A038;
+    border-color: #93802D;
+}
+
+.action-buttons .btn-bug {
+    background-color: #A8B820;
+    border-color: #8D9A19;
+}
+
+.action-buttons .btn-ghost {
+    background-color: #705898;
+    border-color: #554374;
+}
+
+.action-buttons .btn-steel {
+    background-color: #B8B8D0;
+    border-color: #9797BA;
+}
+
+.action-buttons .btn-fire {
+    background-color: #F08030;
+    border-color: #C86920;
+}
+
+.action-buttons .btn-water {
+    background-color: #6890F0;
+    border-color: #4A7AE0;
+}
+
+.action-buttons .btn-grass {
+    background-color: #78C850;
+    border-color: #5CA935;
+}
+
+.action-buttons .btn-electric {
+    background-color: #F8D030;
+    border-color: #DBBA18;
+    color: #333;
+}
+
+.action-buttons .btn-psychic {
+    background-color: #F85888;
+    border-color: #EC3F6F;
+}
+
+.action-buttons .btn-ice {
+    background-color: #98D8D8;
+    border-color: #7AC5C5;
+    color: #333;
+}
+
+.action-buttons .btn-dragon {
+    background-color: #7038F8;
+    border-color: #5018D8;
+}
+
+.action-buttons .btn-dark {
+    background-color: #705848;
+    border-color: #513B2A;
+}
+
+.action-buttons .btn-fairy {
+    background-color: #EE99AC;
+    border-color: #E06B86;
+}
+
+/* Estilo para el botón de volver */
+.action-buttons .btn-back {
+    background-color: #71717A;
+    border-color: #52525B;
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s ease;
+    border-width: 3px;
+    border-style: solid;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.action-buttons .btn-back:hover {
+    background-color: #52525B;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.3);
+}
+
+.action-buttons .btn-back:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+/* En Battle.css */
+/* Log de batalla responsivo */
+.battle-log {
+    position: absolute;
+    bottom: 1.5vh;             /* Posición vertical relativa a la altura de la pantalla */
+    left: 1vw;                /* Posición horizontal relativa al ancho de la pantalla */
+    width: 22vw;              /* Ancho relativo al ancho de la pantalla */
+    height: 10vh;             /* Altura relativa a la altura de la pantalla */
+    max-height: 150px;        /* Altura máxima para pantallas grandes */
+    overflow-y: auto;         /* Scroll vertical cuando sea necesario */
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 1vh;             /* Padding relativo a la altura */
+    border-radius: 0.5vw;     /* Bordes redondeados relativos */
+    font-size: clamp(10px, 1.2vh, 14px); /* Tamaño de fuente adaptativo */
+    z-index: 5;
+    opacity: 0.9;
+    box-shadow: 0 0.2vh 0.5vw rgba(0, 0, 0, 0.5); /* Sombra responsiva */
+}
+
+/* Opcional: Estilo para las entradas del log */
+.battle-log .log-entry {
+    margin-bottom: 0.5vh;
+    line-height: 1.3;
+    text-shadow: 0.05vw 0.05vw 0.1vw rgba(0, 0, 0, 0.7);
+}
+
+/* Opcional: Estilo para la barra de desplazamiento */
+.battle-log::-webkit-scrollbar {
+    width: 0.5vw;
+    max-width: 6px;
+}
+
+.battle-log::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 0.5vw;
+}
+
+.battle-log::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.3);
+}

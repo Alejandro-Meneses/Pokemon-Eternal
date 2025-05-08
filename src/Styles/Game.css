@@ -10,7 +10,6 @@
   }
   
   .pokemon-card {
-    background-color: var(--theme-bg, #f5f5f5); /* Usa el color de fondo principal */
     border: 1px solid var(--border-color, #ddd);
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);

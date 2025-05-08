@@ -2,17 +2,18 @@ import React, { useState, useEffect } from "react";
 import "../../Styles/Game.css";
 import Pokemon from "../../backend/models/Pokemon"; // Importa el modelo de Pokémon
 import Board from "../Game/Board"; // Importa el componente Board
+import Battle from "../Game/Battle"; // Importa el componente Battle
 
 export default function Game() {
   const [pokemons, setPokemons] = useState([]); // Estado para almacenar los datos de los 3 Pokémon
   const [loading, setLoading] = useState(true); // Estado para manejar la carga
   const [error, setError] = useState(null); // Estado para manejar errores
-  const [showBoard, setShowBoard] = useState(false); // Estado para alternar entre Game y Board
+  const [view, setView] = useState("game"); // Estado para alternar entre Game, Board y Battle
 
   useEffect(() => {
     const fetchRandomPokemons = async () => {
       try {
-        const randomIds = Array.from({ length: 3 }, () => Math.floor(Math.random() * 898) + 1); // IDs aleatorios (1-898)
+        const randomIds = Array.from({ length: 3 }, () => Math.floor(Math.random() * 1025) + 1); // IDs aleatorios (1-898)
         const promises = randomIds.map((id) =>
           fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then((res) => res.json())
         );
@@ -35,20 +36,35 @@ export default function Game() {
   return (
     <div>
       <div className="header">
-    <button
-      onClick={() => {
-        console.log("Botón clickeado");
-        setShowBoard((prev) => !prev);
-      }}
-      className="toggle-button"
-    >
-      {showBoard ? "Volver a Game" : "Ir al Tablero"}
-    </button>
-  </div>
+        {/* Botones para alternar entre vistas */}
+        <button
+          onClick={() => setView("game")}
+          className="toggle-button"
+          disabled={view === "game"} // Deshabilita el botón si ya estás en Game
+        >
+          Ir a Game
+        </button>
+        <button
+          onClick={() => setView("board")}
+          className="toggle-button"
+          disabled={view === "board"} // Deshabilita el botón si ya estás en Board
+        >
+          Ir al Tablero
+        </button>
+        <button
+          onClick={() => setView("battle")}
+          className="toggle-button"
+          disabled={view === "battle"} // Deshabilita el botón si ya estás en Battle
+        >
+          Ir a Batalla
+        </button>
+      </div>
 
       {/* Renderizado condicional */}
-      {showBoard ? (
+      {view === "board" ? (
         <Board /> // Muestra el componente Board
+      ) : view === "battle" ? (
+        <Battle /> // Muestra el componente Battle
       ) : (
         <div className="game-container">
           {pokemons.map((pokemon) => (

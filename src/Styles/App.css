@@ -11,9 +11,7 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 
-img {
-  max-width: 100%;
-}
+
 
 :root {
   --body-font: "Inter", sans-serif;
@@ -33,7 +31,6 @@ body {
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  background-blend-mode: color-dodge;
   background-color: rgba(18, 21, 39, 0.86);
   display: flex;
   justify-content: center;
