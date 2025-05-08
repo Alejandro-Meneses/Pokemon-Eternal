@@ -12,7 +12,7 @@ app.use(cors({
     ? ['https://pokemon-eternal.onrender.com', 'https://*.onrender.com'] 
     : 'http://localhost:3000',
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Añadir OPTIONS
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 

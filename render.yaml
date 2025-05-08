@@ -1,5 +1,5 @@
 services:
-  - name: pokemon-eternal-api
+  - name: proyecto-pokemon
     type: web
     plan: free
     runtime: node
@@ -15,7 +15,7 @@ services:
       - key: PORT
         value: 10000
 
-  - name: pokemon-eternal-frontend
+  - name: Pokemon-Eternal
     type: web
     plan: free
     runtime: static
@@ -23,4 +23,4 @@ services:
     staticPublishPath: ./build
     envVars:
       - key: REACT_APP_API_URL
-        value: https://pokemon-eternal-api.onrender.com
+        value: https://proyecto-pokemon.onrender.com
