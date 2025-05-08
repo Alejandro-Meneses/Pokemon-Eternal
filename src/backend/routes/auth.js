@@ -4,7 +4,16 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 
 const router = express.Router();
+// Añade estos manejadores OPTIONS al principio del archivo
 
+// Manejar OPTIONS para las rutas de autenticación
+router.options("/register", (req, res) => {
+  res.status(204).end();
+});
+
+router.options("/login", (req, res) => {
+  res.status(204).end();
+});
 // Register
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
