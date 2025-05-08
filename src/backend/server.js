@@ -11,13 +11,13 @@ const app = express();
 
 // Configuración CORS primero (antes de cualquier ruta)
 app.use(cors({
-  origin: '*', // Temporal mientras solucionamos el problema
+  origin: '\\*', // Temporal mientras solucionamos el problema
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // AÑADE ESTA LÍNEA - Crucial para manejar preflight OPTIONS
-app.options('*', (req, res) => {
+app.options('\\*', (req, res) => {
   // Establecer encabezados manualmente
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
