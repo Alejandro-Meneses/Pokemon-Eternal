@@ -115,11 +115,11 @@ export default function Register() {
         {error && <p className="error-message">{error}</p>}
       </form>
       <p className="auth-toggle">
-        ¿Ya tienes cuenta?{" "}
-        <a href="/login" className="register-link">
-          Inicia sesión
-        </a>
-      </p>
+  ¿Ya tienes cuenta?{" "}
+  <Link to="/login" className="register-link">
+    Inicia sesión
+  </Link>
+</p>
     </div>
   );
 }

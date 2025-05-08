@@ -59,11 +59,11 @@ export default function Login({ onLogin }) {
         {error && <p className="error-message">{error}</p>}
       </form>
       <p className="auth-toggle">
-        ¿No tienes cuenta?{" "}
-        <a href="/register" className="register-link">
-          Regístrate
-        </a>
-      </p>
+  ¿No tienes cuenta?{" "}
+  <Link to="/register" className="register-link">
+    Regístrate
+  </Link>
+</p>
     </div>
   );
 }
