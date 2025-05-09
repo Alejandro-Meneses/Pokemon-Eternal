@@ -59,9 +59,10 @@ export default function App() {
           {/* Sidebar */}
           <div className="sidebar">
             <span className="logo"></span>
-            <a className="logo-expand" href="#">
+            {/* Corregido: reemplazado <a> con href inválido por un <div> */}
+            <div className="logo-expand">
               Pokemon Eternal
-            </a>
+            </div>
             <div className="side-wrapper">
               <div className="side-title">MENU</div>
               <div className="side-menu">

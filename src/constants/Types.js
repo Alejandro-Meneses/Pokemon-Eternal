@@ -4,6 +4,7 @@ export const TYPES = [
     'steel', 'fairy'
 ];
 
+
 // Traducciones de tipos
 export const TYPE_TRANSLATIONS = {
     'normal': 'Normal',
@@ -590,13 +591,15 @@ export const translateType = (type) => {
   return TYPE_TRANSLATIONS[type] || type;
 };
 
-export default {
-  TYPES,
-  TYPE_TRANSLATIONS,
-  TYPE_COLORS,
-  TYPE_CHART,
-  getTypeEffectiveness,
-  getEffectivenessMessage,
-  getTypeColor,
-  translateType
-};
+const Types = {
+    TYPES,
+    TYPE_TRANSLATIONS,
+    TYPE_COLORS,
+    TYPE_CHART,
+    getTypeEffectiveness,
+    getEffectivenessMessage,
+    getTypeColor,
+    translateType
+  };
+  
+  export default Types;
