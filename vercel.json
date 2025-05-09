@@ -13,15 +13,9 @@
         }
       }
     ],
-    "routes": [
-      {
-        "src": "/api/(.*)",
-        "dest": "src/backend/server.js"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/index.html"
-      }
+    "rewrites": [
+      { "source": "/api/(.*)", "destination": "/src/backend/server.js" },
+      { "source": "/(.*)", "destination": "/index.html" }
     ],
     "headers": [
       {
