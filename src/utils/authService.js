@@ -1,5 +1,5 @@
-const API_URL = process.env.REACT_APP_API_URL || 
-  'https://proyecto-pokemon.onrender.com/api/auth';
+// Usar una URL relativa para que funcione tanto en desarrollo local como en Vercel
+const API_URL = process.env.REACT_APP_API_URL || '/api/auth';
 
 export const register = async (userData) => {
   try {

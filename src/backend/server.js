@@ -1,7 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-// Mantén cors importado para referencia
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
@@ -17,43 +16,32 @@ app.use((req, res, next) => {
   next();
 });
 
-// 2. Middleware CORS manual - ANTES de express.json()
-app.use((req, res, next) => {
-  // Log detallado para depuración
-  console.log(`[CORS-MANUAL] ${req.method} ${req.originalUrl}`);
-  
-  // Permitir solicitudes desde estos orígenes
-  const allowedOrigins = [
-    'https://pokemon-eternal.onrender.com',
-    'http://localhost:3000',
-    'https://proyecto-pokemon.onrender.com'
-  ];
-  
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  } else {
-    // Para solicitudes sin origen o desde otros orígenes, usar el frontend principal
-    res.header('Access-Control-Allow-Origin', 'https://pokemon-eternal.onrender.com');
-  }
-  
-  // Configurar encabezados CORS para TODAS las respuestas
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Max-Age', '86400'); // 24 horas - reduce las solicitudes preflight
-  
-  // Manejar directamente las solicitudes OPTIONS
-  if (req.method === 'OPTIONS') {
-    console.log(`[CORS-MANUAL] Respondiendo OPTIONS para: ${req.originalUrl}`);
-    return res.status(204).end();
-  }
-  
-  // Continuar con la solicitud normal
-  next();
-});
+// 2. Configuración CORS simplificada para Vercel
+const corsOptions = {
+  origin: function (origin, callback) {
+    // En desarrollo, permitir localhost; en producción, permitir tu dominio de Vercel
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://pokemon-eternal.vercel.app',
+      undefined // Para solicitudes sin origen (como Postman)
+    ];
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      console.log(`CORS rechazado para origen: ${origin}`);
+      callback(null, true); // En Vercel, permitimos todos los orígenes por ahora
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+};
 
-// 3. Parser JSON después del middleware CORS manual
+// Aplicar CORS
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Manejo explícito para OPTIONS
+
+// 3. Parser JSON
 app.use(express.json());
 
 // 4. Middleware para diagnóstico de rutas de autenticación
@@ -62,7 +50,7 @@ app.use('/api/auth', (req, res, next) => {
   next();
 });
 
-// 5. Rutas API - define estas después de configurar CORS
+// 5. Rutas API
 app.use("/api/auth", authRoutes);
 
 // 6. Rutas de prueba API
@@ -111,14 +99,22 @@ if (process.env.NODE_ENV === "production") {
       if (fs.existsSync(indexPath)) {
         return res.sendFile(indexPath);
       } else {
-        console.log("Index.html no encontrado, redirigiendo al frontend");
-        // Si no existe el archivo, redirige al frontend
-        return res.redirect("https://pokemon-eternal.onrender.com");
+        console.log("Index.html no encontrado, usando fallback");
+        // En Vercel, simplemente devuelve un HTML básico
+        return res.send(`
+          <html>
+            <head>
+              <meta http-equiv="refresh" content="0;url=/" />
+            </head>
+            <body>
+              <p>Redirigiendo...</p>
+            </body>
+          </html>
+        `);
       }
     } catch (err) {
       console.error("Error sirviendo archivos estáticos:", err);
-      // Redirige al frontend en caso de error
-      return res.redirect("https://pokemon-eternal.onrender.com");
+      return res.status(500).send("Error interno del servidor");
     }
   });
 }
@@ -141,7 +137,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 12. Conexión a MongoDB - actualiza sin usar opciones deprecadas
+// 12. Conexión a MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB conectado"))
@@ -150,9 +146,16 @@ mongoose
     if (err.reason) console.error("Razón:", err.reason);
   });
 
-// 13. Iniciar servidor - IMPORTANTE: Usa el puerto que proporciona Render
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
-  console.log(`📍 Entorno: ${process.env.NODE_ENV || 'development'}`);
-});
+// 13. Configuración para desarrollo vs Vercel
+if (process.env.VERCEL) {
+  // En Vercel, exporta la app para serverless
+  console.log("Ejecutando en Vercel - modo serverless");
+  module.exports = app;
+} else {
+  // Solo inicia el servidor si no estamos en Vercel
+  const PORT = process.env.PORT || 10000;
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+    console.log(`📍 Entorno: ${process.env.NODE_ENV || 'development'}`);
+  });
+}

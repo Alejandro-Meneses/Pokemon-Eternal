@@ -10,6 +10,9 @@ router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
+    // Log para depuración en Vercel
+    console.log(`[REGISTER] Intentando registrar: ${email}`);
+    
     if (!username || !email || !password) {
       return res.status(400).json({ error: "Todos los campos son obligatorios" });
     }
@@ -23,6 +26,7 @@ router.post("/register", async (req, res) => {
     const user = new User({ username, email, password: hashedPassword });
 
     await user.save();
+    console.log(`[REGISTER] Usuario registrado con éxito: ${email}`);
     res.status(201).json({ message: "Usuario registrado con éxito" });
   } catch (error) {
     console.error("Error en registro:", error);
@@ -35,22 +39,29 @@ router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    // Log para depuración en Vercel
+    console.log(`[LOGIN] Intentando login: ${email}`);
+
     if (!email || !password) {
       return res.status(400).json({ error: "Por favor, proporciona email y contraseña" });
     }
 
     const user = await User.findOne({ email });
     if (!user) {
+      console.log(`[LOGIN] Usuario no encontrado: ${email}`);
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log(`[LOGIN] Contraseña incorrecta para: ${email}`);
       return res.status(400).json({ error: "Contraseña incorrecta" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    // Aumentar duración del token para mejor experiencia de usuario
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "24h" });
 
+    console.log(`[LOGIN] Login exitoso: ${email}`);
     res.status(200).json({
       token,
       user: { id: user._id, username: user.username, email: user.email }
