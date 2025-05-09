@@ -131,5 +131,11 @@ mongoose
   });
 
 // Iniciar servidor
+// Reemplaza la configuración del puerto actual con esto:
+
+// Iniciar servidor - IMPORTANTE: Usa el puerto que proporciona Render
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`🚀 Servidor corriendo en puerto ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+  console.log(`📍 Entorno: ${process.env.NODE_ENV || 'development'}`);
+});
