@@ -8,15 +8,18 @@ const authRoutes = require("./routes/auth");
 
 const app = express();
 
-// Middleware de diagnóstico mejorado
+// Middleware de diagnóstico mejorado - mantén esto primero para ver todas las peticiones
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] → ${req.method} ${req.path}`);
+  console.log(`[${new Date().toISOString()}] → ${req.method} ${req.originalUrl}`);
   console.log(`Origin: ${req.headers.origin || 'No origin'}`);
   console.log(`User-Agent: ${req.headers['user-agent']}`);
   next();
 });
 
-// Configuración CORS
+// ⭐ IMPORTANTE: Middleware JSON antes de CORS
+app.use(express.json());
+
+// Configuración CORS mejorada
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
@@ -25,7 +28,7 @@ const corsOptions = {
       'https://proyecto-pokemon.onrender.com',
       undefined // Para permitir solicitudes sin origen
     ];
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
       console.log(`CORS rechazado para origen: ${origin}`);
@@ -34,17 +37,18 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 };
 
-// Aplicar CORS
+// ⭐ Aplicar CORS con la configuración adecuada
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Manejo de preflight
 
-// Middleware JSON
-app.use(express.json());
+// ⭐ Usa cors() como manejador de OPTIONS - esto es más confiable
+app.options('*', cors(corsOptions));
 
-// Rutas API
+// Rutas API - define estas después de configurar CORS
 app.use("/api/auth", authRoutes);
 
 // Rutas de prueba API
@@ -108,16 +112,18 @@ app.use((err, req, res, next) => {
       "Error interno del servidor" : err.message 
   });
 });
+// Añade esto a tu server.js
+app.get("/api/debug-cors", (req, res) => {
+  res.json({
+    headers: req.headers,
+    origin: req.headers.origin,
+    method: req.method
+  });
+});
 
-// Conexión a MongoDB
+// Conexión a MongoDB - actualiza sin usar opciones deprecadas
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 45000,
-    family: 4
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB conectado"))
   .catch((err) => {
     console.error("❌ Error conectando a MongoDB:", err.message);

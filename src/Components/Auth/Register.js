@@ -1,23 +1,29 @@
 import React, { useState } from "react";
 import "../../Styles/Login.css"; // Reutiliza el mismo CSS que el login
 import { register } from "../../utils/authService";
-import { useNavigate, Link } from "react-router-dom"; // Importa useNavigate
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Importa el componente de Font Awesome
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons"; // Importa los íconos necesarios
+import { useNavigate, Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 export default function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // Nuevo estado para repetir contraseña
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Indicador de carga
-  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Estado para mostrar/ocultar repetir contraseña
-  const navigate = useNavigate(); // Hook para redirigir
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validar que todos los campos estén completos
+    if (!username.trim() || !email.trim() || !password || !confirmPassword) {
+      setError("Todos los campos son obligatorios");
+      return;
+    }
 
     // Validar que las contraseñas coincidan
     if (password !== confirmPassword) {
@@ -44,19 +50,24 @@ export default function Register() {
       return;
     }
 
+    setError(""); // Limpiar errores anteriores
     setIsLoading(true); // Activa el indicador de carga
 
     try {
       const response = await register({ username, email, password });
+      
       if (response.message) {
         // Registro exitoso
-        alert("Registro exitoso");
+        alert("Registro exitoso. Por favor inicia sesión.");
         navigate("/login"); // Redirige a la página de login
+      } else if (response.error) {
+        setError(response.error);
       } else {
-        setError(response.error || "Error al registrarse");
+        setError("Error desconocido al registrarse");
       }
     } catch (err) {
-      setError("Error al conectar con el servidor");
+      console.error("Error en registro:", err);
+      setError(err.message || "Error al conectar con el servidor");
     } finally {
       setIsLoading(false); // Desactiva el indicador de carga
     }
@@ -115,11 +126,11 @@ export default function Register() {
         {error && <p className="error-message">{error}</p>}
       </form>
       <p className="auth-toggle">
-  ¿Ya tienes cuenta?{" "}
-  <Link to="/login" className="register-link">
-    Inicia sesión
-  </Link>
-</p>
+        ¿Ya tienes cuenta?{" "}
+        <Link to="/login" className="register-link">
+          Inicia sesión
+        </Link>
+      </p>
     </div>
   );
 }

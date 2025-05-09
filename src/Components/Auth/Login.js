@@ -1,33 +1,60 @@
 import React, { useState } from "react";
-
+import { useNavigate, Link } from "react-router-dom";
 import "../../Styles/Login.css";
-import { login } from "../../utils/authService";
-import { useNavigate, Link } from "react-router-dom"; // Importa useNavigate
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Importa el componente de Font Awesome
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons"; // Importa los íconos necesarios
+import { login } from "../../utils/authService"; // Corregido: importar login, no register
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // Hook para redirigir
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validaciones básicas
+    if (!email.trim()) {
+      setError("Por favor ingresa tu correo electrónico");
+      return;
+    }
+    
+    if (!password) {
+      setError("Por favor ingresa tu contraseña");
+      return;
+    }
+    
+    setIsLoading(true);
+    setError("");
+    
     try {
       const response = await login({ email, password });
+      
       if (response.token) {
         // Inicio de sesión exitoso
-        localStorage.setItem("token", response.token); // Guarda el token en localStorage
-        alert("Inicio de sesión exitoso");
-        onLogin(); // Llama a la función para actualizar el estado de autenticación
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("user", JSON.stringify(response.user));
+        
+        // Notificar al usuario de forma más sutil (opcional: puedes mantener el alert)
+        console.log("Inicio de sesión exitoso");
+        
+        // Actualizar estado de autenticación
+        onLogin();
+        
+        // Redirigir a la página principal
         navigate("/");
+      } else if (response.error) {
+        setError(response.error);
       } else {
-        setError(response.error || "Error al iniciar sesión");
+        setError("Error desconocido al iniciar sesión");
       }
     } catch (err) {
-      setError("Error al conectar con el servidor");
+      setError(err.message || "Error al conectar con el servidor");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -41,6 +68,7 @@ export default function Login({ onLogin }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          autoFocus
         />
         <div className="password-container">
           <input
@@ -56,15 +84,17 @@ export default function Login({ onLogin }) {
             onClick={() => setShowPassword(!showPassword)}
           />
         </div>
-        <button type="submit">Iniciar Sesión</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+        </button>
         {error && <p className="error-message">{error}</p>}
       </form>
       <p className="auth-toggle">
-  ¿No tienes cuenta?{" "}
-  <Link to="/register" className="register-link">
-    Regístrate
-  </Link>
-</p>
+        ¿No tienes cuenta?{" "}
+        <Link to="/register" className="register-link">
+          Regístrate
+        </Link>
+      </p>
     </div>
   );
 }
