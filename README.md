@@ -4,7 +4,7 @@
 
 Pokémon Eternal es un juego web basado en el universo Pokémon que permite a los usuarios crear cuentas, coleccionar Pokémon, y participar en batallas estratégicas por turnos. El proyecto combina una interfaz atractiva con mecánicas de juego inspiradas en la saga original.
 
-**[Prueba la aplicación aquí](https://pokemon-eternal.vercel.app)**
+**[Prueba la aplicación aquí](https://pokemoneternal.vercel.app)**
 
 ## 📋 Características Actuales
 
