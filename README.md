@@ -1,70 +1,66 @@
-# Getting Started with Create React App
+# Pokémon Eternal
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 🌟 Descripción
 
-## Available Scripts
+Pokémon Eternal es un juego web basado en el universo Pokémon que permite a los usuarios crear cuentas, coleccionar Pokémon, y participar en batallas estratégicas por turnos. El proyecto combina una interfaz atractiva con mecánicas de juego inspiradas en la saga original.
 
-In the project directory, you can run:
+**[Prueba la aplicación aquí](https://pokemon-eternal.vercel.app)**
 
-### `npm start`
+## 📋 Características Actuales
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Sistema de Autenticación**: Registro de usuarios e inicio de sesión con JWT.
+- **Interfaz Responsiva**: Diseño adaptable para dispositivos móviles y escritorio.
+- **Sistema de Tipos**: Implementación del sistema de tipos de Pokémon.
+- **Movimiento por Mapa**: Sistema básico para explorar el mapa del juego.
+- **Sistema de Combate**: Versión inicial del sistema de batallas por turnos (en desarrollo).
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🚀 Próximas Características
 
-### `npm test`
+- **Sistema de Batalla Mejorado**: Implementación completa de un sistema de combate por turnos con mayor profundidad estratégica.
+- **Evolución de Pokémon**: Sistema que permitirá a los Pokémon evolucionar basado en condiciones específicas.
+- **Sistema de Captura**: Mecánica para capturar nuevos Pokémon durante las batallas.
+- **Colección de Pokémon**: Sistema completo para visualizar y gestionar los Pokémon capturados.
+- **Modo Multijugador**: Batallas en tiempo real contra otros jugadores.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🛠️ Tecnologías Utilizadas
 
-### `npm run build`
+### Frontend
+- React.js
+- React Router
+- CSS personalizado para la interfaz de usuario
+- FontAwesome para iconografía
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Backend
+- Node.js
+- Express.js
+- MongoDB para almacenamiento de datos
+- JWT para autenticación
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Despliegue
+- Vercel para hosting y despliegue continuo
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🏗️ Arquitectura
 
-### `npm run eject`
+El proyecto utiliza una arquitectura de tres capas:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. **Interfaz de Usuario**: Desarrollada con React, se encarga de toda la interacción con el usuario.
+2. **API REST**: Servidor Express que maneja peticiones y respuestas.
+3. **Base de Datos**: MongoDB almacena usuarios, Pokémon y datos del juego.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 💻 Instalación Local
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Para ejecutar el proyecto en tu entorno local:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+# Clonar el repositorio
+git clone https://github.com/Alejandro-Meneses/Proyecto-Pokemon.git
+cd pokemon-eternal
 
-## Learn More
+# Instalar dependencias
+npm install
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# Iniciar en modo desarrollo
+npm start
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# El frontend estará disponible en http://localhost:3000
+# El backend escuchará en http://localhost:10000
