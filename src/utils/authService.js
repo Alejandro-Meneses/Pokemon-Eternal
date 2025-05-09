@@ -1,9 +1,8 @@
 // Modifica la URL para que sea dinámica:
 // Modifica la URL para que sea dinámica con el nombre correcto:
 // filepath: /Users/alejandro/Proyecto/Pokemon Eternal/pokemon-eternal/src/utils/authService.js
-const API_URL = process.env.REACT_APP_API_URL ? 
-  `${process.env.REACT_APP_API_URL}/api/auth` : 
-  'http://localhost:5000/api/auth';
+const API_URL = process.env.REACT_APP_API_URL || 
+  'https://proyecto-pokemon.onrender.com/api/auth';
   export const register = async (userData) => {
   const response = await fetch(`${API_URL}/register`, {
     method: "POST",

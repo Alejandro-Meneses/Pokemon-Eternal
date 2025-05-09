@@ -23,4 +23,4 @@ services:
     staticPublishPath: ./build
     envVars:
       - key: REACT_APP_API_URL
-        value: https://proyecto-pokemon.onrender.com
+        value: https://proyecto-pokemon.onrender.com/api
