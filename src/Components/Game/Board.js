@@ -14,9 +14,9 @@ export default function Board() {
   }, []);
 
   // Función para manejar encuentros de Pokémon
-  const handleEncounter = () => {
+   const handleEncounter = useCallback(() => {
     // Verificar si estamos en grass y aplicar probabilidad de encuentro (10%)
-    if (grid[playerPosition.row][playerPosition.col] === "grass" && 
+    if (grid[playerPosition.row]?.[playerPosition.col] === "grass" && 
         !encounterCooldown && 
         Math.random() < 0.1) { // 10% de probabilidad
       
@@ -27,7 +27,7 @@ export default function Board() {
       // Navegar a la pantalla de batalla
       navigate('/battle');
     }
-  };
+  }, [grid, playerPosition.row, playerPosition.col, encounterCooldown, navigate]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -61,7 +61,7 @@ export default function Board() {
     if (grid.length > 0) {
       handleEncounter();
     }
-  }, [playerPosition]);
+  }, [playerPosition ,grid.length, handleEncounter]);
 
   const generateGridConBordes = (rows, cols) => {
     const getRandomTile = () => {
