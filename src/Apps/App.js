@@ -10,6 +10,8 @@ import Login from "../Components/Auth/Login";
 import Register from "../Components/Auth/Register";
 import Welcome from "../Components/Welcome";
 import Game from "../Components/Game/Game";
+import Board from "../Components/Game/Board";
+import Battle from "../Components/Game/Battle";
 // IMPORTS COMPLETOS
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -103,6 +105,8 @@ export default function App() {
               <Route path="/tutorial" element={<div>Tutorial</div>} />
               <Route path="/gachapon" element={<div>GachaPon</div>} />
               <Route path="/about" element={<div>Sobre Nosotros</div>} />
+              <Route path="/Board" element={<Board />} />
+              <Route path="/battle" element={<Battle />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>

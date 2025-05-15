@@ -4,8 +4,9 @@ import Pokemon from "../../backend/models/Pokemon";
 import Move from "../../backend/models/Move";
 import BattleEngine from "../../backend/battle/Battleengine";
 import { ReactComponent as PokeballIcon } from "../../images/Pokeball.svg";
-
+import { useNavigate } from "react-router-dom";
 const Battle = () => {
+    const navigate = useNavigate(); // Añade esta línea al inicio del componente
     const [playerPokemon, setPlayerPokemon] = useState(null);
     const [rivalPokemon, setRivalPokemon] = useState(null);
     const [showMoves, setShowMoves] = useState(false);
@@ -47,15 +48,15 @@ const Battle = () => {
 
                 let playerInstance = await Pokemon.fetchPokemon(playerId);
                 let rivalInstance = await Pokemon.fetchPokemon(rivalId);
-                
+
                 // Imprimir datos de depuración
                 console.log("Estructura del jugador:", playerInstance);
                 console.log("Estructura del rival:", rivalInstance);
-                
+
                 // Establecer nivel 50 para ambos Pokémon
                 playerInstance.level = 50;
                 rivalInstance.level = 50;
-                
+
                 // Asegurarse de que tienen stats
                 if (!playerInstance.stats) {
                     playerInstance.stats = {
@@ -67,7 +68,7 @@ const Battle = () => {
                         speed: 100
                     };
                 }
-                
+
                 if (!rivalInstance.stats) {
                     rivalInstance.stats = {
                         hp: 150,
@@ -78,16 +79,16 @@ const Battle = () => {
                         speed: 100
                     };
                 }
-                
+
                 // Verificar que los tipos estén definidos
                 if (!playerInstance.types || playerInstance.types.length === 0) {
                     playerInstance.types = ['normal'];
                 }
-                
+
                 if (!rivalInstance.types || rivalInstance.types.length === 0) {
                     rivalInstance.types = ['normal'];
                 }
-                
+
                 // Inicializar HP actual
                 playerInstance.currentHP = playerInstance.stats.hp;
                 rivalInstance.currentHP = rivalInstance.stats.hp;
@@ -98,7 +99,7 @@ const Battle = () => {
                     max: playerInstance.stats.hp,
                     percentage: 100
                 });
-                
+
                 setRivalHP({
                     current: rivalInstance.stats.hp,
                     max: rivalInstance.stats.hp,
@@ -109,36 +110,36 @@ const Battle = () => {
                 // Intentar encontrar movimientos en diferentes propiedades posibles
                 const playerMoves = playerInstance.moves || playerInstance.moveList || [];
                 console.log("Movimientos del jugador encontrados:", playerMoves);
-                
+
                 if (playerMoves.length > 0) {
                     try {
                         // Tomar los primeros 4 movimientos (o todos si hay menos de 4)
                         const moveCount = Math.min(4, playerMoves.length);
                         const movePromises = [];
-                        
+
                         for (let i = 0; i < moveCount; i++) {
                             const moveData = playerMoves[i];
                             // Verificar la estructura del objeto de movimiento
                             const moveUrl = moveData.move ? moveData.move.url : moveData.url;
-                            
+
                             if (!moveUrl) {
                                 console.error("Estructura de movimiento no reconocida:", moveData);
                                 continue;
                             }
-                            
+
                             console.log(`Cargando movimiento del jugador desde: ${moveUrl}`);
-                            
+
                             movePromises.push(
                                 fetch(moveUrl)
                                     .then(response => response.json())
                                     .then(data => new Move(data))
                             );
                         }
-                        
+
                         const movesData = await Promise.all(movePromises);
                         setMoves(movesData);
                         playerInstance.moves = movesData;
-                        
+
                         console.log("Movimientos del jugador cargados:", movesData);
                     } catch (error) {
                         console.error("Error al cargar movimientos del jugador:", error);
@@ -170,39 +171,39 @@ const Battle = () => {
                     setMoves([tackleMove]);
                     playerInstance.moves = [tackleMove];
                 }
-                
+
                 // CORRECCIÓN: similar para el rival
                 const rivalMoves = rivalInstance.moves || rivalInstance.moveList || [];
                 console.log("Movimientos del rival encontrados:", rivalMoves);
-                
+
                 if (rivalMoves.length > 0) {
                     try {
                         // Tomar los primeros 4 movimientos (o todos si hay menos de 4)
                         const moveCount = Math.min(4, rivalMoves.length);
                         const movePromises = [];
-                        
+
                         for (let i = 0; i < moveCount; i++) {
                             const moveData = rivalMoves[i];
                             // Verificar la estructura del objeto de movimiento
                             const moveUrl = moveData.move ? moveData.move.url : moveData.url;
-                            
+
                             if (!moveUrl) {
                                 console.error("Estructura de movimiento rival no reconocida:", moveData);
                                 continue;
                             }
-                            
+
                             console.log(`Cargando movimiento del rival desde: ${moveUrl}`);
-                            
+
                             movePromises.push(
                                 fetch(moveUrl)
                                     .then(response => response.json())
                                     .then(data => new Move(data))
                             );
                         }
-                        
+
                         const movesData = await Promise.all(movePromises);
                         rivalInstance.moves = movesData;
-                        
+
                         console.log("Movimientos del rival cargados:", movesData);
                     } catch (error) {
                         console.error("Error al cargar movimientos del rival:", error);
@@ -235,13 +236,13 @@ const Battle = () => {
 
                 setPlayerPokemon(playerInstance);
                 setRivalPokemon(rivalInstance);
-                
+
                 // Inicializar el motor de batalla
                 const engine = new BattleEngine(playerInstance, rivalInstance);
                 setBattleEngine(engine);
                 setBattleLog(["¡Comienza el combate!"]);
                 setBattleMessage("¿Qué debería hacer " + playerInstance.name + "?");
-                
+
             } catch (error) {
                 console.error("Error al cargar los Pokémon:", error);
                 setBattleMessage("Error al iniciar el combate. Inténtalo de nuevo.");
@@ -250,7 +251,7 @@ const Battle = () => {
 
         fetchBattlePokemons();
     }, []);
-    
+
     // Auto-scroll para el log de batalla
     useEffect(() => {
         if (logContainerRef.current) {
@@ -258,6 +259,17 @@ const Battle = () => {
         }
     }, [battleLog]);
 
+    useEffect(() => {
+        // Cuando battleOver cambia a true, configurar un temporizador para volver al mapa
+        if (battleOver) {
+            const timer = setTimeout(() => {
+                navigate('/Board');
+            }, 2500); // 2.5 segundos de espera
+
+            // Limpieza del temporizador si el componente se desmonta
+            return () => clearTimeout(timer);
+        }
+    }, [battleOver, navigate]);
     // Funciones para manejar los clics en los botones
     const handleAttack = () => {
         setShowMoves(true);
@@ -265,13 +277,13 @@ const Battle = () => {
 
     const handleBag = () => alert("¡Mochila seleccionada! Esta función estará disponible próximamente.");
     const handlePokemon = () => alert("¡Pokémon seleccionado! Esta función estará disponible próximamente.");
-    
+
     const handleRun = async () => {
         if (!battleEngine || isAnimating || battleOver) return;
-        
+
         setIsAnimating(true);
         setBattleLog(prev => [...prev, "Has intentado huir..."]);
-        
+
         // 50% de probabilidad de escapar
         if (Math.random() > 0.5) {
             setBattleLog(prev => [...prev, "¡Has escapado con éxito!"]);
@@ -280,11 +292,11 @@ const Battle = () => {
         } else {
             setBattleLog(prev => [...prev, "¡No has podido escapar!"]);
             await new Promise(resolve => setTimeout(resolve, 1000));
-            
+
             // El rival ataca después de un intento fallido de huida
             await executeRivalAttack();
         }
-        
+
         setIsAnimating(false);
     };
 
@@ -294,55 +306,60 @@ const Battle = () => {
 
     const executeRivalAttack = async () => {
         if (!battleEngine || battleOver) return;
-        
+
         setIsAnimating(true);
         setBattleMessage(`${rivalPokemon.name} está eligiendo un movimiento...`);
-        
+
         // Pausa para simular que el rival está pensando
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
         const result = battleEngine.executeRivalMove();
-        
+
         if (result.success) {
             setBattleMessage(`${rivalPokemon.name} usa ${result.move}...`);
             await new Promise(resolve => setTimeout(resolve, 800));
-            
+
             // Actualizar el log de batalla
             setBattleLog(prev => [...prev, result.message]);
-            
+
             // Actualizar HP del jugador
             setPlayerHP({
                 current: result.playerHP.current,
                 max: result.playerHP.max,
                 percentage: result.playerHP.percentage
             });
-            
+
             // Verificar si la batalla ha terminado
-            if (result.isFinished) {
+            if (result.battleState.isFinished) {
                 setBattleOver(true);
-                setBattleMessage(`¡${rivalPokemon.name} ha ganado el combate!`);
+                if (result.battleState.winner === "player") {
+                    setBattleMessage(`Has ganado el combate! Volviendo al mapa...`);
+                } else {
+                    setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`);
+                }
+
             } else {
                 setBattleMessage("¿Qué debería hacer " + playerPokemon.name + "?");
             }
         } else {
             setBattleLog(prev => [...prev, "El rival no pudo atacar: " + result.message]);
         }
-        
+
         setIsAnimating(false);
     };
 
     const handleUseMove = async (move) => {
         if (!battleEngine || isAnimating || battleOver) return;
-        
+
         setIsAnimating(true);
         setShowMoves(false);
         setBattleMessage(`${playerPokemon.name} usa ${move.name}...`);
-        
+
         // Pequeña pausa para la animación
         await new Promise(resolve => setTimeout(resolve, 800));
-        
+
         const result = battleEngine.executeTurn(move);
-        
+
         if (result.success) {
             // Orden de los ataques basado en velocidad
             if (result.firstAttacker === "player") {
@@ -354,15 +371,15 @@ const Battle = () => {
                         max: result.battleState.rivalHP.max,
                         percentage: result.battleState.rivalHP.percentage
                     });
-                    
+
                     // Pequeña pausa antes del ataque del rival
                     await new Promise(resolve => setTimeout(resolve, 1500));
-                    
+
                     // Si la batalla no ha terminado, el rival ataca
                     if (!result.battleState.isFinished && result.rivalAttackResult) {
                         setBattleMessage(`${rivalPokemon.name} usa ${result.rivalAttackResult.move}...`);
                         await new Promise(resolve => setTimeout(resolve, 800));
-                        
+
                         setBattleLog(prev => [...prev, result.rivalAttackResult.message]);
                         setPlayerHP({
                             current: result.battleState.playerHP.current,
@@ -376,22 +393,22 @@ const Battle = () => {
                 if (result.rivalAttackResult) {
                     setBattleMessage(`${rivalPokemon.name} usa ${result.rivalAttackResult.move}...`);
                     await new Promise(resolve => setTimeout(resolve, 800));
-                    
+
                     setBattleLog(prev => [...prev, result.rivalAttackResult.message]);
                     setPlayerHP({
                         current: result.battleState.playerHP.current,
                         max: result.battleState.playerHP.max,
                         percentage: result.battleState.playerHP.percentage
                     });
-                    
+
                     // Si la batalla no ha terminado, el jugador ataca
                     if (!result.battleState.isFinished && result.playerAttackResult) {
                         // Pequeña pausa antes del ataque del jugador
                         await new Promise(resolve => setTimeout(resolve, 1500));
-                        
+
                         setBattleMessage(`${playerPokemon.name} usa ${move.name}...`);
                         await new Promise(resolve => setTimeout(resolve, 800));
-                        
+
                         setBattleLog(prev => [...prev, result.playerAttackResult.message]);
                         setRivalHP({
                             current: result.battleState.rivalHP.current,
@@ -401,22 +418,23 @@ const Battle = () => {
                     }
                 }
             }
-            
+
             // Verificar si la batalla ha terminado
             if (result.battleState.isFinished) {
                 setBattleOver(true);
                 if (result.battleState.winner === "player") {
-                    setBattleMessage(`¡${playerPokemon.name} ha ganado el combate!`);
+                    setBattleMessage(`Has ganado el combate! Volviendo al mapa...`); // INCLUYE el mensaje
                 } else {
-                    setBattleMessage(`¡${rivalPokemon.name} ha ganado el combate!`);
+                    setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`); // INCLUYE el mensaje
                 }
+
             } else {
                 setBattleMessage("¿Qué debería hacer " + playerPokemon.name + "?");
             }
         } else {
             setBattleLog(prev => [...prev, "Error al ejecutar el movimiento: " + result.message]);
         }
-        
+
         setIsAnimating(false);
     };
 
@@ -450,16 +468,18 @@ const Battle = () => {
                 </div>
             )}
 
-            {/* Mensaje de batalla */}
-            <div className="battle-message">
-                {battleMessage}
-            </div>
-            
-            {/* Log de batalla - En esquina inferior izquierda */}
-            <div className="battle-log" ref={logContainerRef}>
-                {battleLog.map((log, index) => (
-                    <div key={index} className="log-entry">{log}</div>
-                ))}
+            <div className="battle-info-group">
+                {/* Mensaje de batalla */}
+                <div className="battle-message">
+                    {battleMessage}
+                </div>
+
+                {/* Log de batalla - En esquina inferior izquierda */}
+                <div className="battle-log" ref={logContainerRef}>
+                    {battleLog.map((log, index) => (
+                        <div key={index} className="log-entry">{log}</div>
+                    ))}
+                </div>
             </div>
 
             {/* Pokémon rival */}
@@ -467,17 +487,19 @@ const Battle = () => {
                 <div className="rival-info">
                     <p className="pokemon-name">Lv. {rivalPokemon.level || 50} {rivalPokemon.name}</p>
                     <div className="rival-hp-bar-container">
-                        <div 
-                            className="hp-bar" 
-                            style={{ 
-                                width: `${rivalHP.percentage}%`,
-                                backgroundColor: rivalHP.percentage > 50 
-                                    ? '#78C850' 
-                                    : rivalHP.percentage > 20 
-                                        ? '#F8D030' 
-                                        : '#F08030'
-                            }}
-                        ></div>
+                        <div className="hp-bar-background">
+                            <div
+                                className="hp-bar"
+                                style={{
+                                    width: `${rivalHP.percentage}%`,
+                                    backgroundColor: rivalHP.percentage > 50
+                                        ? '#78C850'  // Verde (más del 50%)
+                                        : rivalHP.percentage > 20
+                                            ? '#F8D030'  // Amarillo (entre 20% y 50%)
+                                            : '#F03030'  // Rojo (menos del 20%)
+                                }}
+                            ></div>
+                        </div>
                         <PokeballIcon className="hp-icon" />
                     </div>
                     <p className="hp-text">{Math.ceil(rivalHP.current)}/{rivalHP.max}</p>
@@ -510,17 +532,19 @@ const Battle = () => {
                     <p className="pokemon-name">{playerPokemon.name} Lv. {playerPokemon.level || 50}</p>
                     <div className="player-hp-bar-container">
                         <PokeballIcon className="hp-icon" />
-                        <div 
-                            className="hp-bar" 
-                            style={{ 
-                                width: `${playerHP.percentage}%`,
-                                backgroundColor: playerHP.percentage > 50 
-                                    ? '#78C850' 
-                                    : playerHP.percentage > 20 
-                                        ? '#F8D030' 
-                                        : '#F08030'
-                            }}
-                        ></div>
+                        <div className="hp-bar-background">
+                            <div
+                                className="hp-bar"
+                                style={{
+                                    width: `${playerHP.percentage}%`,
+                                    backgroundColor: playerHP.percentage > 50
+                                        ? '#78C850'  // Verde (más del 50%)
+                                        : playerHP.percentage > 20
+                                            ? '#F8D030'  // Amarillo (entre 20% y 50%)
+                                            : '#F03030'  // Rojo (menos del 20%)
+                                }}
+                            ></div>
+                        </div>
                     </div>
                     <p className="hp-text">{Math.ceil(playerHP.current)}/{playerHP.max}</p>
                 </div>
@@ -532,8 +556,8 @@ const Battle = () => {
                     // Menú principal
                     <div className="row g-2">
                         <div className="col-6">
-                            <button 
-                                className="btn btn-danger w-100" 
+                            <button
+                                className="btn btn-danger w-100"
                                 onClick={handleAttack}
                                 disabled={isAnimating || battleOver}
                             >
@@ -541,8 +565,8 @@ const Battle = () => {
                             </button>
                         </div>
                         <div className="col-6">
-                            <button 
-                                className="btn btn-warning w-100" 
+                            <button
+                                className="btn btn-warning w-100"
                                 onClick={handleBag}
                                 disabled={isAnimating || battleOver}
                             >
@@ -550,8 +574,8 @@ const Battle = () => {
                             </button>
                         </div>
                         <div className="col-6">
-                            <button 
-                                className="btn btn-success w-100" 
+                            <button
+                                className="btn btn-success w-100"
                                 onClick={handlePokemon}
                                 disabled={isAnimating || battleOver}
                             >
@@ -559,8 +583,8 @@ const Battle = () => {
                             </button>
                         </div>
                         <div className="col-6">
-                            <button 
-                                className="btn btn-primary w-100" 
+                            <button
+                                className="btn btn-primary w-100"
                                 onClick={handleRun}
                                 disabled={isAnimating || battleOver}
                             >
@@ -585,8 +609,8 @@ const Battle = () => {
                             </div>
                         ))}
                         <div className="col-12">
-                            <button 
-                                className="btn btn-secondary w-100" 
+                            <button
+                                className="btn btn-secondary w-100"
                                 onClick={handleBackToMainMenu}
                                 disabled={isAnimating || battleOver}
                             >
@@ -595,20 +619,7 @@ const Battle = () => {
                         </div>
                     </div>
                 )}
-                
-                {/* Botón para reiniciar cuando la batalla termina */}
-                {battleOver && (
-                    <div className="row mt-3">
-                        <div className="col-12">
-                            <button 
-                                className="btn btn-primary w-100" 
-                                onClick={() => window.location.reload()}
-                            >
-                                Nueva batalla
-                            </button>
-                        </div>
-                    </div>
-                )}
+
             </div>
         </div>
     );

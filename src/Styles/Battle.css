@@ -100,13 +100,26 @@
     filter: drop-shadow(0.1vw 0.1vw 0.3vw rgba(0, 0, 0, 0.5)); /* Sombra negra suave */
 }
 
-/* Barra de vida */
+/* NUEVO: Fondo de la barra de vida */
+.hp-bar-background {
+    width: 100%;
+    height: 100%;
+    background-color: #e0e0e0;
+    border-radius: 0.5vw;
+    overflow: hidden;
+    position: relative;
+    flex-grow: 1;
+}
+
+/* Barra de vida MODIFICADA */
 .hp-bar {
     background-color: #4caf50; /* Color verde de la barra */
     height: 100%; /* Ocupa toda la altura del contenedor */
     border-radius: 0.5vw; /* Bordes redondeados */
-    flex-grow: 1; /* La barra ocupa el espacio restante */
-    transition: width 0.3s ease; /* Animación al cambiar el ancho */
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: width 0.8s ease, background-color 0.8s ease; /* Animación al cambiar el ancho y color */
     box-shadow: 0.1vw 0.1vw 0.5vw rgba(0, 0, 0, 0.8); /* Sombra negra suave */
 }
 
@@ -121,7 +134,6 @@
     text-shadow: 0.1vw 0.1vw 0.3vw rgba(0, 0, 0, 0.5); /* Sombra negra suave */
 }
 
-/* Contenedor de los botones de acción */
 /* Contenedor de los botones de acción */
 .action-buttons {
     position: absolute;
@@ -280,12 +292,11 @@
     transform: translateY(1px);
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
-/* En Battle.css */
+
 /* Log de batalla responsivo */
 .battle-log {
-    position: absolute;
     bottom: 1.5vh;             /* Posición vertical relativa a la altura de la pantalla */
-    left: 1vw;                /* Posición horizontal relativa al ancho de la pantalla */
+    left: auto;                /* Posición horizontal relativa al ancho de la pantalla */
     width: 22vw;              /* Ancho relativo al ancho de la pantalla */
     height: 10vh;             /* Altura relativa a la altura de la pantalla */
     max-height: 150px;        /* Altura máxima para pantallas grandes */
@@ -293,11 +304,14 @@
     background-color: rgba(0, 0, 0, 0.8);
     color: white;
     padding: 1vh;             /* Padding relativo a la altura */
-    border-radius: 0.5vw;     /* Bordes redondeados relativos */
     font-size: clamp(10px, 1.2vh, 14px); /* Tamaño de fuente adaptativo */
     z-index: 5;
     opacity: 0.9;
     box-shadow: 0 0.2vh 0.5vw rgba(0, 0, 0, 0.5); /* Sombra responsiva */
+    position: relative;
+    bottom: auto;
+    border-radius: 0 0 0.5vw 0.5vw;
+    margin-top: -0.5vh; /* Ajusta para que parezca conectado */
 }
 
 /* Opcional: Estilo para las entradas del log */
@@ -320,4 +334,41 @@
 
 .battle-log::-webkit-scrollbar-track {
     background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Grupo para contener el mensaje y el log juntos */
+.battle-info-group {
+    position: absolute;
+    bottom: 1.5vh;
+    left: 1vw;
+    width: 22vw;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5vh;
+    z-index: 5;
+}
+
+/* Ajustes al mensaje de batalla para que se alinee con el log */
+.battle-message {
+    background-color: rgba(60, 90, 166, 0.85); /* Azul Pokemon más oscuro y semi-transparente */
+    color: white; /* Texto blanco para mejor contraste */
+    padding: 1vh;
+    border-radius: 0.5vw 0.5vw 0 0;
+    font-size: clamp(12px, 1.4vh, 16px);
+    font-weight: bold;
+    text-align: center;
+    height: auto;
+    min-height: 4vh;
+    width: 22vw;
+    box-shadow: 0 0.2vh 0.2vw rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Texto de HP */
+.hp-text {
+    font-size: 1.8vh;
+    margin-top: 0.5vh;
+    font-weight: bold;
 }

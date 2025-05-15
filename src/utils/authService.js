@@ -1,5 +1,5 @@
 // Usar una URL relativa para que funcione tanto en desarrollo local como en Vercel
-const API_URL = process.env.REACT_APP_API_URL || '/api/auth';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/auth';
 
 export const register = async (userData) => {
   try {

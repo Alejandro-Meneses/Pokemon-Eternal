@@ -1,14 +1,33 @@
 import React, { useEffect, useState } from "react";
 import "../../Styles/Board.css";
+import { useNavigate } from "react-router-dom"; // Importar para la navegación
 
 export default function Board() {
   const [grid, setGrid] = useState([]);
   const [playerPosition, setPlayerPosition] = useState({ row: 5, col: 5 });
+  const [encounterCooldown, setEncounterCooldown] = useState(false); // Para evitar encuentros consecutivos
+  const navigate = useNavigate(); // Hook para navegación
 
   useEffect(() => {
     const newGrid = generateGridConBordes(11, 11);
     setGrid(newGrid);
   }, []);
+
+  // Función para manejar encuentros de Pokémon
+  const handleEncounter = () => {
+    // Verificar si estamos en grass y aplicar probabilidad de encuentro (10%)
+    if (grid[playerPosition.row][playerPosition.col] === "grass" && 
+        !encounterCooldown && 
+        Math.random() < 0.1) { // 10% de probabilidad
+      
+      // Activar cooldown para evitar encuentros consecutivos
+      setEncounterCooldown(true);
+      setTimeout(() => setEncounterCooldown(false), 1000);
+      
+      // Navegar a la pantalla de batalla
+      navigate('/battle');
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -35,6 +54,14 @@ export default function Board() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [playerPosition, grid]);
+
+  // Efecto para verificar encuentros cuando la posición del jugador cambia
+  useEffect(() => {
+    // Verificar posibles encuentros después de cada movimiento
+    if (grid.length > 0) {
+      handleEncounter();
+    }
+  }, [playerPosition]);
 
   const generateGridConBordes = (rows, cols) => {
     const getRandomTile = () => {
@@ -71,6 +98,11 @@ export default function Board() {
           ))}
         </div>
       ))}
+      {grid.length > 0 && grid[playerPosition.row][playerPosition.col] === "grass" && (
+        <div className="encounter-indicator">
+          Estás en zona de hierba. Posible encuentro: 10%
+        </div>
+      )}
     </div>
   );
 }
