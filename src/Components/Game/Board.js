@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useCallback } from "react";
 import "../../Styles/Board.css";
 import { useNavigate } from "react-router-dom"; // Importar para la navegación
 
