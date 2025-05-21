@@ -1,0 +1,588 @@
+/* ========= VARIABLES Y CONFIGURACIÓN BÁSICA ========= */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Colores principales */
+  --primary-color: #3D7DCA; /* Azul Pokémon */
+  --secondary-color: #FFCB05; /* Amarillo Pokémon */
+  --accent-color: #FF5350; /* Rojo Pokéball */
+  
+  /* Colores neutrales */
+  --dark-color: #1E1E1E;
+  --light-color: #f8f9fa;
+  --theme-bg: #1f1d2b;
+  
+  /* Fondos y efectos */
+  --gradient-bg: linear-gradient(163deg, rgba(31, 29, 43, 1) 21%, rgba(31, 29, 43, 0.3113620448179272) 64%);
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --button-shadow: 0 4px 15px rgba(61, 125, 202, 0.3);
+  --transition-speed: 0.3s;
+}
+
+/* ========= CONTENEDOR PRINCIPAL ========= */
+.tutorial-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: 15px;
+  background-color: var(--theme-bg);
+  background-image: var(--gradient-bg);
+  background-size: cover;
+  color: var(--light-color);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.tutorial-container.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Decoraciones */
+.pokeball-decoration {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: 
+    radial-gradient(circle at center, 
+      transparent 0%, 
+      transparent 35%, 
+      rgba(255, 255, 255, 0.1) 35%, 
+      rgba(255, 255, 255, 0.1) 37%, 
+      transparent 37%, 
+      transparent 45%, 
+      rgba(255, 255, 255, 0.05) 45%, 
+      rgba(255, 255, 255, 0.05) 47%, 
+      transparent 47%
+    );
+  z-index: 1;
+  opacity: 0.35;
+}
+
+.pokeball-decoration.top-left {
+  top: -60px;
+  left: -60px;
+}
+
+.pokeball-decoration.bottom-right {
+  bottom: -60px;
+  right: -60px;
+}
+
+/* ========= CAJA DE CONTENIDO PRINCIPAL ========= */
+.tutorial-content {
+  max-width: 650px;
+  width: 100%;
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 28px 20px; /* ¡AUMENTADO significativamente! */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: fadeInUp 1s ease forwards;
+  margin: 0 auto;
+  overflow-y: auto;
+  max-height: 96vh; /* ¡AUMENTADO significativamente! */
+  position: relative;
+}
+
+/* ========= ENCABEZADO Y NAVEGACIÓN ========= */
+/* Encabezado */
+.tutorial-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.tutorial-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -1px;
+}
+
+/* Navegación de puntos */
+.tutorial-navigation {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+  z-index: 10;
+}
+
+.nav-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-dot:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.nav-dot.active {
+  background: var(--primary-color);
+  transform: scale(1.2);
+}
+
+/* ========= SECCIONES DE CONTENIDO ========= */
+.tutorial-sections {
+  margin-bottom: 18px;
+}
+
+.tutorial-section {
+  animation: fadeIn 0.5s ease;
+}
+
+.tutorial-section h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--secondary-color);
+}
+
+.tutorial-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 10px;
+  margin-bottom: 6px;
+}
+
+/* Grid para layout */
+.tutorial-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 12px;
+}
+
+/* Textos */
+.tutorial-text {
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.tutorial-text ul {
+  padding-left: 16px;
+  margin: 8px 0;
+}
+
+.tutorial-text li {
+  margin-bottom: 5px;
+}
+
+/* ========= IMÁGENES ========= */
+.tutorial-image {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+  margin: 0 auto;
+}
+
+.tutorial-image:hover {
+  transform: translateY(-3px);
+}
+
+.tutorial-img {
+  max-height: 240px; /* ¡AUMENTADO! */
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}
+
+.image-caption {
+  text-align: center;
+  font-size: 0.75rem;
+  padding: 6px;
+  background: rgba(0, 0, 0, 0.2);
+  margin: 0;
+}
+
+/* ========= TARJETAS DE TIPS ========= */
+.tutorial-tips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+  margin-bottom: 60px; /* Aumentado */
+  max-height: 220px; /* ¡AUMENTADO! */
+  overflow-y: auto;
+}
+
+.tips-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 8px 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: auto;
+}
+
+.tips-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tip-icon {
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+}
+
+.tips-card p {
+  font-size: 0.75rem;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* ========= CONTROLES Y BOTONES ========= */
+.tutorial-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px 4px;
+  z-index: 20;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(31, 29, 43, 0.8);
+  backdrop-filter: blur(5px);
+  border-radius: 0 0 16px 16px;
+  margin-top: 8px;
+}
+
+.tutorial-button {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--button-shadow);
+  z-index: 20;
+  pointer-events: auto !important;
+}
+
+.tutorial-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.4s ease;
+  transform: skewX(-15deg);
+}
+
+.tutorial-button:hover::before {
+  left: 100%;
+}
+
+.tutorial-button.primary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.tutorial-button.primary:hover {
+  background: #3570b8;
+  transform: translateY(-3px);
+  box-shadow: 0 7px 20px rgba(61, 125, 202, 0.4);
+}
+
+.tutorial-button.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.tutorial-button.secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-3px);
+}
+
+.tutorial-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.tutorial-button:disabled:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: none;
+  box-shadow: var(--button-shadow);
+}
+
+.button-text {
+  margin-right: 5px;
+}
+
+.button-icon {
+  font-size: 0.9rem;
+}
+
+/* Estilos específicos para enlaces */
+a.tutorial-button {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  user-select: none;
+}
+
+a.tutorial-button:active {
+  transform: scale(0.98);
+}
+
+a.tutorial-button.primary:active {
+  background: #2d62a8;
+}
+
+a.tutorial-button.secondary:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.tutorial-button span {
+  pointer-events: none;
+}
+
+/* ========= ANIMACIONES ========= */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ========= RESPONSIVIDAD ========= */
+/* Pantallas grandes */
+@media (max-width: 992px) {
+  .tutorial-content {
+    max-width: 85%;
+    padding: 24px 18px; /* Aumentado */
+  }
+  
+  .tutorial-title {
+    font-size: 1.5rem;
+  }
+  
+  .tutorial-section h2 {
+    font-size: 1.2rem;
+  }
+  
+  .tutorial-img {
+    max-height: 170px; /* Aumentado */
+  }
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+  .tutorial-content {
+    padding: 22px 16px; /* Aumentado */
+    max-height: 85vh; /* Aumentado significativamente */
+  }
+  
+  .tutorial-title {
+    font-size: 1.4rem;
+  }
+  
+  .tutorial-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .tutorial-image {
+    max-width: 85%;
+  }
+  
+  .tutorial-img {
+    max-height: 160px; /* Aumentado */
+  }
+  
+  .tutorial-button {
+    min-width: 75px;
+    padding: 6px 10px;
+  }
+  
+  .tutorial-tips {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    max-height: 200px; /* Aumentado */
+  }
+}
+
+/* Tablets pequeñas y móviles en horizontal */
+@media (max-width: 640px) {
+  .tutorial-content {
+    padding: 20px 14px; /* Aumentado */
+  }
+  
+  .tutorial-title {
+    font-size: 1.3rem;
+  }
+  
+  .tutorial-section h2 {
+    font-size: 1.1rem;
+  }
+  
+  .tutorial-section h3 {
+    font-size: 0.95rem;
+  }
+  
+  .tutorial-tips {
+    grid-template-columns: repeat(2, 1fr);
+    max-height: 195px; /* Aumentado */
+  }
+  
+  .tutorial-img {
+    max-height: 150px; /* Aumentado */
+  }
+}
+
+/* Móviles */
+@media (max-width: 480px) {
+  .tutorial-container {
+    padding: 10px;
+  }
+  
+  .tutorial-content {
+    padding: 18px 12px; /* Aumentado significativamente */
+    border-radius: 10px;
+  }
+  
+  .tutorial-controls {
+    flex-direction: row;
+    gap: 5px;
+    padding: 6px 8px 4px;
+  }
+  
+  .tutorial-button {
+    min-width: 65px;
+    padding: 5px 8px;
+    font-size: 0.7rem;
+  }
+  
+  .tutorial-title {
+    font-size: 1.2rem;
+  }
+  
+  .tutorial-text {
+    font-size: 0.8rem;
+  }
+  
+  .tutorial-section h2 {
+    font-size: 1rem;
+  }
+  
+  .tutorial-image {
+    margin-bottom: 6px;
+  }
+  
+  .tutorial-img {
+    max-height: 140px; /* Aumentado */
+  }
+  
+  .nav-dots {
+    gap: 6px;
+  }
+  
+  .nav-dot {
+    width: 7px;
+    height: 7px;
+  }
+  
+  .tutorial-tips {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    max-height: 170px; /* Aumentado */
+  }
+  
+  .tip-icon {
+    font-size: 1.1rem;
+    margin-bottom: 3px;
+  }
+  
+  .tips-card p {
+    font-size: 0.7rem;
+  }
+  
+  .button-text {
+    margin-right: 4px;
+  }
+}
+
+/* Móviles pequeños */
+@media (max-width: 360px) {
+  .tutorial-content {
+    padding: 16px 10px; /* Aumentado */
+  }
+  
+  .tutorial-title {
+    font-size: 1.1rem;
+  }
+  
+  .button-text {
+    margin-right: 3px;
+    font-size: 0.65rem;
+  }
+  
+  .button-icon {
+    font-size: 0.8rem;
+  }
+  
+  .tutorial-tips {
+    grid-template-columns: 1fr;
+    max-height: 160px; /* Aumentado */
+  }
+  
+  .tutorial-img {
+    max-height: 130px; /* Aumentado */
+  }
+}

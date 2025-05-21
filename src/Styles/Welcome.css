@@ -1,53 +1,367 @@
+/* Importar fuentes */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Variables */
+:root {
+  --primary-color: #3D7DCA; /* Azul Pokémon */
+  --secondary-color: #FFCB05; /* Amarillo Pokémon */
+  --dark-color: #1E1E1E;
+  --light-color: #f8f9fa;
+  --accent-color: #FF5350; /* Rojo Pokéball */
+  --theme-bg: #1f1d2b;
+  --gradient-bg: linear-gradient(163deg, rgba(31, 29, 43, 1) 21%, rgba(31, 29, 43, 0.3113620448179272) 64%); /* Igualado al gradiente de App.css */
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --button-shadow: 0 4px 15px rgba(61, 125, 202, 0.3);
+  --transition-speed: 0.3s;
+}
+
+/* Estilos base y animación de entrada combinados */
 .welcome-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    height: 100%;
-    padding: 20px;
-    background-color: var(--theme-bg);
-    color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Cambiado de min-height a height para evitar scroll */
+  width: 100%;
+  padding: 20px; /* Reducido de 30px */
+  background-size: cover;
+  color: var(--light-color);
+  position: relative;
+  overflow: hidden; /* Mantener para prevenir scroll */
+  font-family: 'Poppins', sans-serif;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.welcome-container.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Contenido principal */
+.welcome-content {
+  max-width: 800px;
+  width: 100%;
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px; /* Reducido de 40px */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: fadeInUp 1s ease forwards;
+  overflow-y: auto; /* Permite scroll interno si el contenido es muy largo */
+  max-height: 85vh; /* Limita la altura para evitar scroll del cuerpo */
+}
+
+/* Encabezado */
+.welcome-header {
+  text-align: center;
+  margin-bottom: 25px; /* Reducido de 30px */
+}
+
+.welcome-title {
+  font-size: 3rem; /* Reducido de 3.5rem */
+  font-weight: 700;
+  margin-bottom: 8px; /* Reducido de 10px */
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -1px;
+}
+
+.welcome-subtitle {
+  font-size: 1.2rem;
+  color: var(--light-color);
+  opacity: 0.8;
+}
+
+/* Cuerpo */
+.welcome-body {
+  margin-bottom: 30px; /* Reducido de 40px */
+}
+
+.welcome-text {
+  font-size: 1.05rem; /* Reducido de 1.1rem */
+  line-height: 1.5; /* Reducido de 1.6 */
+  margin-bottom: 25px; /* Reducido de 30px */
+  text-align: center;
+}
+
+/* Características */
+.welcome-features {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 15px; /* Reducido de 20px */
+  margin: 25px 0; /* Reducido de 30px 0 */
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 130px; /* Reducido de 140px */
+  transition: transform var(--transition-speed);
+}
+
+.feature:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  font-size: 2.3rem; /* Reducido de 2.5rem */
+  margin-bottom: 8px; /* Reducido de 10px */
+}
+
+.feature-text {
+  font-size: 0.95rem; /* Reducido de 1rem */
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Botones de acción */
+.welcome-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 25px; /* Reducido de 30px */
+  z-index: 10;
+}
+
+.welcome-button {
+  padding: 14px 25px; /* Reducido de 15px 30px */
+  font-size: 1.05rem; /* Reducido de 1.1rem */
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px; /* Reducido de 200px */
+  border: none;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--button-shadow);
+  z-index: 10;
+  pointer-events: auto !important; /* Mantenido porque es crucial */
+}
+
+.welcome-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.4s ease;
+  transform: skewX(-15deg);
+}
+
+.welcome-button:hover::before {
+  left: 100%;
+}
+
+.welcome-button.primary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.welcome-button.primary:hover {
+  background: #3570b8;
+  transform: translateY(-3px);
+  box-shadow: 0 7px 20px rgba(61, 125, 202, 0.4);
+}
+
+.welcome-button.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.welcome-button.secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-3px);
+}
+
+.button-text {
+  margin-right: 10px;
+}
+
+.button-icon {
+  font-size: 1.2rem;
+}
+
+/* Pie de página */
+.welcome-footer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 15px; /* Reducido de 20px */
+}
+
+/* Decoraciones */
+.pokeball-decoration {
+  position: absolute;
+  width: 250px; /* Reducido de 300px */
+  height: 250px; /* Reducido de 300px */
+  border-radius: 50%;
+  background: 
+    radial-gradient(circle at center, 
+      transparent 0%, 
+      transparent 35%, 
+      rgba(255, 255, 255, 0.1) 35%, 
+      rgba(255, 255, 255, 0.1) 37%, 
+      transparent 37%, 
+      transparent 45%, 
+      rgba(255, 255, 255, 0.05) 45%, 
+      rgba(255, 255, 255, 0.05) 47%, 
+      transparent 47%
+    );
+  z-index: 1;
+  opacity: 0.4; /* Reducido de 0.5 */
+}
+
+.pokeball-decoration.top-left {
+  top: -80px; /* Reducido de -100px */
+  left: -80px; /* Reducido de -100px */
+}
+
+.pokeball-decoration.bottom-right {
+  bottom: -80px; /* Reducido de -100px */
+  right: -80px; /* Reducido de -100px */
+}
+
+/* Estilos específicos para Links usados como botones */
+a.welcome-button {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Feedback visual al hacer clic */
+a.welcome-button:active {
+  transform: scale(0.98);
+}
+
+a.welcome-button.primary:active {
+  background: #2d62a8;
+}
+
+a.welcome-button.secondary:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Asegurar que toda el área sea clicable */
+.welcome-button span {
+  pointer-events: none;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .welcome-content {
+    padding: 25px;
+    z-index: 10;
+    max-height: 80vh;
   }
   
   .welcome-title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin-bottom: 20px;
+    font-size: 2.3rem;
   }
   
-  .welcome-text {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-    line-height: 1.6;
-    max-width: 600px;
+  .welcome-features {
+    gap: 15px;
   }
   
-  .welcome-actions {
-    display: flex;
-    gap: 20px;
+  .feature {
+    width: 100px;
   }
   
   .welcome-button {
-    padding: 10px 20px;
+    min-width: 160px;
+    padding: 12px 20px;
     font-size: 1rem;
-    font-weight: bold;
-    color: #ffffff;
-    background-color: #22b07d;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-container {
+    padding: 15px;
   }
   
-  .welcome-button:hover {
-    background-color: #1e9a6b;
+  .welcome-content {
+    padding: 20px 15px;
+    max-height: 85vh;
   }
   
-  .welcome-button.secondary {
-    background-color: #353340;
+  .welcome-actions {
+    flex-direction: column;
+    gap: 12px;
   }
   
-  .welcome-button.secondary:hover {
-    background-color: #2e2c3a;
+  .welcome-button {
+    width: 100%;
+    padding: 10px 20px;
   }
+  
+  .welcome-title {
+    font-size: 1.8rem;
+  }
+  
+  .welcome-text {
+    font-size: 0.95rem;
+  }
+  
+  .welcome-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .pokeball-decoration {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+@media (max-height: 700px) {
+  .welcome-content {
+    padding: 20px 15px;
+    max-height: 90vh;
+  }
+  
+  .welcome-title {
+    font-size: 2.2rem;
+  }
+  
+  .welcome-body {
+    margin-bottom: 20px;
+  }
+  
+  .welcome-features {
+    gap: 10px;
+    margin: 15px 0;
+  }
+}

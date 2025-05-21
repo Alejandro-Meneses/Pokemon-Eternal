@@ -12,6 +12,7 @@ import Welcome from "../Components/Welcome";
 import Game from "../Components/Game/Game";
 import Board from "../Components/Game/Board";
 import Battle from "../Components/Game/Battle";
+import Tutorial from "../Components/Tutorial";
 // IMPORTS COMPLETOS
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -66,7 +67,7 @@ export default function App() {
               Pokemon Eternal
             </div>
             <div className="side-wrapper">
-              <div className="side-title">MENU</div>
+              <div className="side-title"></div>
               <div className="side-menu">
                 <Link className="sidebar-link" to="/">
                   <FontAwesomeIcon icon={faHome} className="icon" />
@@ -102,7 +103,7 @@ export default function App() {
               <Route path="/" element={<Welcome />} />
               <Route path="/game" element={<Game />} />
               {/* Puedes crear y agregar estos componentes si aún no existen */}
-              <Route path="/tutorial" element={<div>Tutorial</div>} />
+              <Route path="/tutorial" element={<Tutorial />} />
               <Route path="/gachapon" element={<div>GachaPon</div>} />
               <Route path="/about" element={<div>Sobre Nosotros</div>} />
               <Route path="/Board" element={<Board />} />
