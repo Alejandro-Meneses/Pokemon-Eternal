@@ -13,7 +13,8 @@ import Game from "../Components/Game/Game";
 import Board from "../Components/Game/Board";
 import Battle from "../Components/Game/Battle";
 import Tutorial from "../Components/Tutorial";
-// IMPORTS COMPLETOS
+import AboutUs from "../Components/AboutUs";
+import Gacha from "../Components/Gacha";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
@@ -81,11 +82,11 @@ export default function App() {
                   <FontAwesomeIcon icon={faBook} className="icon" />
                   Tutorial
                 </Link>
-                <Link className="sidebar-link" to="/gachapon">
+                <Link className="sidebar-link" to="/gacha">
                   <FontAwesomeIcon icon={faTicket} className="icon" />
                   GachaPon(NEW)
                 </Link>
-                <Link className="sidebar-link" to="/about">
+                <Link className="sidebar-link" to="/aboutus">
                   <FontAwesomeIcon icon={faInfoCircle} className="icon" />
                   Sobre Nosotros
                 </Link>
@@ -104,8 +105,8 @@ export default function App() {
               <Route path="/game" element={<Game />} />
               {/* Puedes crear y agregar estos componentes si aún no existen */}
               <Route path="/tutorial" element={<Tutorial />} />
-              <Route path="/gachapon" element={<div>GachaPon</div>} />
-              <Route path="/about" element={<div>Sobre Nosotros</div>} />
+              <Route path="/gacha" element={<Gacha />} />
+              <Route path="/aboutus" element={<AboutUs />} />
               <Route path="/Board" element={<Board />} />
               <Route path="/battle" element={<Battle />} />
               <Route path="*" element={<Navigate to="/" />} />

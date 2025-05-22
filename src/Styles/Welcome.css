@@ -1,19 +1,6 @@
 /* Importar fuentes */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
-/* Variables */
-:root {
-  --primary-color: #3D7DCA; /* Azul Pokémon */
-  --secondary-color: #FFCB05; /* Amarillo Pokémon */
-  --dark-color: #1E1E1E;
-  --light-color: #f8f9fa;
-  --accent-color: #FF5350; /* Rojo Pokéball */
-  --theme-bg: #1f1d2b;
-  --gradient-bg: linear-gradient(163deg, rgba(31, 29, 43, 1) 21%, rgba(31, 29, 43, 0.3113620448179272) 64%); /* Igualado al gradiente de App.css */
-  --card-bg: rgba(255, 255, 255, 0.05);
-  --button-shadow: 0 4px 15px rgba(61, 125, 202, 0.3);
-  --transition-speed: 0.3s;
-}
+@import url('../Styles/Variables.css');
 
 /* Estilos base y animación de entrada combinados */
 .welcome-container {

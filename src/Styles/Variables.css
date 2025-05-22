@@ -1,0 +1,27 @@
+:root {
+  /* Colores principales */
+  --primary-color: #3D7DCA; /* Azul Pokémon */
+  --secondary-color: #8A2BE2; /* Blue Violet (tu elección de púrpura) */
+  --accent-color: #FF5350; /* Rojo Pokéball */
+  
+  /* Colores neutrales */
+  --dark-color: #1E1E1E;
+  --light-color: #f8f9fa;
+  --theme-bg: #1f1d2b;
+  
+  /* Fondos y efectos */
+  --gradient-bg: linear-gradient(163deg, rgba(31, 29, 43, 1) 21%, rgba(31, 29, 43, 0.3113620448179272) 64%);
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --button-shadow: 0 4px 15px rgba(61, 125, 202, 0.3);
+  --transition-speed: 0.3s;
+  
+  /* Fuentes */
+  --body-font: "Inter", sans-serif;
+  --body-color: #808191;
+  
+  /* Otros elementos UI */
+  --button-bg: #353340;
+  --border-color: #000;
+  --video-bg: #252936;
+  --delay: 0s;
+}

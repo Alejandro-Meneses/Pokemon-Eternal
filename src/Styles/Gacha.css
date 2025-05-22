@@ -1,0 +1,473 @@
+@import url('../Styles/Variables.css');
+
+/* ====================================================
+   CONTENEDOR PRINCIPAL Y ANIMACIÓN DE ENTRADA
+   ==================================================== */
+.constellation-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: radial-gradient(ellipse at bottom, #1B2735 0%, var(--theme-bg) 100%);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.constellation-container.loaded {
+  opacity: 1;
+}
+
+/* ====================================================
+   ESTRELLAS DE FONDO
+   ==================================================== */
+.stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 50%;
+  filter: drop-shadow(0 0 6px rgba(105, 155, 255, 0.7));
+  animation: twinkle var(--transition-speed) infinite alternate;
+}
+
+/* ====================================================
+   DREAM BALLS (ESTRELLAS INTERACTIVAS MEJORADAS)
+   ==================================================== */
+.dream-ball {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  box-shadow: 0 0 15px rgba(138, 43, 226, 0.6);
+  cursor: pointer;
+  z-index: 20;
+  pointer-events: auto !important;
+  transition: all 0.5s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.dream-ball::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: -1;
+  transform: scale(0);
+  transition: transform 0.5s ease;
+}
+
+.dream-ball::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+.dream-ball:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 30px rgba(138, 43, 226, 0.9);
+  animation: pulse 1.5s infinite;
+}
+
+.dream-ball:hover::before {
+  transform: scale(2.5);
+  opacity: 0.3;
+}
+
+.dream-ball.active {
+  background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+  box-shadow: 0 0 40px var(--accent-color);
+  animation: none;
+  transform: scale(1.3);
+}
+
+/* ====================================================
+   CONSTELACIONES PREDISEÑADAS
+   ==================================================== */
+.constellation-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 1s ease;
+  pointer-events: none;
+}
+
+.constellation-pattern.active {
+  opacity: 0.7;
+}
+
+/* ====================================================
+   LÍNEAS DE CONSTELACIÓN
+   ==================================================== */
+
+.constellation-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 15; /* Entre las estrellas y el UI */
+}
+
+.fixed-constellation-line {
+  position: absolute;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  height: 2px;
+  transform-origin: 0 0;
+  filter: drop-shadow(0 0 8px rgba(61, 125, 202, 0.5));
+  pointer-events: none;
+  opacity: 0;
+  animation: fade-in 1.5s forwards 0.2s;
+}
+/* ====================================================
+   ELEMENTOS UI
+   ==================================================== */
+.constellation-ui {
+  position: absolute;
+  bottom: 30px;
+  width: 500px;
+  max-width: 90%;
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--light-color);
+  z-index: 30;
+  transform: translateY(20px);
+  opacity: 0;
+  animation: slide-up 0.5s forwards 0.2s;
+  pointer-events: auto !important;
+}
+
+.constellation-title {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 15px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.constellation-description {
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+/* ====================================================
+   POPUP DE POKEMON
+   ==================================================== */
+.pokemon-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  width: 320px;
+  max-width: 90vw;
+  background: var(--card-bg);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 30px;
+  z-index: 100;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.pokemon-popup.active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
+}
+
+.popup-header {
+  margin-bottom: 20px;
+}
+
+.popup-title {
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.pokemon-image-container {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 20px;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0) 70%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.pokemon-image {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  transform: scale(0);
+  animation: pop-in 0.7s forwards 0.5s;
+}
+
+.particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  background: var(--primary-color);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.pokemon-info {
+  margin-bottom: 25px;
+}
+
+.pokemon-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.pokemon-type {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin: 0 5px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.pokemon-rarity {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: gold;
+}
+
+/* Overlay oscuro cuando aparece el popup */
+.dark-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.dark-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ====================================================
+   CONTROLES
+   ==================================================== */
+.constellation-controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.constellation-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: none;
+  text-decoration: none;
+  font-family: 'Poppins', sans-serif;
+  pointer-events: auto !important;
+  z-index: 110;
+}
+
+.constellation-button.primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: var(--light-color);
+  box-shadow: var(--button-shadow);
+}
+
+.constellation-button.secondary {
+  background: var(--button-bg);
+  color: var(--light-color);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.constellation-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.constellation-button:active {
+  transform: translateY(0);
+}
+
+/* ====================================================
+   DECORACIÓN
+   ==================================================== */
+.constellation-decoration {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  opacity: 0.05;
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+.constellation-decoration.top-left {
+  top: 10%;
+  left: 5%;
+  background-image: url('../images/Pokeball.svg');
+  animation: float 8s ease-in-out infinite;
+}
+
+.constellation-decoration.bottom-right {
+  bottom: 10%;
+  right: 5%;
+  background-image: url('../images/Pokeball.svg');
+  animation: float 8s ease-in-out infinite 1s;
+}
+
+/* ====================================================
+   ANIMACIONES
+   ==================================================== */
+@keyframes twinkle {
+  0% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 15px rgba(138, 43, 226, 0.7); }
+  50% { box-shadow: 0 0 30px rgba(138, 43, 226, 1); }
+  100% { box-shadow: 0 0 15px rgba(138, 43, 226, 0.7); }
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 0.7; }
+}
+
+@keyframes slide-up {
+  0% { 
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% { 
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* ====================================================
+   RESPONSIVE
+   ==================================================== */
+@media (max-width: 768px) {
+  .dream-ball {
+    width: 25px;
+    height: 25px;
+  }
+  
+  .dream-ball::after {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .constellation-title {
+    font-size: 1.3rem;
+  }
+  
+  .constellation-description {
+    font-size: 0.85rem;
+  }
+  
+  .pokemon-popup {
+    padding: 20px;
+  }
+  
+  .popup-title {
+    font-size: 1.5rem;
+  }
+  
+  .pokemon-image-container {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .pokemon-image {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .pokemon-name {
+    font-size: 1.3rem;
+  }
+}

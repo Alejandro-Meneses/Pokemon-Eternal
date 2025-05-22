@@ -1,24 +1,6 @@
 /* ========= VARIABLES Y CONFIGURACIÓN BÁSICA ========= */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
-:root {
-  /* Colores principales */
-  --primary-color: #3D7DCA; /* Azul Pokémon */
-  --secondary-color: #FFCB05; /* Amarillo Pokémon */
-  --accent-color: #FF5350; /* Rojo Pokéball */
-  
-  /* Colores neutrales */
-  --dark-color: #1E1E1E;
-  --light-color: #f8f9fa;
-  --theme-bg: #1f1d2b;
-  
-  /* Fondos y efectos */
-  --gradient-bg: linear-gradient(163deg, rgba(31, 29, 43, 1) 21%, rgba(31, 29, 43, 0.3113620448179272) 64%);
-  --card-bg: rgba(255, 255, 255, 0.05);
-  --button-shadow: 0 4px 15px rgba(61, 125, 202, 0.3);
-  --transition-speed: 0.3s;
-}
-
+@import url('../Styles/Variables.css');
 /* ========= CONTENEDOR PRINCIPAL ========= */
 .tutorial-container {
   display: flex;

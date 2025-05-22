@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap");
-
+@import url('../Styles/Variables.css');
 /* General Reset */
 * {
   outline: none;
@@ -9,18 +9,6 @@
 html {
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
-}
-
-
-
-:root {
-  --body-font: "Inter", sans-serif;
-  --theme-bg: #1f1d2b;
-  --body-color: #808191;
-  --button-bg: #353340;
-  --border-color: #000;
-  --video-bg: #252936;
-  --delay: 0s;
 }
 
 /* Body Styles */
