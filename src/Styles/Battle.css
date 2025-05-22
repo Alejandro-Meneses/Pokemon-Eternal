@@ -1,103 +1,154 @@
 /* Contenedor principal */
+@import url('../Styles/Variables.css');
+
 .battle-container {
-    width: 90%; /* Ocupa el 90% del ancho de la pantalla */
-    max-width: 80vw; /* Máximo ancho relativo al viewport */
-    height: 70vh; /* Altura relativa al viewport */
-    margin: 0 auto; /* Centrado horizontal */
-    background: linear-gradient(to top, #cceabb, #a1d0f0);
-    border: 0.3vw solid #333; /* Borde responsivo */
-    border-radius: 1vw; /* Bordes redondeados responsivos */
+    width: 90%;
+    /* Ocupa el 90% del ancho de la pantalla */
+    max-width: 80vw;
+    /* Máximo ancho relativo al viewport */
+    height: 70vh;
+    /* Altura relativa al viewport */
+    margin: 0 auto;
+    /* Centrado horizontal */
+    background: linear-gradient(to top, var(--primary-color), rgba(100, 120, 200, 0.7), var(--secondary-color));
+    border: 0.3vw solid #333;
+    /* Borde responsivo */
+    border-radius: 1vw;
+    /* Bordes redondeados responsivos */
     position: relative;
-    overflow: hidden; /* Asegura que nada se salga del contenedor */
+    overflow: hidden;
+    /* Asegura que nada se salga del contenedor */
 }
 
 /* Sección del Pokémon rival */
 .rival-section {
     position: absolute;
-    top: 8vh; /* Más centrado verticalmente */
-    right: 3vw; /* Más cerca del borde derecho */
+    top: 8vh;
+    /* Más centrado verticalmente */
+    right: 3vw;
+    /* Más cerca del borde derecho */
     text-align: right;
 }
 
 .rival-sprite {
-    height: 20vh; /* Altura relativa al viewport */
-    width: auto; /* Mantiene la proporción */
-    margin-left: -1vw; /* Espacio entre la imagen y la barra */
+    height: 20vh;
+    /* Altura relativa al viewport */
+    width: auto;
+    /* Mantiene la proporción */
+    margin-left: -1vw;
+    /* Espacio entre la imagen y la barra */
 }
 
 .rival-info {
     position: absolute;
     top: 0;
-    right: 65%; /* Movido más a la derecha (era 110%) */
-    border-radius: 0.5vw; /* Bordes redondeados responsivos */
-    padding: 1vh; /* Más espacio interno */
+    right: 65%;
+    /* Movido más a la derecha (era 110%) */
+    border-radius: 0.5vw;
+    /* Bordes redondeados responsivos */
+    padding: 1vh;
+    /* Más espacio interno */
     text-align: left;
-    width: 15vw; /* Ancho responsivo */
+    width: 15vw;
+    /* Ancho responsivo */
 }
 
 /* Sección del Pokémon del jugador */
 .player-section {
     position: absolute;
-    bottom: 14vh; /* Movido más arriba */
-    left: 1vw; /* Movido más a la izquierda */
+    bottom: 14vh;
+    /* Movido más arriba */
+    left: 1vw;
+    /* Movido más a la izquierda */
     text-align: left;
 }
 
 .player-sprite {
-    height: 20vh; /* Altura relativa al viewport */
-    width: auto; /* Mantiene la proporción */
-    margin-right: 1vw; /* Espacio entre la imagen y la barra */
-    margin-top: 1vh; /* Espacio entre la imagen y la barra */
+    height: 20vh;
+    /* Altura relativa al viewport */
+    width: auto;
+    /* Mantiene la proporción */
+    margin-right: 1vw;
+    /* Espacio entre la imagen y la barra */
+    margin-top: 1vh;
+    /* Espacio entre la imagen y la barra */
 }
 
 /* Información del Pokémon del jugador */
 .player-info {
     position: absolute;
-    bottom: 20%; /* Mueve el nombre más arriba */
-    left: 75%; /* Ajustado para compensar que el sprite está más a la izquierda */
-    border-radius: 0.5vw; /* Bordes redondeados responsivos */
-    padding: 1vh; /* Más espacio interno */
+    bottom: 20%;
+    /* Mueve el nombre más arriba */
+    left: 75%;
+    /* Ajustado para compensar que el sprite está más a la izquierda */
+    border-radius: 0.5vw;
+    /* Bordes redondeados responsivos */
+    padding: 1vh;
+    /* Más espacio interno */
     text-align: left;
-    width: 15vw; /* Ancho responsivo */
+    width: 15vw;
+    /* Ancho responsivo */
 }
 
 /* Barra de vida del jugador */
 .player-hp-bar-container {
-    display: flex; /* Alinea la imagen y la barra en línea */
-    align-items: center; /* Centra verticalmente los elementos */
-    justify-content: flex-start; /* Alinea los elementos al inicio (izquierda) */
-    background-color: transparent; /* Sin fondo */
-    height: 2vh; /* Altura de la barra */
-    width: 80%; /* Ancho total del contenedor */
+    display: flex;
+    /* Alinea la imagen y la barra en línea */
+    align-items: center;
+    /* Centra verticalmente los elementos */
+    justify-content: flex-start;
+    /* Alinea los elementos al inicio (izquierda) */
+    background-color: transparent;
+    /* Sin fondo */
+    height: 2vh;
+    /* Altura de la barra */
+    width: 80%;
+    /* Ancho total del contenedor */
     margin-top: 0.5vh;
 }
 
 .player-hp-bar-container .hp-icon {
-    height: 4vh; /* Tamaño del ícono igual a la altura de la barra */
-    width: auto; /* Mantiene la proporción */
-    margin-right: -0.5vw; /* Espacio entre la imagen y la barra */
-    flex-shrink: 0; /* Evita que el ícono se reduzca */
+    height: 4vh;
+    /* Tamaño del ícono igual a la altura de la barra */
+    width: auto;
+    /* Mantiene la proporción */
+    margin-right: -0.5vw;
+    /* Espacio entre la imagen y la barra */
+    flex-shrink: 0;
+    /* Evita que el ícono se reduzca */
     z-index: 1;
-    filter: drop-shadow(0.1vw 0.1vw 0.3vw rgba(0, 0, 0, 0.5)); /* Sombra negra suave */
+    filter: drop-shadow(0.1vw 0.1vw 0.3vw rgba(0, 0, 0, 0.5));
+    /* Sombra negra suave */
 }
 
 /* Barra de vida del rival */
 .rival-hp-bar-container {
-    display: flex; /* Alinea la imagen y la barra en línea */
-    align-items: center; /* Centra verticalmente los elementos */
-    justify-content: flex-end; /* Alinea los elementos al final (derecha) */
-    background-color: transparent; /* Sin fondo */
-    height: 2vh; /* Altura de la barra */
-    width: 80%; /* Ancho total del contenedor */
+    display: flex;
+    /* Alinea la imagen y la barra en línea */
+    align-items: center;
+    /* Centra verticalmente los elementos */
+    justify-content: flex-end;
+    /* Alinea los elementos al final (derecha) */
+    background-color: transparent;
+    /* Sin fondo */
+    height: 2vh;
+    /* Altura de la barra */
+    width: 80%;
+    /* Ancho total del contenedor */
     margin-top: 0.5vh;
 }
 
 .rival-hp-bar-container .hp-icon {
-    height: 4vh; /* Tamaño del ícono igual a la altura de la barra */
-    width: auto; /* Mantiene la proporción */
-    margin-left: -0.5vw; /* Espacio entre la barra y la imagen */
-    flex-shrink: 0; /* Evita que el ícono se reduzca */
-    filter: drop-shadow(0.1vw 0.1vw 0.3vw rgba(0, 0, 0, 0.5)); /* Sombra negra suave */
+    height: 4vh;
+    /* Tamaño del ícono igual a la altura de la barra */
+    width: auto;
+    /* Mantiene la proporción */
+    margin-left: -0.5vw;
+    /* Espacio entre la barra y la imagen */
+    flex-shrink: 0;
+    /* Evita que el ícono se reduzca */
+    filter: drop-shadow(0.1vw 0.1vw 0.3vw rgba(0, 0, 0, 0.5));
+    /* Sombra negra suave */
 }
 
 /* NUEVO: Fondo de la barra de vida */
@@ -113,46 +164,65 @@
 
 /* Barra de vida MODIFICADA */
 .hp-bar {
-    background-color: #4caf50; /* Color verde de la barra */
-    height: 100%; /* Ocupa toda la altura del contenedor */
-    border-radius: 0.5vw; /* Bordes redondeados */
+    background-color: #4caf50;
+    /* Color verde de la barra */
+    height: 100%;
+    /* Ocupa toda la altura del contenedor */
+    border-radius: 0.5vw;
+    /* Bordes redondeados */
     position: absolute;
     top: 0;
     left: 0;
-    transition: width 0.8s ease, background-color 0.8s ease; /* Animación al cambiar el ancho y color */
-    box-shadow: 0.1vw 0.1vw 0.5vw rgba(0, 0, 0, 0.8); /* Sombra negra suave */
+    transition: width 0.8s ease, background-color 0.8s ease;
+    /* Animación al cambiar el ancho y color */
+    box-shadow: 0.1vw 0.1vw 0.5vw rgba(0, 0, 0, 0.8);
+    /* Sombra negra suave */
 }
 
 /* Nombre del Pokémon */
 .pokemon-name {
     font-weight: bold;
-    font-size: 2.2vh; /* Tamaño de fuente más grande */
+    font-size: 2.2vh;
+    /* Tamaño de fuente más grande */
     margin: 0;
-    margin-bottom: 1.2vh; /* Espacio debajo del nombre */
+    margin-bottom: 1.2vh;
+    /* Espacio debajo del nombre */
     margin-left: 3vh;
-    text-transform: uppercase; /* Todo en mayúsculas */
-    text-shadow: 0.1vw 0.1vw 0.3vw rgba(0, 0, 0, 0.5); /* Sombra negra suave */
+    text-transform: uppercase;
+    /* Todo en mayúsculas */
+    text-shadow: 0.1vw 0.1vw 0.3vw rgba(0, 0, 0, 0.5);
+    /* Sombra negra suave */
 }
 
 /* Contenedor de los botones de acción */
 .action-buttons {
     position: absolute;
-    bottom: 2vh; /* Posicionado en la parte inferior */
-    right: 2vw; /* Posicionado en la parte derecha */
-    width: 15vw; /* Aumentamos el ancho para botones más grandes */
+    bottom: 2vh;
+    /* Posicionado en la parte inferior */
+    right: 2vw;
+    /* Posicionado en la parte derecha */
+    width: 15vw;
+    /* Aumentamos el ancho para botones más grandes */
     z-index: 2;
-    pointer-events: auto; /* Permite la interacción con los botones */
+    pointer-events: auto;
+    /* Permite la interacción con los botones */
 }
 
 /* Estilos generales para todos los botones de acción */
 .action-buttons .btn {
-    font-size: 14px !important; /* Aumentamos el tamaño de fuente */
+    font-size: 14px !important;
+    /* Aumentamos el tamaño de fuente */
     font-weight: bold !important;
-    padding: 8px 6px !important; /* Mayor padding para botones más grandes */
-    white-space: nowrap; /* Evita que el texto se rompa en múltiples líneas */
-    overflow: hidden; /* Oculta el texto que excede el botón */
-    text-overflow: ellipsis; /* Muestra puntos suspensivos si el texto es demasiado largo */
-    position: relative; /* Para el tooltip */
+    padding: 8px 6px !important;
+    /* Mayor padding para botones más grandes */
+    white-space: nowrap;
+    /* Evita que el texto se rompa en múltiples líneas */
+    overflow: hidden;
+    /* Oculta el texto que excede el botón */
+    text-overflow: ellipsis;
+    /* Muestra puntos suspensivos si el texto es demasiado largo */
+    position: relative;
+    /* Para el tooltip */
 }
 
 /* Estilos base para todos los botones de movimientos */
@@ -295,23 +365,33 @@
 
 /* Log de batalla responsivo */
 .battle-log {
-    bottom: 1.5vh;             /* Posición vertical relativa a la altura de la pantalla */
-    left: auto;                /* Posición horizontal relativa al ancho de la pantalla */
-    width: 22vw;              /* Ancho relativo al ancho de la pantalla */
-    height: 10vh;             /* Altura relativa a la altura de la pantalla */
-    max-height: 150px;        /* Altura máxima para pantallas grandes */
-    overflow-y: auto;         /* Scroll vertical cuando sea necesario */
+    bottom: 1.5vh;
+    /* Posición vertical relativa a la altura de la pantalla */
+    left: auto;
+    /* Posición horizontal relativa al ancho de la pantalla */
+    width: 22vw;
+    /* Ancho relativo al ancho de la pantalla */
+    height: 10vh;
+    /* Altura relativa a la altura de la pantalla */
+    max-height: 150px;
+    /* Altura máxima para pantallas grandes */
+    overflow-y: auto;
+    /* Scroll vertical cuando sea necesario */
     background-color: rgba(0, 0, 0, 0.8);
     color: white;
-    padding: 1vh;             /* Padding relativo a la altura */
-    font-size: clamp(10px, 1.2vh, 14px); /* Tamaño de fuente adaptativo */
+    padding: 1vh;
+    /* Padding relativo a la altura */
+    font-size: clamp(10px, 1.2vh, 14px);
+    /* Tamaño de fuente adaptativo */
     z-index: 5;
     opacity: 0.9;
-    box-shadow: 0 0.2vh 0.5vw rgba(0, 0, 0, 0.5); /* Sombra responsiva */
+    box-shadow: 0 0.2vh 0.5vw rgba(0, 0, 0, 0.5);
+    /* Sombra responsiva */
     position: relative;
     bottom: auto;
     border-radius: 0 0 0.5vw 0.5vw;
-    margin-top: -0.5vh; /* Ajusta para que parezca conectado */
+    margin-top: -0.5vh;
+    /* Ajusta para que parezca conectado */
 }
 
 /* Opcional: Estilo para las entradas del log */
@@ -350,8 +430,10 @@
 
 /* Ajustes al mensaje de batalla para que se alinee con el log */
 .battle-message {
-    background-color: rgba(60, 90, 166, 0.85); /* Azul Pokemon más oscuro y semi-transparente */
-    color: white; /* Texto blanco para mejor contraste */
+    background-color: rgba(60, 90, 166, 0.85);
+    /* Azul Pokemon más oscuro y semi-transparente */
+    color: white;
+    /* Texto blanco para mejor contraste */
     padding: 1vh;
     border-radius: 0.5vw 0.5vw 0 0;
     font-size: clamp(12px, 1.4vh, 16px);
