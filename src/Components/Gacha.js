@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';import { Link } from 'react-router-dom';
 import '../Styles/Gacha.css';
 
 // Datos de muestra para los Pokemon
@@ -36,11 +35,11 @@ const Gacha = () => {
   ];
 
   // Definición de qué estrellas se conectan entre sí
-  const starConnections = [
-    [0, 1], [1, 2], [2, 3], [3, 4], // Primera fila
-    [5, 6], [6, 7], [7, 8], // Segunda fila
-    [0, 5], [1, 6], [3, 7], [4, 8] // Conexiones verticales optimizadas
-  ];
+ const starConnections = useMemo(() => [
+  [0, 1], [1, 2], [2, 3], [3, 4],
+  [5, 6], [6, 7], [7, 8],
+  [0, 5], [1, 6], [3, 7], [4, 8]
+], []);
 
   // Memoizar la función createConstellationLines para evitar el warning de dependencias
   const createConstellationLines = useCallback(() => {
