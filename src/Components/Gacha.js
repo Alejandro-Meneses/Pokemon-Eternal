@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import '../Styles/Gacha.css';
 
@@ -15,25 +15,11 @@ const samplePokemon = [
   { id: 143, name: "Snorlax", image: "../images/pokemon/snorlax.png", types: ["Normal"], rarity: "Raro" }
 ];
 
-// Constelaciones prediseñadas para cada Pokemon
-const constellationPatterns = [
-  "M20,30 L50,50 L80,40 L110,70 L140,30", // Constelación para Bulbasaur
-  "M40,60 L70,30 L100,50 L130,20 L160,50", // Constelación para Pikachu
-  "M30,40 L60,20 L90,40 L120,30 L150,60", // Constelación para Eevee
-  "M30,30 L70,20 L110,30 L130,60 L90,70", // Constelación para Mewtwo
-  "M20,40 L50,20 L80,30 L120,20 L150,40 L120,60 L80,70", // Constelación para Rayquaza
-  "M30,30 L60,20 L90,40 L120,20 L150,30 L120,60", // Constelación para Charizard
-  "M40,40 L70,20 L100,30 L130,20 L120,50 L90,60", // Constelación para Gengar
-  "M30,30 L60,40 L90,20 L120,40 L150,30 L120,60 L90,70", // Constelación para Lapras
-  "M40,30 L70,20 L100,30 L130,20 L150,40 L130,60 L100,50 L70,60" // Constelación para Snorlax
-];
-
 const Gacha = () => {
   const [loaded, setLoaded] = useState(false);
   const [activeStarIndex, setActiveStarIndex] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedPokemon, setSelectedPokemon] = useState(null);
-  const [activeConstellation, setActiveConstellation] = useState(null);
   const containerRef = useRef(null);
   
   // Posiciones predefinidas para las estrellas
@@ -53,61 +39,11 @@ const Gacha = () => {
   const starConnections = [
     [0, 1], [1, 2], [2, 3], [3, 4], // Primera fila
     [5, 6], [6, 7], [7, 8], // Segunda fila
-    [0, 5], [1, 6], [2, 7], [3, 8], // Conexiones verticales
-    [4, 7] // Conexión diagonal
+    [0, 5], [1, 6], [3, 7], [4, 8] // Conexiones verticales optimizadas
   ];
 
-  // Efecto para animación de entrada
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoaded(true);
-      generateStars();
-      
-      // Crear las líneas de la constelación después de un breve retraso
-      setTimeout(() => createConstellationLines(), 500);
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Generar estrellas de fondo
-  const generateStars = () => {
-    if (!containerRef.current) return;
-    
-    const starsContainer = containerRef.current.querySelector('.stars');
-    if (!starsContainer) return;
-    
-    // Limpiar estrellas existentes
-    starsContainer.innerHTML = '';
-    
-    // Generar nuevas estrellas
-    const starCount = 200;
-    for (let i = 0; i < starCount; i++) {
-      const star = document.createElement('div');
-      star.classList.add('star');
-      
-      // Tamaño aleatorio entre 1-3px
-      const size = Math.random() * 2 + 1;
-      star.style.width = `${size}px`;
-      star.style.height = `${size}px`;
-      
-      // Posición aleatoria
-      star.style.top = `${Math.random() * 100}%`;
-      star.style.left = `${Math.random() * 100}%`;
-      
-      // Duración de animación aleatoria
-      const duration = Math.random() * 3 + 2;
-      star.style.animationDuration = `${duration}s`;
-      
-      // Retraso de animación aleatorio
-      star.style.animationDelay = `${Math.random() * 5}s`;
-      
-      starsContainer.appendChild(star);
-    }
-  };
-
-  // Crear líneas de constelación entre las estrellas
-  const createConstellationLines = () => {
+  // Memoizar la función createConstellationLines para evitar el warning de dependencias
+  const createConstellationLines = useCallback(() => {
     if (!containerRef.current) return;
     
     // Primero, eliminar líneas existentes
@@ -157,44 +93,91 @@ const Gacha = () => {
       
       linesContainer.appendChild(line);
     });
-  };
+  }, [starConnections]); // Dependencia agregada correctamente
+
+  // Generar estrellas de fondo
+  const generateStars = useCallback(() => {
+    if (!containerRef.current) return;
+    
+    const starsContainer = containerRef.current.querySelector('.stars');
+    if (!starsContainer) return;
+    
+    // Limpiar estrellas existentes
+    starsContainer.innerHTML = '';
+    
+    // Generar nuevas estrellas
+    const starCount = 200;
+    for (let i = 0; i < starCount; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      
+      // Tamaño aleatorio entre 1-3px
+      const size = Math.random() * 2 + 1;
+      star.style.width = `${size}px`;
+      star.style.height = `${size}px`;
+      
+      // Posición aleatoria
+      star.style.top = `${Math.random() * 100}%`;
+      star.style.left = `${Math.random() * 100}%`;
+      
+      // Duración de animación aleatoria
+      const duration = Math.random() * 3 + 2;
+      star.style.animationDuration = `${duration}s`;
+      
+      // Retraso de animación aleatorio
+      star.style.animationDelay = `${Math.random() * 5}s`;
+      
+      starsContainer.appendChild(star);
+    }
+  }, []);
+
+  // Efecto para animación de entrada - ahora con dependencias correctas
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoaded(true);
+      generateStars();
+      
+      // Crear las líneas de la constelación después de un breve retraso
+      setTimeout(() => createConstellationLines(), 500);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [createConstellationLines, generateStars]); // Dependencias agregadas correctamente
 
   // Manejar click en una estrella
- // Manejar click en una estrella
-const handleStarClick = (index) => {
-  // Ya está seleccionada, no hacemos nada
-  if (activeStarIndex === index) return;
-  
-  // Seleccionamos esta estrella
-  setActiveStarIndex(index);
-  
-  // Ya no necesitamos esto:
-  // setActiveConstellation(index);
-  
-  // Destacar la estrella seleccionada y atenuar las líneas
-  const fixedLines = containerRef.current.querySelectorAll('.fixed-constellation-line');
-  fixedLines.forEach(line => {
-    line.style.opacity = '0.3'; // Atenuar en lugar de ocultar
-  });
-  
-  // Seleccionar un Pokémon aleatorio
-  const randomPokemon = samplePokemon[Math.floor(Math.random() * samplePokemon.length)];
-  
-  // Primero guardamos el Pokémon 
-  setSelectedPokemon(randomPokemon);
-  
-  // Mostrar popup después de una breve pausa
-  setTimeout(() => {
-    // Verificar de nuevo que tenemos un Pokémon seleccionado
-    if (randomPokemon) {
-      setShowPopup(true);
-      // Solo creamos partículas si hay un Pokémon
-      setTimeout(() => {
-        createParticleEffect();
-      }, 100);
+  const handleStarClick = (index) => {
+    // Ya está seleccionada, no hacemos nada
+    if (activeStarIndex === index) return;
+    
+    // Seleccionamos esta estrella
+    setActiveStarIndex(index);
+    
+    // Destacar la estrella seleccionada y atenuar las líneas
+    if (containerRef.current) {
+      const fixedLines = containerRef.current.querySelectorAll('.fixed-constellation-line');
+      fixedLines.forEach(line => {
+        line.style.opacity = '0.3'; // Atenuar en lugar de ocultar
+      });
     }
-  }, 1000);
-};
+    
+    // Seleccionar un Pokémon aleatorio
+    const randomPokemon = samplePokemon[Math.floor(Math.random() * samplePokemon.length)];
+    
+    // Primero guardamos el Pokémon 
+    setSelectedPokemon(randomPokemon);
+    
+    // Mostrar popup después de una breve pausa
+    setTimeout(() => {
+      // Verificar de nuevo que tenemos un Pokémon seleccionado
+      if (randomPokemon) {
+        setShowPopup(true);
+        // Solo creamos partículas si hay un Pokémon
+        setTimeout(() => {
+          createParticleEffect();
+        }, 100);
+      }
+    }, 1000);
+  };
 
   // Crear efecto de partículas
   const createParticleEffect = () => {
@@ -240,6 +223,7 @@ const handleStarClick = (index) => {
           case 'veneno': particleColor = '#A040A0'; break;
           case 'volador': particleColor = '#A890F0'; break;
           case 'hielo': particleColor = '#98D8D8'; break;
+          default: particleColor = '#3498db'; break; // Caso default añadido
         }
       } catch (error) {
         console.error("Error al acceder al tipo de Pokémon:", error);
@@ -272,14 +256,17 @@ const handleStarClick = (index) => {
     setShowPopup(false);
     
     // Restaurar las líneas originales
-    const fixedLines = containerRef.current.querySelectorAll('.fixed-constellation-line');
-    fixedLines.forEach(line => {
-      line.style.opacity = '0.7';  // Restaurar opacidad original
-    });
+    if (containerRef.current) {
+      const fixedLines = containerRef.current.querySelectorAll('.fixed-constellation-line');
+      fixedLines.forEach(line => {
+        line.style.opacity = '0.7';  // Restaurar opacidad original
+      });
+    }
     
     setTimeout(() => {
       setActiveStarIndex(null);
-      setActiveConstellation(null);
+      // Ya no necesitamos esto porque eliminamos este estado
+      // setActiveConstellation(null);
     }, 300); // Pequeño retraso para que la animación sea suave
   };
 
@@ -300,7 +287,6 @@ const handleStarClick = (index) => {
           onClick={() => handleStarClick(index)}
         ></div>
       ))}
-      
       
       {/* Popup de Pokemon - Solo lo mostramos si selectedPokemon existe */}
       {selectedPokemon && (
