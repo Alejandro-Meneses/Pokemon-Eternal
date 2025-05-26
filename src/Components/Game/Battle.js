@@ -5,8 +5,9 @@ import Move from "../../backend/models/Move";
 import BattleEngine from "../../backend/battle/Battleengine";
 import { ReactComponent as PokeballIcon } from "../../images/Pokeball.svg";
 import { useNavigate } from "react-router-dom";
+
 const Battle = () => {
-    const navigate = useNavigate(); // Añade esta línea al inicio del componente
+    const navigate = useNavigate();
     const [playerPokemon, setPlayerPokemon] = useState(null);
     const [rivalPokemon, setRivalPokemon] = useState(null);
     const [showMoves, setShowMoves] = useState(false);
@@ -106,8 +107,7 @@ const Battle = () => {
                     percentage: 100
                 });
 
-                // CORRECCIÓN: Buscar movimientos en la propiedad correcta
-                // Intentar encontrar movimientos en diferentes propiedades posibles
+                // Buscar movimientos
                 const playerMoves = playerInstance.moves || playerInstance.moveList || [];
                 console.log("Movimientos del jugador encontrados:", playerMoves);
 
@@ -172,7 +172,7 @@ const Battle = () => {
                     playerInstance.moves = [tackleMove];
                 }
 
-                // CORRECCIÓN: similar para el rival
+                // Similar para el rival
                 const rivalMoves = rivalInstance.moves || rivalInstance.moveList || [];
                 console.log("Movimientos del rival encontrados:", rivalMoves);
 
@@ -270,6 +270,7 @@ const Battle = () => {
             return () => clearTimeout(timer);
         }
     }, [battleOver, navigate]);
+
     // Funciones para manejar los clics en los botones
     const handleAttack = () => {
         setShowMoves(true);
@@ -423,9 +424,9 @@ const Battle = () => {
             if (result.battleState.isFinished) {
                 setBattleOver(true);
                 if (result.battleState.winner === "player") {
-                    setBattleMessage(`Has ganado el combate! Volviendo al mapa...`); // INCLUYE el mensaje
+                    setBattleMessage(`Has ganado el combate! Volviendo al mapa...`);
                 } else {
-                    setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`); // INCLUYE el mensaje
+                    setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`);
                 }
 
             } else {
@@ -550,59 +551,64 @@ const Battle = () => {
                 </div>
             </div>
 
-            {/* Botones de acción */}
+            {/* Botones de acción con enfoque híbrido */}
             <div className="action-buttons">
                 {!showMoves ? (
-                    // Menú principal
+                    // Menú principal con clases de Bootstrap + clases personalizadas
                     <div className="row g-2">
                         <div className="col-6">
                             <button
-                                className="btn btn-danger w-100"
+                                className="btn btn-danger w-100 battle-btn btn-attack"
                                 onClick={handleAttack}
                                 disabled={isAnimating || battleOver}
+                                aria-label="Atacar"
                             >
                                 Atacar
                             </button>
                         </div>
                         <div className="col-6">
                             <button
-                                className="btn btn-warning w-100"
+                                className="btn btn-warning w-100 battle-btn btn-bag"
                                 onClick={handleBag}
                                 disabled={isAnimating || battleOver}
+                                aria-label="Abrir mochila"
                             >
                                 Mochila
                             </button>
                         </div>
                         <div className="col-6">
                             <button
-                                className="btn btn-success w-100"
+                                className="btn btn-success w-100 battle-btn btn-pokemon"
                                 onClick={handlePokemon}
                                 disabled={isAnimating || battleOver}
+                                aria-label="Ver Pokémon"
                             >
                                 Pokémon
                             </button>
                         </div>
                         <div className="col-6">
                             <button
-                                className="btn btn-primary w-100"
+                                className="btn btn-primary w-100 battle-btn btn-run"
                                 onClick={handleRun}
                                 disabled={isAnimating || battleOver}
+                                aria-label="Huir del combate"
                             >
                                 Huir
                             </button>
                         </div>
                     </div>
                 ) : (
-                    // Menú de movimientos
+                    // Menú de movimientos con clases híbridas
                     <div className="row g-2">
                         {moves.map((move, index) => (
                             <div className="col-6" key={index}>
                                 <button
-                                    className={`btn btn-move btn-${move.type} w-100`}
+                                    className={`btn btn-move btn-${move.type} w-100 battle-btn`}
                                     onClick={() => handleUseMove(move)}
                                     onMouseEnter={(e) => showTooltip(move.getTooltipDescription(), e)}
                                     onMouseLeave={hideTooltip}
                                     disabled={isAnimating || battleOver}
+                                    aria-label={`Usar ${move.name}`}
                                 >
                                     {move.name.toUpperCase()}
                                 </button>
@@ -610,16 +616,16 @@ const Battle = () => {
                         ))}
                         <div className="col-12">
                             <button
-                                className="btn btn-secondary w-100"
+                                className="btn btn-secondary w-100 battle-btn btn-back"
                                 onClick={handleBackToMainMenu}
                                 disabled={isAnimating || battleOver}
+                                aria-label="Volver al menú principal"
                             >
                                 Volver
                             </button>
                         </div>
                     </div>
                 )}
-
             </div>
         </div>
     );

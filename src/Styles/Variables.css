@@ -24,4 +24,63 @@
   --border-color: #000;
   --video-bg: #252936;
   --delay: 0s;
+  
+  /* COLORES DE TIPOS POKÉMON */
+  --type-normal-bg: #A8A878;
+  --type-fire-bg: #F08030;
+  --type-fighting-bg: #C03028;
+  --type-water-bg: #6890F0;
+  --type-flying-bg: #A890F0;
+  --type-grass-bg: #78C850;
+  --type-poison-bg: #A040A0;
+  --type-electric-bg: #F8D030;
+  --type-ground-bg: #E0C068;
+  --type-psychic-bg: #F85888;
+  --type-rock-bg: #B8A038;
+  --type-ice-bg: #98D8D8;
+  --type-bug-bg: #A8B820;
+  --type-dragon-bg: #7038F8;
+  --type-ghost-bg: #705898;
+  --type-dark-bg: #705848;
+  --type-steel-bg: #B8B8D0;
+  --type-fairy-bg: #EE99AC;
+  
+  /* COLORES DE BORDES PARA TIPOS */
+  --type-normal-border: #8A8A59;
+  --type-fire-border: #C86920;
+  --type-fighting-border: #9D2721;
+  --type-water-border: #4A7AE0;
+  --type-flying-border: #8A70D8;
+  --type-grass-border: #5CA935;
+  --type-poison-border: #803380;
+  --type-electric-border: #DBBA18;
+  --type-ground-border: #BDA53C;
+  --type-psychic-border: #EC3F6F;
+  --type-rock-border: #93802D;
+  --type-ice-border: #7AC5C5;
+  --type-bug-border: #8D9A19;
+  --type-dragon-border: #5018D8;
+  --type-ghost-border: #554374;
+  --type-dark-border: #513B2A;
+  --type-steel-border: #9797BA;
+  --type-fairy-border: #E06B86;
+
+  /* COLORES DE BOTONES DE ACCIÓN */
+  --action-attack-color: #e74c3c;  /* rojo */
+  --action-bag-color: #f39c12;     /* naranja */
+  --action-pokemon-color: #27ae60; /* verde */
+  --action-run-color: #3498db;     /* azul */
+  --action-back-color: #7f8c8d;    /* gris */
+  --action-back-color-hover: #52525B; /* gris más oscuro para hover */
+  
+  /* VERSIONES OSCURAS DE COLORES PRIMARIOS PARA HOVER */
+  --primary-color-dark: #1a4a7a;
+  --secondary-color-dark: #6a1cb2;
+  --accent-color-dark: #d32f2f;
+  
+  /* VARIABLES PARA RESPONSIVE */
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
 }

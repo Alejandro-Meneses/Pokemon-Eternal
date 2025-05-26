@@ -25,7 +25,7 @@
 /* ====================================================
    ESTRELLAS DE FONDO
    ==================================================== */
-.stars {
+.constellation-container .stars {
   position: absolute;
   top: 0;
   left: 0;
@@ -35,7 +35,7 @@
   z-index: 0;
 }
 
-.star {
+.constellation-container .star {
   position: absolute;
   background: #ffffff;
   border-radius: 50%;
@@ -46,7 +46,7 @@
 /* ====================================================
    DREAM BALLS (ESTRELLAS INTERACTIVAS MEJORADAS)
    ==================================================== */
-.dream-ball {
+.constellation-container .dream-ball {
   position: absolute;
   width: 30px;
   height: 30px;
@@ -63,7 +63,7 @@
   overflow: visible;
 }
 
-.dream-ball::before {
+.constellation-container .dream-ball::before {
   content: '';
   position: absolute;
   width: 100%;
@@ -75,7 +75,7 @@
   transition: transform 0.5s ease;
 }
 
-.dream-ball::after {
+.constellation-container .dream-ball::after {
   content: '';
   width: 12px;
   height: 12px;
@@ -84,18 +84,18 @@
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
-.dream-ball:hover {
+.constellation-container .dream-ball:hover {
   transform: scale(1.2);
   box-shadow: 0 0 30px rgba(138, 43, 226, 0.9);
   animation: pulse 1.5s infinite;
 }
 
-.dream-ball:hover::before {
+.constellation-container .dream-ball:hover::before {
   transform: scale(2.5);
   opacity: 0.3;
 }
 
-.dream-ball.active {
+.constellation-container .dream-ball.active {
   background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
   box-shadow: 0 0 40px var(--accent-color);
   animation: none;
@@ -105,7 +105,7 @@
 /* ====================================================
    CONSTELACIONES PREDISEÑADAS
    ==================================================== */
-.constellation-pattern {
+.constellation-container .constellation-pattern {
   position: absolute;
   top: 0;
   left: 0;
@@ -117,7 +117,7 @@
   pointer-events: none;
 }
 
-.constellation-pattern.active {
+.constellation-container .constellation-pattern.active {
   opacity: 0.7;
 }
 
@@ -125,7 +125,7 @@
    LÍNEAS DE CONSTELACIÓN
    ==================================================== */
 
-.constellation-lines {
+.constellation-container .constellation-lines {
   position: absolute;
   top: 0;
   left: 0;
@@ -135,7 +135,7 @@
   z-index: 15; /* Entre las estrellas y el UI */
 }
 
-.fixed-constellation-line {
+.constellation-container .fixed-constellation-line {
   position: absolute;
   background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
   height: 2px;
@@ -149,7 +149,7 @@
 /* ====================================================
    ELEMENTOS UI - REDUCIDOS 25%
    ==================================================== */
-.constellation-ui {
+.constellation-container .constellation-ui {
   position: absolute;
   bottom: 30px;
   width: 375px; /* Reducido de 500px (25% menos) */
@@ -167,7 +167,7 @@
   pointer-events: auto !important;
 }
 
-.constellation-title {
+.constellation-container .constellation-title {
   font-size: 1.2rem; /* Reducido de 1.5rem (25% menos) */
   text-align: center;
   margin-bottom: 12px; /* Reducido de 15px */
@@ -177,7 +177,7 @@
   color: transparent;
 }
 
-.constellation-description {
+.constellation-container .constellation-description {
   font-size: 0.8rem; /* Reducido de 0.9rem */
   text-align: center;
   margin-bottom: 15px; /* Reducido de 20px */
@@ -187,7 +187,7 @@
 /* ====================================================
    POPUP DE POKEMON - REDUCIDO 30% ADICIONAL
    ==================================================== */
-.pokemon-image-loading {
+.constellation-container .pokemon-image-loading {
   width: 95px; /* Reducido de 120px */
   height: 95px; /* Reducido de 120px */
   border-radius: 50%;
@@ -198,7 +198,7 @@
   position: relative;
 }
 
-.pokemon-image-loading::after {
+.constellation-container .pokemon-image-loading::after {
   content: '';
   width: 70%;
   height: 70%;
@@ -213,7 +213,7 @@
   100% { transform: rotate(360deg); }
 }
 
-.pokemon-popup {
+.constellation-container .pokemon-popup {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -233,17 +233,17 @@
   transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.pokemon-popup.active {
+.constellation-container .pokemon-popup.active {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
   pointer-events: auto;
 }
 
-.popup-header {
+.constellation-container .popup-header {
   margin-bottom: 10px; /* Reducido de 12px */
 }
 
-.popup-title {
+.constellation-container .popup-title {
   font-size: 1.2rem; /* Reducido de 1.4rem */
   margin-bottom: 3px;
   background: linear-gradient(90deg, #60c5fa, #7494ea);
@@ -253,7 +253,7 @@
   text-shadow: 0 0 10px rgba(96, 197, 250, 0.3);
 }
 
-.pokemon-image-container {
+.constellation-container .pokemon-image-container {
   width: 120px; /* Reducido de 150px */
   height: 120px; /* Reducido de 150px */
   margin: 0 auto 12px; /* Reducido de 15px */
@@ -265,7 +265,7 @@
   position: relative;
 }
 
-.pokemon-image {
+.constellation-container .pokemon-image {
   width: 95px; /* Reducido de 120px */
   height: 95px; /* Reducido de 120px */
   object-fit: contain;
@@ -274,7 +274,7 @@
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
 }
 
-.particles {
+.constellation-container .particles {
   position: absolute;
   top: 0;
   left: 0;
@@ -283,14 +283,14 @@
   pointer-events: none;
 }
 
-.particle {
+.constellation-container .particle {
   position: absolute;
   background: var(--primary-color);
   border-radius: 50%;
   opacity: 0;
 }
 
-.pokemon-info {
+.constellation-container .pokemon-info {
   margin-bottom: 12px; /* Reducido de 15px */
   background: rgba(25, 31, 52, 0.6);
   border-radius: 12px;
@@ -299,7 +299,7 @@
   text-align: center;
 }
 
-.pokemon-name {
+.constellation-container .pokemon-name {
   font-size: 1.25rem; /* Reducido de 1.5rem */
   font-weight: 600;
   margin-bottom: 5px; /* Reducido de 6px */
@@ -307,7 +307,7 @@
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-.pokemon-sprite {
+.constellation-container .pokemon-sprite {
   margin: 6px auto; /* Reducido de 8px */
   background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
@@ -318,20 +318,20 @@
   justify-content: center;
 }
 
-.pokemon-sprite img {
+.constellation-container .pokemon-sprite img {
   width: 48px; /* Reducido de 60px */
   height: 48px; /* Reducido de 60px */
   object-fit: contain;
 }
 
-.pokemon-types {
+.constellation-container .pokemon-types {
   display: flex;
   justify-content: center;
   gap: 6px; /* Reducido de 8px */
   margin: 8px 0; /* Reducido de 12px */
 }
 
-.pokemon-type {
+.constellation-container .pokemon-type {
   display: inline-block;
   padding: 3px 8px; /* Reducido de 4px 10px */
   border-radius: 15px; /* Reducido de 20px */
@@ -342,26 +342,28 @@
 }
 
 /* Colores para los tipos de Pokémon */
-.type-normal { background-color: #A8A878; }
-.type-fire { background-color: #F08030; }
-.type-fighting { background-color: #C03028; }
-.type-water { background-color: #6890F0; }
-.type-flying { background-color: #A890F0; }
-.type-grass { background-color: #78C850; }
-.type-poison { background-color: #A040A0; }
-.type-electric { background-color: #F8D030; }
-.type-ground { background-color: #E0C068; }
-.type-psychic { background-color: #F85888; }
-.type-rock { background-color: #B8A038; }
-.type-ice { background-color: #98D8D8; }
-.type-bug { background-color: #A8B820; }
-.type-dragon { background-color: #7038F8; }
-.type-ghost { background-color: #705898; }
-.type-dark { background-color: #705848; }
-.type-steel { background-color: #B8B8D0; }
-.type-fairy { background-color: #EE99AC; }
+/* Colores para los tipos de Pokémon */
+.constellation-container .type-normal { background-color: var(--type-normal-bg); }
+.constellation-container .type-fire { background-color: var(--type-fire-bg); }
+.constellation-container .type-fighting { background-color: var(--type-fighting-bg); }
+.constellation-container .type-water { background-color: var(--type-water-bg); }
+.constellation-container .type-flying { background-color: var(--type-flying-bg); }
+.constellation-container .type-grass { background-color: var(--type-grass-bg); }
+.constellation-container .type-poison { background-color: var(--type-poison-bg); }
+.constellation-container .type-electric { background-color: var(--type-electric-bg); }
+.constellation-container .type-ground { background-color: var(--type-ground-bg); }
+.constellation-container .type-psychic { background-color: var(--type-psychic-bg); }
+.constellation-container .type-rock { background-color: var(--type-rock-bg); }
+.constellation-container .type-ice { background-color: var(--type-ice-bg); }
+.constellation-container .type-bug { background-color: var(--type-bug-bg); }
+.constellation-container .type-dragon { background-color: var(--type-dragon-bg); }
+.constellation-container .type-ghost { background-color: var(--type-ghost-bg); }
+.constellation-container .type-dark { background-color: var(--type-dark-bg); }
+.constellation-container .type-steel { background-color: var(--type-steel-bg); }
+.constellation-container .type-fairy { background-color: var(--type-fairy-bg); }
 
-.pokemon-stat-total {
+
+.constellation-container .pokemon-stat-total {
   margin: 10px auto 0; /* Reducido de 12px */
   padding: 4px 10px; /* Reducido de 6px 12px */
   background: rgba(60, 80, 150, 0.3);
@@ -372,20 +374,20 @@
   color: #fff;
 }
 
-.pokemon-rarity {
+.constellation-container .pokemon-rarity {
   margin: 10px 0 3px; /* Reducido de 12px 0 5px */
   font-size: 0.9rem; /* Reducido de 1rem */
   font-weight: 600;
   text-transform: uppercase;
 }
 
-.rarity-común { color: #7e94af; }
-.rarity-raro { color: #4da3ff; }
-.rarity-epico { color: #ff4df0; }
-.rarity-legendario { color: #f9bf16; text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
+.constellation-container .rarity-común { color: #7e94af; }
+.constellation-container .rarity-raro { color: #4da3ff; }
+.constellation-container .rarity-epico { color: #ff4df0; }
+.constellation-container .rarity-legendario { color: #f9bf16; text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
 
 /* Overlay oscuro cuando aparece el popup */
-.dark-overlay {
+.constellation-container .dark-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -398,7 +400,7 @@
   transition: opacity 0.5s ease;
 }
 
-.dark-overlay.active {
+.constellation-container .dark-overlay.active {
   opacity: 1;
   pointer-events: auto;
 }
@@ -406,21 +408,21 @@
 /* ====================================================
    CONTROLES - ACTUALIZADO PARA UI MÁS PEQUEÑA
    ==================================================== */
-.constellation-controls {
+.constellation-container .constellation-controls {
   display: flex;
   justify-content: center;
   gap: 12px; /* Reducido de 15px */
   margin-top: 12px; /* Reducido de 15px */
 }
 
-.popup-buttons {
+.constellation-container .popup-buttons {
   display: flex;
   justify-content: center;
   gap: 15px;
   margin-top: 6px; /* Reducido de 8px */
 }
 
-.constellation-button {
+.constellation-container .constellation-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -438,31 +440,31 @@
   font-size: 0.85rem; /* Reducido de 0.9rem */
 }
 
-.constellation-button.primary {
+.constellation-container .constellation-button.primary {
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   color: var(--light-color);
   box-shadow: var(--button-shadow);
 }
 
-.constellation-button.secondary {
+.constellation-container .constellation-button.secondary {
   background: var(--button-bg);
   color: var(--light-color);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.constellation-button:hover {
+.constellation-container .constellation-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.constellation-button:active {
+.constellation-container .constellation-button:active {
   transform: translateY(0);
 }
 
 /* ====================================================
    DECORACIÓN
    ==================================================== */
-.constellation-decoration {
+.constellation-container .constellation-decoration {
   position: absolute;
   width: 150px;
   height: 150px;
@@ -472,14 +474,14 @@
   z-index: 0;
 }
 
-.constellation-decoration.top-left {
+.constellation-container .constellation-decoration.top-left {
   top: 10%;
   left: 5%;
   background-image: url('../images/Pokeball.svg');
   animation: float 8s ease-in-out infinite;
 }
 
-.constellation-decoration.bottom-right {
+.constellation-container .constellation-decoration.bottom-right {
   bottom: 10%;
   right: 5%;
   background-image: url('../images/Pokeball.svg');
@@ -531,59 +533,60 @@
    RESPONSIVE - ACTUALIZADO PARA ELEMENTOS MÁS PEQUEÑOS
    ==================================================== */
 @media (max-width: 768px) {
-  .dream-ball {
+  .constellation-container .dream-ball {
     width: 25px;
     height: 25px;
   }
   
-  .dream-ball::after {
+  .constellation-container .dream-ball::after {
     width: 10px;
     height: 10px;
   }
   
-  .constellation-ui {
+  .constellation-container .constellation-ui {
     width: 325px; /* Aún más reducido para móviles */
     padding: 12px;
   }
   
-  .constellation-title {
+  .constellation-container .constellation-title {
     font-size: 1.1rem;
   }
   
-  .constellation-description {
+  .constellation-container .constellation-description {
     font-size: 0.75rem;
   }
   
-  .pokemon-popup {
+  .constellation-container .pokemon-popup {
     padding: 12px; /* Reducido aún más para dispositivos móviles */
     width: 200px; /* Reducido de 280px */
   }
   
-  .popup-title {
+  .constellation-container .popup-title {
     font-size: 1.1rem; /* Reducido para móviles */
   }
   
-  .pokemon-image-container {
+  .constellation-container .pokemon-image-container {
     width: 100px; /* Reducido para móviles */
     height: 100px; /* Reducido para móviles */
     margin-bottom: 8px;
   }
   
-  .pokemon-image, .pokemon-image-loading {
+  .constellation-container .pokemon-image, 
+  .constellation-container .pokemon-image-loading {
     width: 80px; /* Reducido para móviles */
     height: 80px; /* Reducido para móviles */
   }
   
-  .pokemon-name {
+  .constellation-container .pokemon-name {
     font-size: 1.1rem;
   }
   
-  .pokemon-sprite {
+  .constellation-container .pokemon-sprite {
     width: 45px; /* Reducido para móviles */
     height: 45px; /* Reducido para móviles */
   }
   
-  .pokemon-sprite img {
+  .constellation-container .pokemon-sprite img {
     width: 38px; /* Reducido para móviles */
     height: 38px; /* Reducido para móviles */
   }

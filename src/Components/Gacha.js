@@ -266,10 +266,11 @@ const Gacha = () => {
 
   // Crear efecto de partículas
   const createParticleEffect = () => {
-    // Verificar que selectedPokemon existe
-    if (!selectedPokemon) return;
+    // Verificar que selectedPokemon existe y que el contenedor está disponible
+    if (!selectedPokemon || !containerRef.current) return;
     
-    const particlesContainer = document.querySelector('.particles');
+    // CAMBIO IMPORTANTE: Usar el contenedor del componente como contexto
+    const particlesContainer = containerRef.current.querySelector('.particles');
     if (!particlesContainer) return;
     
     // Limpiar partículas anteriores

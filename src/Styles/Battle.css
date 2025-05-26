@@ -1,6 +1,7 @@
-/* Contenedor principal */
+/* ESTILOS ESPECÍFICOS DEL COMPONENTE BATTLE */
 @import url('../Styles/Variables.css');
 
+/* Contenedor principal */
 .battle-container {
     width: 90%;
     /* Ocupa el 90% del ancho de la pantalla */
@@ -17,11 +18,10 @@
     /* Bordes redondeados responsivos */
     position: relative;
     overflow: hidden;
-    /* Asegura que nada se salga del contenedor */
 }
 
 /* Sección del Pokémon rival */
-.rival-section {
+.battle-container .rival-section {
     position: absolute;
     top: 8vh;
     /* Más centrado verticalmente */
@@ -30,7 +30,7 @@
     text-align: right;
 }
 
-.rival-sprite {
+.battle-container .rival-sprite {
     height: 20vh;
     /* Altura relativa al viewport */
     width: auto;
@@ -39,7 +39,7 @@
     /* Espacio entre la imagen y la barra */
 }
 
-.rival-info {
+.battle-container .rival-info {
     position: absolute;
     top: 0;
     right: 65%;
@@ -54,7 +54,7 @@
 }
 
 /* Sección del Pokémon del jugador */
-.player-section {
+.battle-container .player-section {
     position: absolute;
     bottom: 14vh;
     /* Movido más arriba */
@@ -63,7 +63,7 @@
     text-align: left;
 }
 
-.player-sprite {
+.battle-container .player-sprite {
     height: 20vh;
     /* Altura relativa al viewport */
     width: auto;
@@ -75,7 +75,7 @@
 }
 
 /* Información del Pokémon del jugador */
-.player-info {
+.battle-container .player-info {
     position: absolute;
     bottom: 20%;
     /* Mueve el nombre más arriba */
@@ -91,7 +91,7 @@
 }
 
 /* Barra de vida del jugador */
-.player-hp-bar-container {
+.battle-container .player-hp-bar-container {
     display: flex;
     /* Alinea la imagen y la barra en línea */
     align-items: center;
@@ -107,7 +107,7 @@
     margin-top: 0.5vh;
 }
 
-.player-hp-bar-container .hp-icon {
+.battle-container .player-hp-bar-container .hp-icon {
     height: 4vh;
     /* Tamaño del ícono igual a la altura de la barra */
     width: auto;
@@ -122,7 +122,7 @@
 }
 
 /* Barra de vida del rival */
-.rival-hp-bar-container {
+.battle-container .rival-hp-bar-container {
     display: flex;
     /* Alinea la imagen y la barra en línea */
     align-items: center;
@@ -138,7 +138,7 @@
     margin-top: 0.5vh;
 }
 
-.rival-hp-bar-container .hp-icon {
+.battle-container .rival-hp-bar-container .hp-icon {
     height: 4vh;
     /* Tamaño del ícono igual a la altura de la barra */
     width: auto;
@@ -152,7 +152,7 @@
 }
 
 /* NUEVO: Fondo de la barra de vida */
-.hp-bar-background {
+.battle-container .hp-bar-background {
     width: 100%;
     height: 100%;
     background-color: #e0e0e0;
@@ -163,7 +163,7 @@
 }
 
 /* Barra de vida MODIFICADA */
-.hp-bar {
+.battle-container .hp-bar {
     background-color: #4caf50;
     /* Color verde de la barra */
     height: 100%;
@@ -180,7 +180,7 @@
 }
 
 /* Nombre del Pokémon */
-.pokemon-name {
+.battle-container .pokemon-name {
     font-weight: bold;
     font-size: 2.2vh;
     /* Tamaño de fuente más grande */
@@ -195,7 +195,7 @@
 }
 
 /* Contenedor de los botones de acción */
-.action-buttons {
+.battle-container .action-buttons {
     position: absolute;
     bottom: 2vh;
     /* Posicionado en la parte inferior */
@@ -209,7 +209,7 @@
 }
 
 /* Estilos generales para todos los botones de acción */
-.action-buttons .btn {
+.battle-container .action-buttons .btn {
     font-size: 14px !important;
     /* Aumentamos el tamaño de fuente */
     font-weight: bold !important;
@@ -226,7 +226,7 @@
 }
 
 /* Estilos base para todos los botones de movimientos */
-.action-buttons .btn-move {
+.battle-container .action-buttons .btn-move {
     color: white;
     font-weight: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
@@ -236,112 +236,112 @@
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 }
 
-.action-buttons .btn-move:hover {
+.battle-container .action-buttons .btn-move:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 8px rgba(0, 0, 0, 0.3);
 }
 
-.action-buttons .btn-move:active {
+.battle-container .action-buttons .btn-move:active {
     transform: translateY(1px);
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Estilos específicos por tipo de Pokémon */
-.action-buttons .btn-normal {
-    background-color: #A8A878;
-    border-color: #8A8A59;
+.battle-container .action-buttons .btn-normal {
+    background-color: var(--type-normal-bg);
+    border-color: var(--type-normal-border);
 }
 
-.action-buttons .btn-fighting {
-    background-color: #C03028;
-    border-color: #9D2721;
+.battle-container .action-buttons .btn-fighting {
+    background-color: var(--type-fighting-bg);
+    border-color: var(--type-fighting-border);
 }
 
-.action-buttons .btn-flying {
-    background-color: #A890F0;
-    border-color: #8A70D8;
+.battle-container .action-buttons .btn-flying {
+    background-color: var(--type-flying-bg);
+    border-color: var(--type-flying-border);
 }
 
-.action-buttons .btn-poison {
-    background-color: #A040A0;
-    border-color: #803380;
+.battle-container .action-buttons .btn-poison {
+    background-color: var(--type-poison-bg);
+    border-color: var(--type-poison-border);
 }
 
-.action-buttons .btn-ground {
-    background-color: #E0C068;
-    border-color: #BDA53C;
+.battle-container .action-buttons .btn-ground {
+    background-color: var(--type-ground-bg);
+    border-color: var(--type-ground-border);
 }
 
-.action-buttons .btn-rock {
-    background-color: #B8A038;
-    border-color: #93802D;
+.battle-container .action-buttons .btn-rock {
+    background-color: var(--type-rock-bg);
+    border-color: var(--type-rock-border);
 }
 
-.action-buttons .btn-bug {
-    background-color: #A8B820;
-    border-color: #8D9A19;
+.battle-container .action-buttons .btn-bug {
+    background-color: var(--type-bug-bg);
+    border-color: var(--type-bug-border);
 }
 
-.action-buttons .btn-ghost {
-    background-color: #705898;
-    border-color: #554374;
+.battle-container .action-buttons .btn-ghost {
+    background-color: var(--type-ghost-bg);
+    border-color: var(--type-ghost-border);
 }
 
-.action-buttons .btn-steel {
-    background-color: #B8B8D0;
-    border-color: #9797BA;
+.battle-container .action-buttons .btn-steel {
+    background-color: var(--type-steel-bg);
+    border-color: var(--type-steel-border);
 }
 
-.action-buttons .btn-fire {
-    background-color: #F08030;
-    border-color: #C86920;
+.battle-container .action-buttons .btn-fire {
+    background-color: var(--type-fire-bg);
+    border-color: var(--type-fire-border);
 }
 
-.action-buttons .btn-water {
-    background-color: #6890F0;
-    border-color: #4A7AE0;
+.battle-container .action-buttons .btn-water {
+    background-color: var(--type-water-bg);
+    border-color: var(--type-water-border);
 }
 
-.action-buttons .btn-grass {
-    background-color: #78C850;
-    border-color: #5CA935;
+.battle-container .action-buttons .btn-grass {
+    background-color: var(--type-grass-bg);
+    border-color: var(--type-grass-border);
 }
 
-.action-buttons .btn-electric {
-    background-color: #F8D030;
-    border-color: #DBBA18;
+.battle-container .action-buttons .btn-electric {
+    background-color: var(--type-electric-bg);
+    border-color: var(--type-electric-border);
     color: #333;
 }
 
-.action-buttons .btn-psychic {
-    background-color: #F85888;
-    border-color: #EC3F6F;
+.battle-container .action-buttons .btn-psychic {
+    background-color: var(--type-psychic-bg);
+    border-color: var(--type-psychic-border);
 }
 
-.action-buttons .btn-ice {
-    background-color: #98D8D8;
-    border-color: #7AC5C5;
+.battle-container .action-buttons .btn-ice {
+    background-color: var(--type-ice-bg);
+    border-color: var(--type-ice-border);
     color: #333;
 }
 
-.action-buttons .btn-dragon {
-    background-color: #7038F8;
-    border-color: #5018D8;
+.battle-container .action-buttons .btn-dragon {
+    background-color: var(--type-dragon-bg);
+    border-color: var(--type-dragon-border);
 }
 
-.action-buttons .btn-dark {
-    background-color: #705848;
-    border-color: #513B2A;
+.battle-container .action-buttons .btn-dark {
+    background-color: var(--type-dark-bg);
+    border-color: var(--type-dark-border);
 }
 
-.action-buttons .btn-fairy {
-    background-color: #EE99AC;
-    border-color: #E06B86;
+.battle-container .action-buttons .btn-fairy {
+    background-color: var(--type-fairy-bg);
+    border-color: var(--type-fairy-border);
 }
 
 /* Estilo para el botón de volver */
-.action-buttons .btn-back {
-    background-color: #71717A;
+.battle-container .action-buttons .btn-back {
+    background-color: var(--action-back-color, #71717A);
     border-color: #52525B;
     color: white;
     font-weight: bold;
@@ -352,19 +352,19 @@
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 }
 
-.action-buttons .btn-back:hover {
-    background-color: #52525B;
+.battle-container .action-buttons .btn-back:hover {
+    background-color: var(--action-back-color-hover, #52525B);
     transform: translateY(-2px);
     box-shadow: 0 5px 8px rgba(0, 0, 0, 0.3);
 }
 
-.action-buttons .btn-back:active {
+.battle-container .action-buttons .btn-back:active {
     transform: translateY(1px);
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Log de batalla responsivo */
-.battle-log {
+.battle-container .battle-log {
     bottom: 1.5vh;
     /* Posición vertical relativa a la altura de la pantalla */
     left: auto;
@@ -395,29 +395,29 @@
 }
 
 /* Opcional: Estilo para las entradas del log */
-.battle-log .log-entry {
+.battle-container .battle-log .log-entry {
     margin-bottom: 0.5vh;
     line-height: 1.3;
     text-shadow: 0.05vw 0.05vw 0.1vw rgba(0, 0, 0, 0.7);
 }
 
 /* Opcional: Estilo para la barra de desplazamiento */
-.battle-log::-webkit-scrollbar {
+.battle-container .battle-log::-webkit-scrollbar {
     width: 0.5vw;
     max-width: 6px;
 }
 
-.battle-log::-webkit-scrollbar-thumb {
+.battle-container .battle-log::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.5);
     border-radius: 0.5vw;
 }
 
-.battle-log::-webkit-scrollbar-track {
+.battle-container .battle-log::-webkit-scrollbar-track {
     background-color: rgba(0, 0, 0, 0.3);
 }
 
 /* Grupo para contener el mensaje y el log juntos */
-.battle-info-group {
+.battle-container .battle-info-group {
     position: absolute;
     bottom: 1.5vh;
     left: 1vw;
@@ -429,7 +429,7 @@
 }
 
 /* Ajustes al mensaje de batalla para que se alinee con el log */
-.battle-message {
+.battle-container .battle-message {
     background-color: rgba(60, 90, 166, 0.85);
     /* Azul Pokemon más oscuro y semi-transparente */
     color: white;
@@ -449,8 +449,211 @@
 }
 
 /* Texto de HP */
-.hp-text {
+.battle-container .hp-text {
     font-size: 1.8vh;
     margin-top: 0.5vh;
     font-weight: bold;
+}
+
+/* NUEVO: SISTEMA DE BOTONES OPTIMIZADO PARA MÓVIL */
+.battle-container .action-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Botones grandes y accesibles */
+.battle-container .battle-btn {
+    min-height: 70px;
+    font-size: 18px !important;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s ease;
+}
+
+.battle-container .battle-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Colores de los botones usando variables */
+.battle-container .btn-attack {
+    background-color: var(--action-attack-color, #e74c3c) !important;
+    color: white;
+}
+
+.battle-container .btn-bag {
+    background-color: var(--action-bag-color, #f39c12) !important;
+    color: white;
+}
+
+.battle-container .btn-pokemon {
+    background-color: var(--action-pokemon-color, #27ae60) !important;
+    color: white;
+}
+
+.battle-container .btn-run {
+    background-color: var(--action-run-color, #3498db) !important;
+    color: white;
+}
+
+.battle-container .btn-back {
+    background-color: var(--action-back-color, #7f8c8d) !important;
+    color: white;
+    grid-column: span 2;
+}
+
+/* RESPONSIVE PARA MÓVILES */
+@media (max-width: var(--breakpoint-lg, 900px)) and (orientation: landscape) {
+    .battle-container {
+        border: none;
+        border-radius: 0;
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+    }
+
+    .battle-container .rival-section {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        width: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .battle-container .rival-sprite {
+        height: 70px;
+        width: 70px;
+        object-fit: contain;
+        margin: 0;
+    }
+
+    .battle-container .rival-info {
+        position: relative;
+        top: auto;
+        right: auto;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: 6px;
+        padding: 5px;
+        margin-bottom: 5px;
+        width: 160px;
+    }
+
+    .battle-container .player-section {
+        position: absolute;
+        bottom: 80px;
+        left: 10px;
+        width: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .battle-container .player-sprite {
+        height: 70px;
+        width: 70px;
+        object-fit: contain;
+        margin: 0;
+    }
+
+    .battle-container .player-info {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: 6px;
+        padding: 5px;
+        margin-top: 5px;
+        width: 160px;
+    }
+
+    .battle-container .battle-info-group {
+        position: absolute;
+        bottom: 80px;
+        left: 0;
+        width: 100%;
+        padding: 0;
+    }
+
+    .battle-container .battle-message {
+        width: 100%;
+        border-radius: 0;
+        font-size: 14px;
+        min-height: 30px;
+        padding: 5px;
+    }
+
+    .battle-container .battle-log {
+        width: 100%;
+        border-radius: 0;
+        max-height: 50px;
+        margin: 0;
+    }
+
+    .battle-container .action-buttons {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        padding: 10px;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 100;
+    }
+
+    .battle-container .battle-btn {
+        min-height: 55px;
+    }
+}
+
+/* Para dispositivos muy pequeños */
+@media (max-height: var(--breakpoint-sm, 400px)) and (orientation: landscape) {
+    .battle-container .rival-sprite,
+    .battle-container .player-sprite {
+        height: 60px;
+        width: 60px;
+    }
+
+    .battle-container .rival-info,
+    .battle-container .player-info {
+        width: 140px;
+        padding: 3px;
+    }
+
+    .battle-container .player-section {
+        bottom: 70px;
+    }
+
+    .battle-container .battle-info-group {
+        bottom: 70px;
+    }
+
+    .battle-container .battle-message {
+        min-height: 22px;
+        font-size: 12px;
+        padding: 4px;
+    }
+
+    .battle-container .battle-log {
+        max-height: 35px;
+        font-size: 10px;
+        padding: 4px;
+    }
+
+    .battle-container .battle-btn {
+        min-height: 45px;
+        font-size: 14px !important;
+    }
 }
