@@ -30,10 +30,10 @@ import "../Styles/App.css";
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
+/* const [isMobile, setIsMobile] = useState(false);
   const [isLandscape, setIsLandscape] = useState(
     window.innerWidth > window.innerHeight
-  );
+  );*/
 
   useEffect(() => {
     const token = localStorage.getItem("token");

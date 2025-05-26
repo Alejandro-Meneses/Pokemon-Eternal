@@ -9,7 +9,7 @@ const Gacha = () => {
   const [selectedPokemon, setSelectedPokemon] = useState(null);
   const [imageLoading, setImageLoading] = useState(true);
   const containerRef = useRef(null);
-  const [error, setError] = useState(null);
+  /*const [error, setError] = useState(null);*/
 
   // Generar posiciones aleatorias para las estrellas
   const generateRandomPositions = useCallback(() => {
