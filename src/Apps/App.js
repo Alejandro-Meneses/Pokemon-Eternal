@@ -30,6 +30,10 @@ import "../Styles/App.css";
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isLandscape, setIsLandscape] = useState(
+    window.innerWidth > window.innerHeight
+  );
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -37,6 +41,26 @@ export default function App() {
       setIsLoggedIn(true);
     }
     setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    const checkDevice = () => {
+      setIsMobile(window.innerWidth <= 768);
+      setIsLandscape(window.innerWidth > window.innerHeight);
+    };
+
+    // Initial check
+    checkDevice();
+
+    // Add event listener for resize and orientation change
+    window.addEventListener("resize", checkDevice);
+    window.addEventListener("orientationchange", checkDevice);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("resize", checkDevice);
+      window.removeEventListener("orientationchange", checkDevice);
+    };
   }, []);
 
   const handleLogin = () => {
@@ -64,9 +88,7 @@ export default function App() {
           <div className="sidebar">
             <span className="logo"></span>
             {/* Corregido: reemplazado <a> con href inválido por un <div> */}
-            <div className="logo-expand">
-              Pokemon Eternal
-            </div>
+            <div className="logo-expand">Pokemon Eternal</div>
             <div className="side-wrapper">
               <div className="side-title"></div>
               <div className="side-menu">
@@ -90,7 +112,11 @@ export default function App() {
                   <FontAwesomeIcon icon={faInfoCircle} className="icon" />
                   Sobre Nosotros
                 </Link>
-                <Link className="sidebar-link" to="/login" onClick={handleLogout}>
+                <Link
+                  className="sidebar-link"
+                  to="/login"
+                  onClick={handleLogout}
+                >
                   <FontAwesomeIcon icon={faSignOutAlt} className="icon" />
                   Cerrar sesión
                 </Link>

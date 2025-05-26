@@ -1,5 +1,7 @@
+/* Imports */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap");
 @import url('../Styles/Variables.css');
+
 /* General Reset */
 * {
   outline: none;
@@ -15,7 +17,7 @@ html {
 body {
   font-family: var(--body-font);
   color: var(--body-color);
-  background-image: url("../images/Fondo.jpeg"); ;
+  background-image: url("../images/Fondo.jpeg");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -42,13 +44,26 @@ body:before {
   z-index: -1;
 }
 
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 6px;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #000;
+  border-radius: 10px;
+}
+
+/* ===== DESKTOP LAYOUT ===== */
+
 /* Container Styles */
 .container {
   background-color: var(--theme-bg);
   max-width: 1240px;
   max-height: 900px;
   min-width: 1000px;
-  min-height: 400px;
+  min-height: 600px;
   height: 95vh;
   display: flex;
   overflow: hidden;
@@ -62,14 +77,12 @@ body:before {
 
 /* Sidebar Styles */
 .sidebar {
-  width: 225px; /* Ancho fijo para el sidebar */
+  width: 225px;
   display: flex;
-  flex-direction: column; /* Alinea los elementos verticalmente */
+  flex-direction: column;
   padding: 20px;
   box-sizing: border-box;
 }
-
-
 
 .sidebar .logo-expand {
   text-decoration: none;
@@ -81,7 +94,70 @@ body:before {
   top: 0;
 }
 
+.sidebar .side-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  position: relative;
+  top: -10px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 10px;
+}
 
+.sidebar.collapse {
+  width: 90px;
+  border-right: 1px solid var(--border-color);
+}
+
+.sidebar.collapse .logo-expand,
+.sidebar.collapse .side-title {
+  display: none;
+}
+
+.sidebar.collapse .logo {
+  display: flex;
+}
+
+.sidebar.collapse .side-wrapper {
+  width: 30px;
+}
+
+.sidebar.collapse .side-menu svg {
+  margin-right: 30px;
+}
+
+/* Side Menu Styles */
+.side-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.side-menu a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--body-color);
+}
+
+.side-menu a + a {
+  margin-top: 26px;
+}
+
+.side-menu svg {
+  width: 30px;
+  padding: 8px;
+  border-radius: 10px;
+  background-color: var(--button-bg);
+  flex-shrink: 0;
+  margin-right: 16px;
+}
+
+.side-menu svg:hover {
+  color: #fff;
+}
+
+/* Sidebar Links */
 .sidebar-link {
   display: flex;
   align-items: center;
@@ -125,68 +201,6 @@ body:before {
   background-color: #22b07d;
 }
 
-.sidebar.collapse {
-  width: 90px;
-  border-right: 1px solid var(--border-color);
-}
-
-.sidebar.collapse .logo-expand,
-.sidebar.collapse .side-title {
-  display: none;
-}
-
-.sidebar.collapse .logo {
-  display: flex;
-}
-
-.sidebar.collapse .side-wrapper {
-  width: 30px;
-}
-
-.sidebar.collapse .side-menu svg {
-  margin-right: 30px;
-}
-.sidebar .side-title {
-	text-align: center; /* Centra el texto horizontalmente */
-	margin-bottom: 20px; /* Espacio debajo del título */
-	font-size: 16px; /* Ajusta el tamaño del texto */
-	font-weight: bold; /* Hace el texto más destacado */
-	position: relative; /* Permite ajustar la posición */
-	top: -10px; /* Mueve el título hacia arriba */
-	border-bottom: 2px solid var(--border-color); /* Barra delimitadora */
-	padding-bottom: 10px; /* Espacio entre el texto y la barra */
-  }
-
-/* Side Menu Styles */
-.side-menu {
-  display: flex;
-  flex-direction: column;
-}
-
-.side-menu a {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: var(--body-color);
-}
-
-.side-menu a + a {
-  margin-top: 26px;
-}
-
-.side-menu svg {
-  width: 30px;
-  padding: 8px;
-  border-radius: 10px;
-  background-color: var(--button-bg);
-  flex-shrink: 0;
-  margin-right: 16px;
-}
-
-.side-menu svg:hover {
-  color: #fff;
-}
-
 /* Side Wrapper */
 .side-wrapper {
   border-bottom: 1px solid var(--border-color);
@@ -198,6 +212,37 @@ body:before {
   border-bottom: none;
 }
 
+/* Main Content Area */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0 30px 30px;
+  flex-grow: 1;
+  flex: 1;
+  overflow: auto;
+  min-width: 750px;
+  min-height: 500px;
+}
+
+.main-header {
+  font-size: 30px;
+  color: #fff;
+  font-weight: 700;
+  padding-bottom: 20px;
+  position: sticky;
+  top: 0;
+  left: 0;
+  background: linear-gradient(to bottom, #1f1d2b 0%, #1f1d2b 78%, #000 100%);
+  z-index: 11;
+}
+
+.small-header {
+  font-size: 24px;
+  font-weight: 500;
+  color: #fff;
+  margin: 30px 0 20px;
+}
+
 /* Wrapper Styles */
 .wrapper {
   display: flex;
@@ -205,6 +250,7 @@ body:before {
   flex-grow: 1;
 }
 
+/* Header & User Settings */
 .header {
   display: flex;
   align-items: center;
@@ -223,12 +269,6 @@ body:before {
 .user-settings svg {
   width: 10px;
   flex-shrink: 0;
-}
-
-@media screen and (max-width: 575px) {
-  .user-settings svg {
-    display: none;
-  }
 }
 
 .user-settings .notify {
@@ -252,12 +292,6 @@ body:before {
   top: -2px;
 }
 
-@media screen and (max-width: 575px) {
-  .user-settings .notify .notification {
-    display: none;
-  }
-}
-
 .user-img {
   width: 30px;
   height: 30px;
@@ -272,51 +306,134 @@ body:before {
   margin: 0 6px 0 12px;
 }
 
-@media screen and (max-width: 575px) {
-  .user-name {
-    display: none;
-  }
-}
-
-.main-container {
-  display: flex;
-  flex-direction: column;
-  padding: 0 30px 30px;
-  flex-grow: 1;
-  flex: 1;
-  overflow: auto;
-}
-
+/* Animation */
 .anim {
   animation: bottom 0.8s var(--delay) both;
 }
 
-.main-header {
-  font-size: 30px;
-  color: #fff;
-  font-weight: 700;
-  padding-bottom: 20px;
-  position: sticky;
+/* ===== MOBILE LAYOUT ===== */
+
+/* Orientation message */
+.orientation-message {
+  position: fixed;
   top: 0;
   left: 0;
-  background: linear-gradient(to bottom, #1f1d2b 0%, #1f1d2b 78%, #000 100%);
-  z-index: 11;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(31, 29, 43, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: white;
 }
 
-.small-header {
-  font-size: 24px;
-  font-weight: 500;
+.rotate-device-icon {
+  font-size: 4rem;
+  animation: rotate 1.5s infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(90deg); }
+}
+
+/* Mobile layout styles */
+.mobile-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--theme-bg);
+}
+
+.mobile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: rgba(31, 29, 43, 0.9);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.logo-mobile {
   color: #fff;
-  margin: 30px 0 20px;
+  font-size: 18px;
+  font-weight: 600;
 }
 
-/* Scrollbar Styles */
-::-webkit-scrollbar {
-  width: 6px;
-  border-radius: 10px;
+.mobile-nav {
+  display: flex;
+  align-items: center;
 }
 
-::-webkit-scrollbar-thumb {
-  background-color: #000;
-  border-radius: 10px;
+.mobile-nav-item {
+  color: var(--body-color);
+  padding: 8px 12px;
+  margin: 0 5px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.mobile-nav-item:hover {
+  background-color: #22b07d;
+  color: #fff;
+}
+
+.mobile-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+/* ===== RESPONSIVE MEDIA QUERIES ===== */
+
+/* Larger screens */
+@media screen and (max-width: 1024px) {
+  .container {
+    min-width: 90%;
+    min-height: 90vh;
+  }
+  
+  .sidebar {
+    width: 180px;
+  }
+  
+  .main-container {
+    min-width: calc(100% - 180px);
+  }
+}
+
+/* Tablet/Mobile screens */
+@media screen and (max-width: 768px) {
+  body {
+    overflow: auto;
+  }
+  
+  .container {
+    display: none; /* Hide the desktop layout */
+  }
+  
+  .mobile-container {
+    display: flex;
+  }
+}
+
+/* Small screens */
+@media screen and (max-width: 575px) {
+  .user-settings svg {
+    display: none;
+  }
+  
+  .user-settings .notify .notification {
+    display: none;
+  }
+  
+  .user-name {
+    display: none;
+  }
 }

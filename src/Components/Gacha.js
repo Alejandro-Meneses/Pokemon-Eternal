@@ -1,45 +1,81 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import '../Styles/Gacha.css';
-
-// Datos de muestra para los Pokemon
-const samplePokemon = [
-  { id: 1, name: "Bulbasaur", image: "../images/pokemon/bulbasaur.png", types: ["Planta", "Veneno"], rarity: "Común" },
-  { id: 25, name: "Pikachu", image: "../images/pokemon/pikachu.png", types: ["Eléctrico"], rarity: "Poco común" },
-  { id: 133, name: "Eevee", image: "../images/pokemon/eevee.png", types: ["Normal"], rarity: "Poco común" },
-  { id: 150, name: "Mewtwo", image: "../images/pokemon/mewtwo.png", types: ["Psíquico"], rarity: "Legendario" },
-  { id: 384, name: "Rayquaza", image: "../images/pokemon/rayquaza.png", types: ["Dragón", "Volador"], rarity: "Legendario" },
-  { id: 6, name: "Charizard", image: "../images/pokemon/charizard.png", types: ["Fuego", "Volador"], rarity: "Raro" },
-  { id: 94, name: "Gengar", image: "../images/pokemon/gengar.png", types: ["Fantasma", "Veneno"], rarity: "Raro" },
-  { id: 131, name: "Lapras", image: "../images/pokemon/lapras.png", types: ["Agua", "Hielo"], rarity: "Poco común" },
-  { id: 143, name: "Snorlax", image: "../images/pokemon/snorlax.png", types: ["Normal"], rarity: "Raro" }
-];
 
 const Gacha = () => {
   const [loaded, setLoaded] = useState(false);
   const [activeStarIndex, setActiveStarIndex] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedPokemon, setSelectedPokemon] = useState(null);
+  const [imageLoading, setImageLoading] = useState(true);
   const containerRef = useRef(null);
+  const [error, setError] = useState(null);
+
+  // Generar posiciones aleatorias para las estrellas
+  const generateRandomPositions = useCallback(() => {
+    const positions = [];
+    
+    // Dividir la pantalla en una cuadrícula 3x3 para mejor distribución
+    for (let i = 0; i < 9; i++) {
+      const gridX = i % 3;  // 0, 1, 2, 0, 1, 2, 0, 1, 2
+      const gridY = Math.floor(i / 3);  // 0, 0, 0, 1, 1, 1, 2, 2, 2
+      
+      // Calcular posición dentro de su sección con algo de aleatoriedad
+      // Cada sección cubre aproximadamente 33% de la pantalla
+      const top = `${gridY * 25 + 10 + Math.random() * 20}%`;
+      const left = `${gridX * 25 + 10 + Math.random() * 20}%`;
+      
+      positions.push({ top, left });
+    }
+    
+    return positions;
+  }, []);
   
-  // Posiciones predefinidas para las estrellas
-  const starPositions = [
-    { top: '20%', left: '15%' },
-    { top: '35%', left: '25%' },
-    { top: '15%', left: '40%' },
-    { top: '30%', left: '55%' },
-    { top: '20%', left: '75%' },
-    { top: '50%', left: '20%' },
-    { top: '65%', left: '35%' },
-    { top: '50%', left: '60%' },
-    { top: '60%', left: '80%' }
-  ];
+  // Usar useMemo para generar posiciones aleatorias solo cuando se monta el componente
+  const starPositions = useMemo(() => {
+    return generateRandomPositions();
+  }, [generateRandomPositions]);
 
   // Definición de qué estrellas se conectan entre sí
- const starConnections = useMemo(() => [
-  [0, 1], [1, 2], [2, 3], [3, 4],
-  [5, 6], [6, 7], [7, 8],
-  [0, 5], [1, 6], [3, 7], [4, 8]
-], []);
+  const starConnections = useMemo(() => [
+    [0, 1], [1, 2], [2, 3], [3, 4],
+    [5, 6], [6, 7], [7, 8],
+    [0, 5], [1, 6], [3, 7], [4, 8]
+  ], []);
+
+  // Función para calcular las stats base de un Pokémon
+  const calculateStats = (pokemonData) => {
+    const stats = {};
+    let total = 0;
+
+    pokemonData.stats.forEach(stat => {
+      const statName = stat.stat.name.replace('-', '_');
+      stats[statName] = stat.base_stat;
+      total += stat.base_stat;
+    });
+
+    stats.total = total; // Agregamos el total de stats
+    return stats;
+  };
+
+  // Función para obtener los tipos del Pokémon
+  const getTypes = (pokemonData) => {
+    return pokemonData.types.map(typeInfo =>
+      typeInfo.type.name.charAt(0).toUpperCase() + typeInfo.type.name.slice(1)
+    );
+  };
+
+  // CORRECCIÓN: Función para determinar la rareza basada en stats totales
+  const determineRarity = (stats) => {
+    // Usar directamente el total calculado previamente
+    const totalStats = stats.total;
+    
+    if (totalStats >= 600) return "Legendario";
+    if (totalStats >= 500) return "Epico";
+    if (totalStats >= 400) return "Raro";
+    if (totalStats >= 250) return "Común";
+    return "Común";
+  };
 
   // Memoizar la función createConstellationLines para evitar el warning de dependencias
   const createConstellationLines = useCallback(() => {
@@ -73,10 +109,10 @@ const Gacha = () => {
       const containerRect = containerRef.current.getBoundingClientRect();
       
       // Calcular puntos centrales relativos al contenedor
-      const fromX = fromRect.left + fromRect.width/2 - containerRect.left;
-      const fromY = fromRect.top + fromRect.height/2 - containerRect.top;
-      const toX = toRect.left + toRect.width/2 - containerRect.left;
-      const toY = toRect.top + toRect.height/2 - containerRect.top;
+      const fromX = fromRect.left + fromRect.width / 2 - containerRect.left;
+      const fromY = fromRect.top + fromRect.height / 2 - containerRect.top;
+      const toX = toRect.left + toRect.width / 2 - containerRect.left;
+      const toY = toRect.top + toRect.height / 2 - containerRect.top;
       
       // Calcular longitud y ángulo
       const length = Math.sqrt(Math.pow(toX - fromX, 2) + Math.pow(toY - fromY, 2));
@@ -92,7 +128,7 @@ const Gacha = () => {
       
       linesContainer.appendChild(line);
     });
-  }, [starConnections]); // Dependencia agregada correctamente
+  }, [starConnections]);
 
   // Generar estrellas de fondo
   const generateStars = useCallback(() => {
@@ -141,10 +177,54 @@ const Gacha = () => {
     }, 100);
     
     return () => clearTimeout(timer);
-  }, [createConstellationLines, generateStars]); // Dependencias agregadas correctamente
+  }, [createConstellationLines, generateStars]);
+
+  // Función para obtener un Pokémon aleatorio
+  const fetchRandomPokemon = async () => {
+    try {
+      const randomId = Math.floor(Math.random() * 1025) + 1;
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}`);
+      const data = await response.json();
+
+      // Verificar si tenemos acceso a las imágenes
+      let mainImage = data.sprites.other['official-artwork'].front_default;
+      // Usar alternativas si la imagen oficial no está disponible
+      if (!mainImage) {
+        mainImage = data.sprites.other.home.front_default ||
+                   data.sprites.front_default ||
+                   `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${data.id}.png`;
+      }
+
+      // Verificar sprite
+      let sprite = data.sprites.front_default;
+      if (!sprite) {
+        sprite = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${data.id}.png`;
+      }
+
+      // Crear un objeto con los datos que necesitamos
+      const pokemon = {
+        id: data.id,
+        name: data.name.charAt(0).toUpperCase() + data.name.slice(1),
+        image: mainImage,
+        sprite: sprite,
+        types: getTypes(data),
+        stats: calculateStats(data),
+        rarity: ''
+      };
+
+      // Determinar rareza basada en stats
+      pokemon.rarity = determineRarity(pokemon.stats);
+      
+      return pokemon;
+    } catch (err) {
+      console.error("Error fetching Pokemon:", err);
+      setError(err.message);
+      return null;
+    }
+  };
 
   // Manejar click en una estrella
-  const handleStarClick = (index) => {
+  const handleStarClick = async (index) => {
     // Ya está seleccionada, no hacemos nada
     if (activeStarIndex === index) return;
     
@@ -159,23 +239,29 @@ const Gacha = () => {
       });
     }
     
-    // Seleccionar un Pokémon aleatorio
-    const randomPokemon = samplePokemon[Math.floor(Math.random() * samplePokemon.length)];
-    
-    // Primero guardamos el Pokémon 
-    setSelectedPokemon(randomPokemon);
-    
-    // Mostrar popup después de una breve pausa
-    setTimeout(() => {
-      // Verificar de nuevo que tenemos un Pokémon seleccionado
+    try {
+      // Obtener un Pokémon aleatorio
+      const randomPokemon = await fetchRandomPokemon();
+      
       if (randomPokemon) {
-        setShowPopup(true);
-        // Solo creamos partículas si hay un Pokémon
+        // CORRECCIÓN: Reiniciar el estado de carga de imagen
+        setImageLoading(true);
+        
+        // Guardamos el Pokémon
+        setSelectedPokemon(randomPokemon);
+        
+        // Mostrar popup después de una breve pausa
         setTimeout(() => {
-          createParticleEffect();
-        }, 100);
+          setShowPopup(true);
+          // Solo creamos partículas si hay un Pokémon
+          setTimeout(() => {
+            createParticleEffect();
+          }, 100);
+        }, 1000);
       }
-    }, 1000);
+    } catch (err) {
+      console.error("Error en handleStarClick:", err);
+    }
   };
 
   // Crear efecto de partículas
@@ -208,21 +294,23 @@ const Gacha = () => {
       let particleColor = '#3498db'; // Color predeterminado
       
       try {
-        const pokemonType = selectedPokemon.types[0].toLowerCase();
-        
-        switch(pokemonType) {
-          case 'fuego': particleColor = '#F08030'; break;
-          case 'agua': particleColor = '#6890F0'; break;
-          case 'planta': particleColor = '#78C850'; break;
-          case 'eléctrico': particleColor = '#F8D030'; break;
-          case 'psíquico': particleColor = '#F85888'; break;
-          case 'fantasma': particleColor = '#705898'; break;
-          case 'dragón': particleColor = '#7038F8'; break;
-          case 'normal': particleColor = '#A8A878'; break;
-          case 'veneno': particleColor = '#A040A0'; break;
-          case 'volador': particleColor = '#A890F0'; break;
-          case 'hielo': particleColor = '#98D8D8'; break;
-          default: particleColor = '#3498db'; break; // Caso default añadido
+        if (selectedPokemon.types && selectedPokemon.types.length > 0) {
+          const pokemonType = selectedPokemon.types[0].toLowerCase();
+          
+          switch (pokemonType) {
+            case 'fire': particleColor = '#F08030'; break;
+            case 'water': particleColor = '#6890F0'; break;
+            case 'grass': particleColor = '#78C850'; break;
+            case 'electric': particleColor = '#F8D030'; break;
+            case 'psychic': particleColor = '#F85888'; break;
+            case 'ghost': particleColor = '#705898'; break;
+            case 'dragon': particleColor = '#7038F8'; break;
+            case 'normal': particleColor = '#A8A878'; break;
+            case 'poison': particleColor = '#A040A0'; break;
+            case 'flying': particleColor = '#A890F0'; break;
+            case 'ice': particleColor = '#98D8D8'; break;
+            default: particleColor = '#3498db'; break;
+          }
         }
       } catch (error) {
         console.error("Error al acceder al tipo de Pokémon:", error);
@@ -264,13 +352,11 @@ const Gacha = () => {
     
     setTimeout(() => {
       setActiveStarIndex(null);
-      // Ya no necesitamos esto porque eliminamos este estado
-      // setActiveConstellation(null);
     }, 300); // Pequeño retraso para que la animación sea suave
   };
 
   return (
-    <div 
+    <div
       className={`constellation-container ${loaded ? 'loaded' : ''}`}
       ref={containerRef}
     >
@@ -295,13 +381,23 @@ const Gacha = () => {
           </div>
           
           <div className="pokemon-image-container">
-            <img 
-              src={selectedPokemon.image} 
+            {imageLoading && <div className="pokemon-image-loading"></div>}
+            <img
+              src={selectedPokemon.image}
               alt={selectedPokemon.name}
               className="pokemon-image"
+              style={{display: imageLoading ? 'none' : 'block'}}
+              onLoad={() => setImageLoading(false)} // CORRECCIÓN: Añadir onLoad
               onError={(e) => {
-                e.target.onerror = null; 
-                e.target.src = "../images/pokeball.svg"; // Imagen de respaldo
+                e.target.onerror = null;
+                // Intenta con un respaldo alternativo
+                if (selectedPokemon.id) {
+                  e.target.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${selectedPokemon.id}.png`;
+                } else {
+                  e.target.src = "../images/pokeball.svg"; // Imagen de respaldo final
+                }
+                setImageLoading(false); // CORRECCIÓN: Marcar que la carga ha terminado
+                console.log("Error cargando imagen de Pokémon:", selectedPokemon.name);
               }}
             />
             <div className="particles"></div>
@@ -309,23 +405,35 @@ const Gacha = () => {
           
           <div className="pokemon-info">
             <div className="pokemon-name">{selectedPokemon.name}</div>
-            <div>
+            
+            <div className="pokemon-sprite">
+              <img
+                src={selectedPokemon.sprite}
+                alt={`${selectedPokemon.name} sprite`}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "../images/pokeball.svg";
+                }}
+              />
+            </div>
+            
+            <div className="pokemon-types">
               {selectedPokemon.types.map((type, index) => (
-                <span key={index} className="pokemon-type">{type}</span>
+                <span key={index} className={`pokemon-type type-${type.toLowerCase()}`}>{type}</span>
               ))}
             </div>
-            <div className="pokemon-rarity">★ {selectedPokemon.rarity} ★</div>
+            
+            <div className={`pokemon-rarity rarity-${selectedPokemon.rarity.toLowerCase().replace(' ', '-')}`}>
+              ★ {selectedPokemon.rarity} ★
+            </div>
+            
+            <div className="pokemon-stat-total">
+              Poder Total: {selectedPokemon.stats.total}
+            </div>
           </div>
           
           <div className="popup-buttons">
-            <button 
-              className="constellation-button secondary" 
-              onClick={closePopup}
-            >
-              <span className="button-text">Cerrar</span>
-            </button>
-            
-            <button 
+            <button
               className="constellation-button primary"
               onClick={closePopup}
             >
@@ -336,7 +444,7 @@ const Gacha = () => {
       )}
       
       {/* Overlay oscuro para el popup */}
-      <div 
+      <div
         className={`dark-overlay ${showPopup ? 'active' : ''}`}
         onClick={closePopup}
       ></div>
