@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  pokedollars: {
+    type: Number,
+    default: 1000  // Valor inicial al registrarse
+  },
   createdAt: {
     type: Date,
     default: Date.now

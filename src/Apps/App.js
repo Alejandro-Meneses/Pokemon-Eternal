@@ -43,7 +43,7 @@ export default function App() {
     setIsLoading(false);
   }, []);
 
-  useEffect(() => {
+ /* useEffect(() => {
     const checkDevice = () => {
       setIsMobile(window.innerWidth <= 768);
       setIsLandscape(window.innerWidth > window.innerHeight);
@@ -62,7 +62,7 @@ export default function App() {
       window.removeEventListener("orientationchange", checkDevice);
     };
   }, []);
-
+*/
   const handleLogin = () => {
     setIsLoggedIn(true);
   };

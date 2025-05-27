@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import '../Styles/Gacha.css';
+import axios from 'axios';
 
 const Gacha = () => {
   const [loaded, setLoaded] = useState(false);
@@ -9,7 +10,74 @@ const Gacha = () => {
   const [selectedPokemon, setSelectedPokemon] = useState(null);
   const [imageLoading, setImageLoading] = useState(true);
   const containerRef = useRef(null);
-  /*const [error, setError] = useState(null);*/
+  
+  // Estado para los Pokedólares
+  const [pokedollars, setPokedollars] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  
+  // Costo de usar el Gacha
+  const GACHA_COST = 250;
+
+  // Efecto optimizado para cargar los Pokedólares
+  useEffect(() => {
+    const fetchPokedollars = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        
+        const response = await axios.get('/api/wallet', {
+          headers: {
+            'x-auth-token': token
+          }
+        });
+        
+        setPokedollars(response.data.pokedollars);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error al obtener el saldo:", error);
+        setIsLoading(false);
+        showError("No se pudo cargar tu saldo. Inténtalo de nuevo.");
+      }
+    };
+    
+    fetchPokedollars();
+  }, []);
+
+  // Función optimizada para gastar Pokedólares
+  const spendPokedollars = async (amount) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await axios.put('/api/wallet/spend', 
+        { amount, reason: 'gacha_pull' },
+        { headers: { 'x-auth-token': token } }
+      );
+      
+      setPokedollars(response.data.pokedollars);
+      return true;
+    } catch (error) {
+      console.error("Error al gastar Pokedólares:", error);
+      
+      if (error.response && error.response.data.msg) {
+        showError(error.response.data.msg);
+      } else {
+        showError("No se pudo realizar la operación. Inténtalo de nuevo.");
+      }
+      
+      return false;
+    }
+  };
+
+  // Función para mostrar mensajes de error
+  const showError = (message) => {
+    setErrorMessage(message);
+    setShowErrorToast(true);
+    
+    setTimeout(() => {
+      setShowErrorToast(false);
+    }, 3000);
+  };
 
   // Generar posiciones aleatorias para las estrellas
   const generateRandomPositions = useCallback(() => {
@@ -21,7 +89,6 @@ const Gacha = () => {
       const gridY = Math.floor(i / 3);  // 0, 0, 0, 1, 1, 1, 2, 2, 2
       
       // Calcular posición dentro de su sección con algo de aleatoriedad
-      // Cada sección cubre aproximadamente 33% de la pantalla
       const top = `${gridY * 25 + 10 + Math.random() * 20}%`;
       const left = `${gridX * 25 + 10 + Math.random() * 20}%`;
       
@@ -65,7 +132,7 @@ const Gacha = () => {
     );
   };
 
-  // CORRECCIÓN: Función para determinar la rareza basada en stats totales
+  // Función para determinar la rareza basada en stats totales
   const determineRarity = (stats) => {
     // Usar directamente el total calculado previamente
     const totalStats = stats.total;
@@ -77,7 +144,7 @@ const Gacha = () => {
     return "Común";
   };
 
-  // Memoizar la función createConstellationLines para evitar el warning de dependencias
+  // Memoizar la función createConstellationLines
   const createConstellationLines = useCallback(() => {
     if (!containerRef.current) return;
     
@@ -166,7 +233,7 @@ const Gacha = () => {
     }
   }, []);
 
-  // Efecto para animación de entrada - ahora con dependencias correctas
+  // Efecto para animación de entrada
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoaded(true);
@@ -218,7 +285,6 @@ const Gacha = () => {
       return pokemon;
     } catch (err) {
       console.error("Error fetching Pokemon:", err);
-      setError(err.message);
       return null;
     }
   };
@@ -227,6 +293,18 @@ const Gacha = () => {
   const handleStarClick = async (index) => {
     // Ya está seleccionada, no hacemos nada
     if (activeStarIndex === index) return;
+    
+    // Verificar si el usuario tiene suficientes Pokedólares
+    if (pokedollars < GACHA_COST) {
+      showError(`No tienes suficientes Pokedólares. Necesitas ${GACHA_COST} para obtener un Pokémon.`);
+      return;
+    }
+    
+    // Intentar gastar los Pokedólares
+    const success = await spendPokedollars(GACHA_COST);
+    if (!success) {
+      return; // La función spendPokedollars ya muestra el mensaje de error
+    }
     
     // Seleccionamos esta estrella
     setActiveStarIndex(index);
@@ -244,7 +322,7 @@ const Gacha = () => {
       const randomPokemon = await fetchRandomPokemon();
       
       if (randomPokemon) {
-        // CORRECCIÓN: Reiniciar el estado de carga de imagen
+        // Reiniciar el estado de carga de imagen
         setImageLoading(true);
         
         // Guardamos el Pokémon
@@ -269,7 +347,6 @@ const Gacha = () => {
     // Verificar que selectedPokemon existe y que el contenedor está disponible
     if (!selectedPokemon || !containerRef.current) return;
     
-    // CAMBIO IMPORTANTE: Usar el contenedor del componente como contexto
     const particlesContainer = containerRef.current.querySelector('.particles');
     if (!particlesContainer) return;
     
@@ -368,9 +445,10 @@ const Gacha = () => {
       {starPositions.map((position, index) => (
         <div
           key={index}
-          className={`dream-ball ${activeStarIndex === index ? 'active' : ''}`}
+          className={`dream-ball ${activeStarIndex === index ? 'active' : ''} ${pokedollars < GACHA_COST ? 'disabled' : ''}`}
           style={{ top: position.top, left: position.left }}
           onClick={() => handleStarClick(index)}
+          title={pokedollars < GACHA_COST ? `Necesitas ${GACHA_COST} Pokedólares` : `Obtener Pokémon (${GACHA_COST} Pokedólares)`}
         ></div>
       ))}
       
@@ -388,7 +466,7 @@ const Gacha = () => {
               alt={selectedPokemon.name}
               className="pokemon-image"
               style={{display: imageLoading ? 'none' : 'block'}}
-              onLoad={() => setImageLoading(false)} // CORRECCIÓN: Añadir onLoad
+              onLoad={() => setImageLoading(false)}
               onError={(e) => {
                 e.target.onerror = null;
                 // Intenta con un respaldo alternativo
@@ -397,7 +475,7 @@ const Gacha = () => {
                 } else {
                   e.target.src = "../images/pokeball.svg"; // Imagen de respaldo final
                 }
-                setImageLoading(false); // CORRECCIÓN: Marcar que la carga ha terminado
+                setImageLoading(false);
                 console.log("Error cargando imagen de Pokémon:", selectedPokemon.name);
               }}
             />
@@ -449,6 +527,22 @@ const Gacha = () => {
         className={`dark-overlay ${showPopup ? 'active' : ''}`}
         onClick={closePopup}
       ></div>
+      
+      {/* Mostrar Pokedólares */}
+      <div className="pokedollar-display">
+        <div className="pokedollar-icon">💰</div>
+        <div className="pokedollar-amount">
+          {isLoading ? "Cargando..." : `${pokedollars} P`}
+        </div>
+        <div className="gacha-cost">Costo: {GACHA_COST} P</div>
+      </div>
+      
+      {/* Toast de error */}
+      {showErrorToast && (
+        <div className="error-toast">
+          <div className="error-message">{errorMessage}</div>
+        </div>
+      )}
       
       {/* Interfaz de usuario */}
       <div className="constellation-ui">
