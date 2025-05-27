@@ -1,146 +1,68 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('./auth');
-const Wallet = require('../wallet/Wallet');
+const auth = require('../middleware/auth');
+const User = require('../models/User');
 
 // @route   GET api/wallet
-// @desc    Get user wallet information
+// @desc    Obtener el balance de pokedollars del usuario
 // @access  Private
 router.get('/', auth, async (req, res) => {
   try {
-    // Verificar si el usuario tiene una wallet
-    let wallet = await Wallet.findOne({ user: req.user.id });
-
-    // Si no existe una wallet para este usuario, crearla
-    if (!wallet) {
-      wallet = new Wallet({
-        user: req.user.id,
-        pokedollars: 1000,
-        transactions: [
-          {
-            amount: 1000,
-            type: 'credit',
-            reason: 'initial_balance'
-          }
-        ]
-      });
-
-      await wallet.save();
-    }
-
-    res.json({
-      pokedollars: wallet.pokedollars,
-      transactions: wallet.transactions.slice(0, 10)
-    });
+    const user = await User.findById(req.user.id).select('pokedollars');
+    res.json({ pokedollars: user.pokedollars });
   } catch (err) {
-    console.error('Error en GET api/wallet:', err.message);
+    console.error(err.message);
     res.status(500).send('Error del servidor');
   }
 });
 
 // @route   PUT api/wallet/spend
-// @desc    Spend pokedollars
+// @desc    Gastar pokedollars
 // @access  Private
 router.put('/spend', auth, async (req, res) => {
   try {
     const { amount, reason } = req.body;
     
     if (!amount || amount <= 0) {
-      return res.status(400).json({ msg: 'La cantidad debe ser mayor que cero' });
+      return res.status(400).json({ msg: 'La cantidad debe ser un número positivo' });
     }
-
-    // Obtener la wallet del usuario
-    let wallet = await Wallet.findOne({ user: req.user.id });
     
-    // Si no existe wallet, crearla primero
-    if (!wallet) {
-      wallet = new Wallet({
-        user: req.user.id,
-        pokedollars: 1000,
-        transactions: [
-          {
-            amount: 1000,
-            type: 'credit',
-            reason: 'initial_balance'
-          }
-        ]
-      });
-    }
-
-    // Verificar si tiene suficientes fondos
-    if (wallet.pokedollars < amount) {
-      return res.status(400).json({ msg: 'No tienes suficientes Pokedólares' });
-    }
-
-    // Actualizar el saldo
-    wallet.pokedollars -= amount;
-    wallet.lastUpdated = Date.now();
+    const user = await User.findById(req.user.id);
     
-    // Registrar la transacción
-    wallet.transactions.unshift({
-      amount,
-      type: 'debit',
-      reason: reason || 'purchase',
-      date: Date.now()
-    });
-
-    // Guardar los cambios
-    await wallet.save();
-
-    res.json({
-      pokedollars: wallet.pokedollars,
-      transaction: wallet.transactions[0]
-    });
+    // Verificar si tiene suficiente saldo
+    if (user.pokedollars < amount) {
+      return res.status(400).json({ msg: 'Saldo insuficiente' });
+    }
+    
+    // Descontar el monto
+    user.pokedollars -= amount;
+    await user.save();
+    
+    res.json({ pokedollars: user.pokedollars });
   } catch (err) {
-    console.error('Error en PUT api/wallet/spend:', err.message);
+    console.error(err.message);
     res.status(500).send('Error del servidor');
   }
 });
 
 // @route   PUT api/wallet/add
-// @desc    Add pokedollars to wallet
+// @desc    Añadir pokedollars
 // @access  Private
 router.put('/add', auth, async (req, res) => {
   try {
     const { amount, reason } = req.body;
     
     if (!amount || amount <= 0) {
-      return res.status(400).json({ msg: 'La cantidad debe ser mayor que cero' });
+      return res.status(400).json({ msg: 'La cantidad debe ser un número positivo' });
     }
-
-    // Obtener la wallet del usuario
-    let wallet = await Wallet.findOne({ user: req.user.id });
     
-    // Si no existe wallet, crearla primero
-    if (!wallet) {
-      wallet = new Wallet({
-        user: req.user.id,
-        pokedollars: 0,
-        transactions: []
-      });
-    }
-
-    // Actualizar el saldo
-    wallet.pokedollars += amount;
-    wallet.lastUpdated = Date.now();
+    const user = await User.findById(req.user.id);
+    user.pokedollars += amount;
+    await user.save();
     
-    // Registrar la transacción
-    wallet.transactions.unshift({
-      amount,
-      type: 'credit',
-      reason: reason || 'deposit',
-      date: Date.now()
-    });
-
-    // Guardar los cambios
-    await wallet.save();
-
-    res.json({
-      pokedollars: wallet.pokedollars,
-      transaction: wallet.transactions[0]
-    });
+    res.json({ pokedollars: user.pokedollars });
   } catch (err) {
-    console.error('Error en PUT api/wallet/add:', err.message);
+    console.error(err.message);
     res.status(500).send('Error del servidor');
   }
 });

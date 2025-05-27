@@ -5,7 +5,7 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 const authRoutes = require("./routes/auth");
-const walletRoutes = require('./routes/walletroutes');
+const walletRoutes = require('./routes/walletRoutes');
 const app = express();
 
 // 1. Middleware de logs - siempre primero
