@@ -1,9 +1,9 @@
 // Usar una URL relativa para que funcione tanto en desarrollo local como en Vercel
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/wallet';
+const API_URL_WALLET = process.env.REACT_APP_API_URL_WALLET || 'http://localhost:5000/api/wallet';
 
 export const getBalance = async (token) => {
   try {
-    const response = await fetch(`${API_URL}`, {
+    const response = await fetch(`${API_URL_WALLET}`, {
       method: "GET",
       headers: { 
         "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export const getBalance = async (token) => {
 
 export const spendPokedollars = async (amount, reason, token) => {
   try {
-    const response = await fetch(`${API_URL}/spend`, {
+    const response = await fetch(`${API_URL_WALLET}/spend`, {
       method: "PUT",
       headers: { 
         "Content-Type": "application/json",
@@ -70,7 +70,7 @@ export const spendPokedollars = async (amount, reason, token) => {
 
 export const addPokedollars = async (amount, reason, token) => {
   try {
-    const response = await fetch(`${API_URL}/add`, {
+    const response = await fetch(`${API_URL_WALLET}/add`, {
       method: "PUT",
       headers: { 
         "Content-Type": "application/json",
