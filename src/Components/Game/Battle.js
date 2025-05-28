@@ -53,10 +53,6 @@ const Battle = () => {
                 console.log("Estructura del jugador:", playerInstance);
                 console.log("Estructura del rival:", rivalInstance);
 
-                // Establecer nivel 50 para ambos Pokémon
-                playerInstance.level = 50;
-                rivalInstance.level = 50;
-
                 // Asegurarse de que tienen stats
                 if (!playerInstance.stats) {
                     playerInstance.stats = {
@@ -416,7 +412,7 @@ const Battle = () => {
             {/* Pokémon rival */}
             <div className="rival-section">
                 <div className="rival-info">
-                    <p className="pokemon-name">Lv. {rivalPokemon.level || 50} {rivalPokemon.name}</p>
+                    <p className="pokemon-name">{rivalPokemon.name}</p>
                     <div className="rival-hp-bar-container">
                         <div className="hp-bar-background">
                             <div
@@ -460,7 +456,7 @@ const Battle = () => {
                     }}
                 />
                 <div className="player-info">
-                    <p className="pokemon-name">{playerPokemon.name} Lv. {playerPokemon.level || 50}</p>
+                    <p className="pokemon-name">{playerPokemon.name}</p>
                     <div className="player-hp-bar-container">
                         <PokeballIcon className="hp-icon" />
                         <div className="hp-bar-background">

@@ -203,7 +203,31 @@
 /* ====================================================
    POPUP DE POKEMON - REDUCIDO 30% ADICIONAL
    ==================================================== */
-.constellation-container .pokemon-image-loading {
+.shiny-indicator {
+display: inline-block;
+ margin-left: 8px;
+  color: gold;
+  animation: shine 1.5s infinite alternate;
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+}
+@keyframes shine {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2) rotate(5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.8;
+  }
+}
+.pokemon-image-container.shiny .particles .particle {
+  box-shadow: 0 0 10px gold;
+}
+   .constellation-container .pokemon-image-loading {
   width: 95px; /* Reducido de 120px */
   height: 95px; /* Reducido de 120px */
   border-radius: 50%;

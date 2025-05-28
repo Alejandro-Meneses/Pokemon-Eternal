@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../../Styles/Login.css";
-import { login } from "../../utils/authService"; // Corregido: importar login, no register
+import { login } from "../../Services/AuthService"; // Corregido: importar login, no register
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
