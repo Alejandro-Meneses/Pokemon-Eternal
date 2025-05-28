@@ -6,6 +6,7 @@ const path = require("path");
 const fs = require("fs");
 const authRoutes = require("./routes/auth");
 const walletRoutes = require('./routes/walletroutes');
+const pokemonRoutes = require('./routes/PokemonRoutes');
 const app = express();
 
 // 1. Middleware de logs - siempre primero
@@ -55,6 +56,9 @@ app.use("/api/auth", authRoutes);
 
 // Rutas de la billetera
 app.use('/api/wallet', walletRoutes);
+
+// Rutas de Pokémon
+app.use('/api/pokemon', pokemonRoutes);
 
 // 6. Rutas de prueba API
 app.get("/api/test", (req, res) => {
