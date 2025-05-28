@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import '../Styles/Gacha.css';
-import axios from 'axios';
+import { getBalance, spendPokedollars } from '../utils/walletService';
 
 const Gacha = () => {
   const [loaded, setLoaded] = useState(false);
@@ -26,13 +26,14 @@ const Gacha = () => {
       try {
         const token = localStorage.getItem('token');
         
-        const response = await axios.get('/api/wallet', {
-          headers: {
-            'x-auth-token': token
-          }
-        });
+        // Usar el servicio wallet en lugar de axios
+        const result = await getBalance(token);
         
-        setPokedollars(response.data.pokedollars);
+        if (result.error) {
+          showError("No se pudo cargar tu saldo. Inténtalo de nuevo.");
+        } else {
+          setPokedollars(result.pokedollars);
+        }
         setIsLoading(false);
       } catch (error) {
         console.error("Error al obtener el saldo:", error);
@@ -44,27 +45,24 @@ const Gacha = () => {
     fetchPokedollars();
   }, []);
 
-  // Función optimizada para gastar Pokedólares
-  const spendPokedollars = async (amount) => {
+  // Función optimizada para gastar Pokedólares usando el servicio wallet
+  const handleSpendPokedollars = async (amount) => {
     try {
       const token = localStorage.getItem('token');
       
-      const response = await axios.put('/api/wallet/spend', 
-        { amount, reason: 'gacha_pull' },
-        { headers: { 'x-auth-token': token } }
-      );
+      // Usar el servicio wallet en lugar de axios
+      const result = await spendPokedollars(amount, 'gacha_pull', token);
       
-      setPokedollars(response.data.pokedollars);
+      if (result.error) {
+        showError(result.error);
+        return false;
+      }
+      
+      setPokedollars(result.pokedollars);
       return true;
     } catch (error) {
       console.error("Error al gastar Pokedólares:", error);
-      
-      if (error.response && error.response.data.msg) {
-        showError(error.response.data.msg);
-      } else {
-        showError("No se pudo realizar la operación. Inténtalo de nuevo.");
-      }
-      
+      showError("No se pudo realizar la operación. Inténtalo de nuevo.");
       return false;
     }
   };
@@ -300,10 +298,10 @@ const Gacha = () => {
       return;
     }
     
-    // Intentar gastar los Pokedólares
-    const success = await spendPokedollars(GACHA_COST);
+    // Intentar gastar los Pokedólares usando la nueva función
+    const success = await handleSpendPokedollars(GACHA_COST);
     if (!success) {
-      return; // La función spendPokedollars ya muestra el mensaje de error
+      return; // La función handleSpendPokedollars ya muestra el mensaje de error
     }
     
     // Seleccionamos esta estrella

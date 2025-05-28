@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../../Styles/Battle.css";
 import Pokemon from "../../backend/models/Pokemon";
-import Move from "../../backend/models/Move";
 import BattleEngine from "../../backend/battle/Battleengine";
 import { ReactComponent as PokeballIcon } from "../../images/Pokeball.svg";
 import { useNavigate } from "react-router-dom";
@@ -106,133 +105,12 @@ const Battle = () => {
                     max: rivalInstance.stats.hp,
                     percentage: 100
                 });
+                // Simplemente usar los movimientos ya cargados
+                setMoves(playerInstance.moves);
+                console.log("Movimientos del jugador ya cargados:", playerInstance.moves);
 
-                // Buscar movimientos
-                const playerMoves = playerInstance.moves || playerInstance.moveList || [];
-                console.log("Movimientos del jugador encontrados:", playerMoves);
-
-                if (playerMoves.length > 0) {
-                    try {
-                        // Tomar los primeros 4 movimientos (o todos si hay menos de 4)
-                        const moveCount = Math.min(4, playerMoves.length);
-                        const movePromises = [];
-
-                        for (let i = 0; i < moveCount; i++) {
-                            const moveData = playerMoves[i];
-                            // Verificar la estructura del objeto de movimiento
-                            const moveUrl = moveData.move ? moveData.move.url : moveData.url;
-
-                            if (!moveUrl) {
-                                console.error("Estructura de movimiento no reconocida:", moveData);
-                                continue;
-                            }
-
-                            console.log(`Cargando movimiento del jugador desde: ${moveUrl}`);
-
-                            movePromises.push(
-                                fetch(moveUrl)
-                                    .then(response => response.json())
-                                    .then(data => new Move(data))
-                            );
-                        }
-
-                        const movesData = await Promise.all(movePromises);
-                        setMoves(movesData);
-                        playerInstance.moves = movesData;
-
-                        console.log("Movimientos del jugador cargados:", movesData);
-                    } catch (error) {
-                        console.error("Error al cargar movimientos del jugador:", error);
-                        // Usar Tackle como fallback si falla la carga
-                        const tackleMove = new Move({
-                            id: 33,
-                            name: "Tackle",
-                            type: { name: "normal" },
-                            power: 40,
-                            accuracy: 100,
-                            pp: 35,
-                            damage_class: { name: "physical" }
-                        });
-                        setMoves([tackleMove]);
-                        playerInstance.moves = [tackleMove];
-                    }
-                } else {
-                    console.warn("El jugador no tiene movimientos en la API");
-                    // Usar Tackle como movimiento predeterminado
-                    const tackleMove = new Move({
-                        id: 33,
-                        name: "Tackle",
-                        type: { name: "normal" },
-                        power: 40,
-                        accuracy: 100,
-                        pp: 35,
-                        damage_class: { name: "physical" }
-                    });
-                    setMoves([tackleMove]);
-                    playerInstance.moves = [tackleMove];
-                }
-
-                // Similar para el rival
-                const rivalMoves = rivalInstance.moves || rivalInstance.moveList || [];
-                console.log("Movimientos del rival encontrados:", rivalMoves);
-
-                if (rivalMoves.length > 0) {
-                    try {
-                        // Tomar los primeros 4 movimientos (o todos si hay menos de 4)
-                        const moveCount = Math.min(4, rivalMoves.length);
-                        const movePromises = [];
-
-                        for (let i = 0; i < moveCount; i++) {
-                            const moveData = rivalMoves[i];
-                            // Verificar la estructura del objeto de movimiento
-                            const moveUrl = moveData.move ? moveData.move.url : moveData.url;
-
-                            if (!moveUrl) {
-                                console.error("Estructura de movimiento rival no reconocida:", moveData);
-                                continue;
-                            }
-
-                            console.log(`Cargando movimiento del rival desde: ${moveUrl}`);
-
-                            movePromises.push(
-                                fetch(moveUrl)
-                                    .then(response => response.json())
-                                    .then(data => new Move(data))
-                            );
-                        }
-
-                        const movesData = await Promise.all(movePromises);
-                        rivalInstance.moves = movesData;
-
-                        console.log("Movimientos del rival cargados:", movesData);
-                    } catch (error) {
-                        console.error("Error al cargar movimientos del rival:", error);
-                        // Usar Tackle como fallback si falla la carga
-                        const tackleMove = new Move({
-                            id: 33,
-                            name: "Tackle",
-                            type: { name: "normal" },
-                            power: 40,
-                            accuracy: 100,
-                            pp: 35,
-                            damage_class: { name: "physical" }
-                        });
-                        rivalInstance.moves = [tackleMove];
-                    }
-                } else {
-                    console.warn("El rival no tiene movimientos en la API");
-                    // Usar Tackle como movimiento predeterminado
-                    const tackleMove = new Move({
-                        id: 33,
-                        name: "Tackle",
-                        type: { name: "normal" },
-                        power: 40,
-                        accuracy: 100,
-                        pp: 35,
-                        damage_class: { name: "physical" }
-                    });
-                    rivalInstance.moves = [tackleMove];
-                }
+                // No necesitas cargar los movimientos del rival, ya vienen en rivalInstance.moves
+                console.log("Movimientos del rival ya cargados:", rivalInstance.moves);
 
                 setPlayerPokemon(playerInstance);
                 setRivalPokemon(rivalInstance);
@@ -349,95 +227,147 @@ const Battle = () => {
         setIsAnimating(false);
     };
 
+    
     const handleUseMove = async (move) => {
-        if (!battleEngine || isAnimating || battleOver) return;
+    if (!battleEngine || isAnimating || battleOver) return;
 
+    try {
         setIsAnimating(true);
         setShowMoves(false);
+        
+        // Paso 1: Mostrar mensaje de ataque inicial
         setBattleMessage(`${playerPokemon.name} usa ${move.name}...`);
-
-        // Pequeña pausa para la animación
         await new Promise(resolve => setTimeout(resolve, 800));
-
+        
+        // Paso 2: Ejecutar el turno en el motor de batalla
         const result = battleEngine.executeTurn(move);
-
-        if (result.success) {
-            // Orden de los ataques basado en velocidad
-            if (result.firstAttacker === "player") {
-                // Jugador ataca primero
-                if (result.playerAttackResult) {
-                    setBattleLog(prev => [...prev, result.playerAttackResult.message]);
-                    setRivalHP({
-                        current: result.battleState.rivalHP.current,
-                        max: result.battleState.rivalHP.max,
-                        percentage: result.battleState.rivalHP.percentage
-                    });
-
-                    // Pequeña pausa antes del ataque del rival
-                    await new Promise(resolve => setTimeout(resolve, 1500));
-
-                    // Si la batalla no ha terminado, el rival ataca
-                    if (!result.battleState.isFinished && result.rivalAttackResult) {
-                        setBattleMessage(`${rivalPokemon.name} usa ${result.rivalAttackResult.move}...`);
-                        await new Promise(resolve => setTimeout(resolve, 800));
-
-                        setBattleLog(prev => [...prev, result.rivalAttackResult.message]);
-                        setPlayerHP({
-                            current: result.battleState.playerHP.current,
-                            max: result.battleState.playerHP.max,
-                            percentage: result.battleState.playerHP.percentage
-                        });
-                    }
-                }
-            } else {
-                // Rival ataca primero
-                if (result.rivalAttackResult) {
-                    setBattleMessage(`${rivalPokemon.name} usa ${result.rivalAttackResult.move}...`);
-                    await new Promise(resolve => setTimeout(resolve, 800));
-
-                    setBattleLog(prev => [...prev, result.rivalAttackResult.message]);
-                    setPlayerHP({
-                        current: result.battleState.playerHP.current,
-                        max: result.battleState.playerHP.max,
-                        percentage: result.battleState.playerHP.percentage
-                    });
-
-                    // Si la batalla no ha terminado, el jugador ataca
-                    if (!result.battleState.isFinished && result.playerAttackResult) {
-                        // Pequeña pausa antes del ataque del jugador
-                        await new Promise(resolve => setTimeout(resolve, 1500));
-
-                        setBattleMessage(`${playerPokemon.name} usa ${move.name}...`);
-                        await new Promise(resolve => setTimeout(resolve, 800));
-
-                        setBattleLog(prev => [...prev, result.playerAttackResult.message]);
-                        setRivalHP({
-                            current: result.battleState.rivalHP.current,
-                            max: result.battleState.rivalHP.max,
-                            percentage: result.battleState.rivalHP.percentage
-                        });
-                    }
+        if (!result.success) {
+            setBattleLog(prev => [...prev, "Error al ejecutar el movimiento: " + result.message]);
+            setIsAnimating(false);
+            return;
+        }
+        
+        // Paso 3: Manejar el orden de ataques con esperas adecuadas
+        if (result.firstAttacker === "player") {
+            // JUGADOR ATACA PRIMERO
+            
+            // 3.1 Mostrar resultado del ataque del jugador
+            if (result.playerAttackResult) {
+                setBattleLog(prev => [...prev, result.playerAttackResult.message]);
+                
+                // Actualizar HP del rival con animación
+                const newRivalHP = {
+                    current: result.battleState.rivalHP.current,
+                    max: result.battleState.rivalHP.max, 
+                    percentage: result.battleState.rivalHP.percentage
+                };
+                setRivalHP(newRivalHP);
+                
+                // Esperar para que se vea la animación de daño
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Verificar si el rival fue derrotado
+                if (result.battleState.isFinished && result.battleState.winner === "player") {
+                    setBattleOver(true);
+                    setBattleMessage(`¡Has ganado el combate! Volviendo al mapa...`);
+                    setIsAnimating(false);
+                    return;
                 }
             }
-
-            // Verificar si la batalla ha terminado
-            if (result.battleState.isFinished) {
-                setBattleOver(true);
-                if (result.battleState.winner === "player") {
-                    setBattleMessage(`Has ganado el combate! Volviendo al mapa...`);
-                } else {
-                    setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`);
-                }
-
-            } else {
-                setBattleMessage("¿Qué debería hacer " + playerPokemon.name + "?");
+            
+            // 3.2 Rival ataca (si no ha sido derrotado)
+            if (!result.battleState.isFinished && result.rivalAttackResult) {
+                // Mostrar mensaje de ataque del rival
+                setBattleMessage(`${rivalPokemon.name} usa ${result.rivalAttackResult.move}...`);
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // Mostrar resultado del ataque
+                setBattleLog(prev => [...prev, result.rivalAttackResult.message]);
+                
+                // Actualizar HP del jugador con animación
+                const newPlayerHP = {
+                    current: result.battleState.playerHP.current,
+                    max: result.battleState.playerHP.max,
+                    percentage: result.battleState.playerHP.percentage
+                };
+                setPlayerHP(newPlayerHP);
+                
+                // Esperar para que se vea la animación de daño
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
         } else {
-            setBattleLog(prev => [...prev, "Error al ejecutar el movimiento: " + result.message]);
+            // RIVAL ATACA PRIMERO
+            
+            // 3.3 Mostrar ataque del rival
+            if (result.rivalAttackResult) {
+                setBattleMessage(`${rivalPokemon.name} usa ${result.rivalAttackResult.move}...`);
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // Mostrar resultado del ataque
+                setBattleLog(prev => [...prev, result.rivalAttackResult.message]);
+                
+                // Actualizar HP del jugador con animación
+                const newPlayerHP = {
+                    current: result.battleState.playerHP.current,
+                    max: result.battleState.playerHP.max,
+                    percentage: result.battleState.playerHP.percentage
+                };
+                setPlayerHP(newPlayerHP);
+                
+                // Esperar para que se vea la animación de daño
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Verificar si el jugador fue derrotado
+                if (result.battleState.isFinished && result.battleState.winner === "rival") {
+                    setBattleOver(true);
+                    setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`);
+                    setIsAnimating(false);
+                    return;
+                }
+            }
+            
+            // 3.4 Jugador ataca (si no ha sido derrotado)
+            if (!result.battleState.isFinished && result.playerAttackResult) {
+                // Mostrar ataque del jugador
+                setBattleMessage(`${playerPokemon.name} usa ${move.name}...`);
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // Mostrar resultado
+                setBattleLog(prev => [...prev, result.playerAttackResult.message]);
+                
+                // Actualizar HP del rival con animación
+                const newRivalHP = {
+                    current: result.battleState.rivalHP.current,
+                    max: result.battleState.rivalHP.max,
+                    percentage: result.battleState.rivalHP.percentage
+                };
+                setRivalHP(newRivalHP);
+                
+                // Esperar para que se vea la animación de daño
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
         }
-
+        
+        // Paso 4: Verificar estado final de la batalla
+        if (result.battleState.isFinished) {
+            setBattleOver(true);
+            if (result.battleState.winner === "player") {
+                setBattleMessage(`¡Has ganado el combate! Volviendo al mapa...`);
+            } else {
+                setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`);
+            }
+        } else {
+            // Continuar la batalla
+            setBattleMessage(`¿Qué debería hacer ${playerPokemon.name}?`);
+        }
+        
+    } catch (error) {
+        console.error("Error en handleUseMove:", error);
+        setBattleLog(prev => [...prev, "¡Ha ocurrido un error durante el combate!"]);
+    } finally {
         setIsAnimating(false);
-    };
+    }
+};
 
     if (!playerPokemon || !rivalPokemon || !battleEngine) {
         return <div className="battle-container text-center">Cargando combate...</div>;
@@ -605,8 +535,12 @@ const Battle = () => {
                                 <button
                                     className={`btn btn-move btn-${move.type} w-100 battle-btn`}
                                     onClick={() => handleUseMove(move)}
-                                    onMouseEnter={(e) => showTooltip(move.getTooltipDescription(), e)}
-                                    onMouseLeave={hideTooltip}
+                                    onMouseEnter={(e) => {
+                                        const tooltip = move.getTooltipDescription ?
+                                            move.getTooltipDescription() :
+                                            `${move.name}\nPoder: ${move.power || '?'}\nTipo: ${move.type || '?'}\nClase: ${move.damageClass || '?'}`;
+                                        showTooltip(tooltip, e);
+                                    }} onMouseLeave={hideTooltip}
                                     disabled={isAnimating || battleOver}
                                     aria-label={`Usar ${move.name}`}
                                 >

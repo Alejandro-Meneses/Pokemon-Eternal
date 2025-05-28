@@ -59,8 +59,7 @@ router.post("/login", async (req, res) => {
     }
 
     // Aumentar duración del token para mejor experiencia de usuario
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "24h" });
-
+const token = jwt.sign({ user: { id: user.id } }, process.env.JWT_SECRET, { expiresIn: '1d' });
     console.log(`[LOGIN] Login exitoso: ${email}`);
     res.status(200).json({
       token,
