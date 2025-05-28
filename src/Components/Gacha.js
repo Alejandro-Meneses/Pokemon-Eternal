@@ -252,8 +252,8 @@ const Gacha = () => {
   // Función para obtener un Pokémon aleatorio
   const fetchRandomPokemon = async (pokemonIsShiny = false) => {
     try {
-      const pokemonIds =[580,162,511,835,940,447,448];
-    const randomId = pokemonIds[Math.floor(Math.random() * pokemonIds.length)];
+      //const pokemonIds =[580,162,511,835,940,447,448];
+      const randomId = Math.floor(Math.random() * 1025) + 1;
       const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}`);
       const data = await response.json();
 
