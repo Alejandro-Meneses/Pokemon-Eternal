@@ -4,6 +4,7 @@ import Pokemon from "../../backend/models/Pokemon";
 import BattleEngine from "../../backend/battle/Battleengine";
 import { ReactComponent as PokeballIcon } from "../../images/Pokeball.svg";
 import { useNavigate } from "react-router-dom";
+import { getTeam } from "../../Services/PokemonService"; // Importar getTeam
 
 const Battle = () => {
     const navigate = useNavigate();
@@ -41,90 +42,74 @@ const Battle = () => {
     };
 
     useEffect(() => {
-        const fetchBattlePokemons = async () => {
-            try {
-                const playerId = Math.floor(Math.random() * 1025) + 1;
-                const rivalId = Math.floor(Math.random() * 1025) + 1;
-
-                let playerInstance = await Pokemon.fetchPokemon(playerId);
-                let rivalInstance = await Pokemon.fetchPokemon(rivalId);
-
-                // Imprimir datos de depuración
-                console.log("Estructura del jugador:", playerInstance);
-                console.log("Estructura del rival:", rivalInstance);
-
-                // Asegurarse de que tienen stats
-                if (!playerInstance.stats) {
-                    playerInstance.stats = {
-                        hp: 150,
-                        attack: 100,
-                        defense: 100,
-                        'special-attack': 100,
-                        'special-defense': 100,
-                        speed: 100
-                    };
-                }
-
-                if (!rivalInstance.stats) {
-                    rivalInstance.stats = {
-                        hp: 150,
-                        attack: 100,
-                        defense: 100,
-                        'special-attack': 100,
-                        'special-defense': 100,
-                        speed: 100
-                    };
-                }
-
-                // Verificar que los tipos estén definidos
-                if (!playerInstance.types || playerInstance.types.length === 0) {
-                    playerInstance.types = ['normal'];
-                }
-
-                if (!rivalInstance.types || rivalInstance.types.length === 0) {
-                    rivalInstance.types = ['normal'];
-                }
-
-                // Inicializar HP actual
-                playerInstance.currentHP = playerInstance.stats.hp;
-                rivalInstance.currentHP = rivalInstance.stats.hp;
-
-                // Inicializar valores de HP para la UI
-                setPlayerHP({
-                    current: playerInstance.stats.hp,
-                    max: playerInstance.stats.hp,
-                    percentage: 100
-                });
-
-                setRivalHP({
-                    current: rivalInstance.stats.hp,
-                    max: rivalInstance.stats.hp,
-                    percentage: 100
-                });
-                // Simplemente usar los movimientos ya cargados
-                setMoves(playerInstance.moves);
-                console.log("Movimientos del jugador ya cargados:", playerInstance.moves);
-
-                // No necesitas cargar los movimientos del rival, ya vienen en rivalInstance.moves
-                console.log("Movimientos del rival ya cargados:", rivalInstance.moves);
-
-                setPlayerPokemon(playerInstance);
-                setRivalPokemon(rivalInstance);
-
-                // Inicializar el motor de batalla
-                const engine = new BattleEngine(playerInstance, rivalInstance);
-                setBattleEngine(engine);
-                setBattleLog(["¡Comienza el combate!"]);
-                setBattleMessage("¿Qué debería hacer " + playerInstance.name + "?");
-
-            } catch (error) {
-                console.error("Error al cargar los Pokémon:", error);
-                setBattleMessage("Error al iniciar el combate. Inténtalo de nuevo.");
+           const fetchBattlePokemons = async () => {
+        try {
+            // 1. Obtener el equipo del jugador
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error("No se encontró token de autenticación");
+                setBattleMessage("Error: No estás autenticado. Volviendo al mapa...");
+                setTimeout(() => navigate('/board'), 2000);
+                return;
             }
-        };
 
-        fetchBattlePokemons();
-    }, []);
+            const teamData = await getTeam(token);
+            
+            if (!teamData || teamData.error || !Array.isArray(teamData) || teamData.length === 0) {
+                console.error("Error al obtener el equipo o equipo vacío:", teamData);
+                setBattleMessage("Error: No tienes Pokémon en tu equipo. Volviendo al mapa...");
+                setTimeout(() => navigate('/board'), 2000);
+                return;
+            }
+
+            console.log("Equipo del jugador:", teamData);
+            
+            // 2. Obtener el ID del primer Pokémon del equipo
+            const playerPokemonId = teamData[0].pokemonId;
+            
+            // 3. Cargar los datos completos usando el modelo Pokemon
+            let playerInstance = await Pokemon.fetchPokemon(playerPokemonId);
+            const rivalId = Math.floor(Math.random() * 1025) + 1;
+            let rivalInstance = await Pokemon.fetchPokemon(rivalId);
+
+            console.log("Pokémon del jugador completo:", playerInstance);
+            console.log("Pokémon rival:", rivalInstance);
+
+            // 4. Inicializar HP y UI
+            setPlayerHP({
+                current: playerInstance.stats.hp,
+                max: playerInstance.stats.hp,
+                percentage: 100
+            });
+
+            setRivalHP({
+                current: rivalInstance.stats.hp,
+                max: rivalInstance.stats.hp,
+                percentage: 100
+            });
+            
+            // 5. Configurar movimientos
+            setMoves(playerInstance.moves || []);
+            console.log("Movimientos del jugador:", playerInstance.moves);
+
+            // 6. Establecer los Pokémon y el motor de batalla
+            setPlayerPokemon(playerInstance);
+            setRivalPokemon(rivalInstance);
+
+            // 7. Inicializar el motor de batalla
+            const engine = new BattleEngine(playerInstance, rivalInstance);
+            setBattleEngine(engine);
+            setBattleLog(["¡Comienza el combate!"]);
+            setBattleMessage("¿Qué debería hacer " + playerInstance.name + "?");
+
+        } catch (error) {
+            console.error("Error al cargar los Pokémon:", error);
+            setBattleMessage("Error al iniciar el combate. Inténtalo de nuevo.");
+        }
+    };
+
+    fetchBattlePokemons();
+}, [navigate]);
 
     // Auto-scroll para el log de batalla
     useEffect(() => {
@@ -179,6 +164,7 @@ const Battle = () => {
         setShowMoves(false);
     };
 
+    // Función executeRivalAttack corregida
     const executeRivalAttack = async () => {
         if (!battleEngine || battleOver) return;
 
@@ -189,6 +175,7 @@ const Battle = () => {
         await new Promise(resolve => setTimeout(resolve, 2000));
 
         const result = battleEngine.executeRivalMove();
+        console.log("Resultado del ataque del rival:", result); // Para depuración
 
         if (result.success) {
             setBattleMessage(`${rivalPokemon.name} usa ${result.move}...`);
@@ -197,22 +184,25 @@ const Battle = () => {
             // Actualizar el log de batalla
             setBattleLog(prev => [...prev, result.message]);
 
-            // Actualizar HP del jugador
-            setPlayerHP({
-                current: result.playerHP.current,
-                max: result.playerHP.max,
-                percentage: result.playerHP.percentage
-            });
+            // Actualizar HP del jugador - CORREGIDO
+            // Verificar si result.playerHP existe antes de usarlo
+            if (result.playerHP) {
+                setPlayerHP({
+                    current: result.playerHP.current,
+                    max: result.playerHP.max,
+                    percentage: result.playerHP.percentage
+                });
+            }
 
-            // Verificar si la batalla ha terminado
-            if (result.battleState.isFinished) {
+            // Verificar si la batalla ha terminado - CORREGIDO
+            // Comprobamos directamente las propiedades de result en lugar de battleState
+            if (result.isFinished) {
                 setBattleOver(true);
-                if (result.battleState.winner === "player") {
-                    setBattleMessage(`Has ganado el combate! Volviendo al mapa...`);
+                if (result.winner === "player") {
+                    setBattleMessage(`¡Has ganado el combate! Volviendo al mapa...`);
                 } else {
                     setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`);
                 }
-
             } else {
                 setBattleMessage("¿Qué debería hacer " + playerPokemon.name + "?");
             }
@@ -222,148 +212,147 @@ const Battle = () => {
 
         setIsAnimating(false);
     };
-
     
     const handleUseMove = async (move) => {
-    if (!battleEngine || isAnimating || battleOver) return;
+        if (!battleEngine || isAnimating || battleOver) return;
 
-    try {
-        setIsAnimating(true);
-        setShowMoves(false);
-        
-        // Paso 1: Mostrar mensaje de ataque inicial
-        setBattleMessage(`${playerPokemon.name} usa ${move.name}...`);
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Paso 2: Ejecutar el turno en el motor de batalla
-        const result = battleEngine.executeTurn(move);
-        if (!result.success) {
-            setBattleLog(prev => [...prev, "Error al ejecutar el movimiento: " + result.message]);
-            setIsAnimating(false);
-            return;
-        }
-        
-        // Paso 3: Manejar el orden de ataques con esperas adecuadas
-        if (result.firstAttacker === "player") {
-            // JUGADOR ATACA PRIMERO
+        try {
+            setIsAnimating(true);
+            setShowMoves(false);
             
-            // 3.1 Mostrar resultado del ataque del jugador
-            if (result.playerAttackResult) {
-                setBattleLog(prev => [...prev, result.playerAttackResult.message]);
+            // Paso 1: Mostrar mensaje de ataque inicial
+            setBattleMessage(`${playerPokemon.name} usa ${move.name}...`);
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // Paso 2: Ejecutar el turno en el motor de batalla
+            const result = battleEngine.executeTurn(move);
+            if (!result.success) {
+                setBattleLog(prev => [...prev, "Error al ejecutar el movimiento: " + result.message]);
+                setIsAnimating(false);
+                return;
+            }
+            
+            // Paso 3: Manejar el orden de ataques con esperas adecuadas
+            if (result.firstAttacker === "player") {
+                // JUGADOR ATACA PRIMERO
                 
-                // Actualizar HP del rival con animación
-                const newRivalHP = {
-                    current: result.battleState.rivalHP.current,
-                    max: result.battleState.rivalHP.max, 
-                    percentage: result.battleState.rivalHP.percentage
-                };
-                setRivalHP(newRivalHP);
-                
-                // Esperar para que se vea la animación de daño
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                // Verificar si el rival fue derrotado
-                if (result.battleState.isFinished && result.battleState.winner === "player") {
-                    setBattleOver(true);
-                    setBattleMessage(`¡Has ganado el combate! Volviendo al mapa...`);
-                    setIsAnimating(false);
-                    return;
+                // 3.1 Mostrar resultado del ataque del jugador
+                if (result.playerAttackResult) {
+                    setBattleLog(prev => [...prev, result.playerAttackResult.message]);
+                    
+                    // Actualizar HP del rival con animación
+                    const newRivalHP = {
+                        current: result.battleState.rivalHP.current,
+                        max: result.battleState.rivalHP.max, 
+                        percentage: result.battleState.rivalHP.percentage
+                    };
+                    setRivalHP(newRivalHP);
+                    
+                    // Esperar para que se vea la animación de daño
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    // Verificar si el rival fue derrotado
+                    if (result.battleState.isFinished && result.battleState.winner === "player") {
+                        setBattleOver(true);
+                        setBattleMessage(`¡Has ganado el combate! Volviendo al mapa...`);
+                        setIsAnimating(false);
+                        return;
+                    }
                 }
-            }
-            
-            // 3.2 Rival ataca (si no ha sido derrotado)
-            if (!result.battleState.isFinished && result.rivalAttackResult) {
-                // Mostrar mensaje de ataque del rival
-                setBattleMessage(`${rivalPokemon.name} usa ${result.rivalAttackResult.move}...`);
-                await new Promise(resolve => setTimeout(resolve, 800));
                 
-                // Mostrar resultado del ataque
-                setBattleLog(prev => [...prev, result.rivalAttackResult.message]);
-                
-                // Actualizar HP del jugador con animación
-                const newPlayerHP = {
-                    current: result.battleState.playerHP.current,
-                    max: result.battleState.playerHP.max,
-                    percentage: result.battleState.playerHP.percentage
-                };
-                setPlayerHP(newPlayerHP);
-                
-                // Esperar para que se vea la animación de daño
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-        } else {
-            // RIVAL ATACA PRIMERO
-            
-            // 3.3 Mostrar ataque del rival
-            if (result.rivalAttackResult) {
-                setBattleMessage(`${rivalPokemon.name} usa ${result.rivalAttackResult.move}...`);
-                await new Promise(resolve => setTimeout(resolve, 800));
-                
-                // Mostrar resultado del ataque
-                setBattleLog(prev => [...prev, result.rivalAttackResult.message]);
-                
-                // Actualizar HP del jugador con animación
-                const newPlayerHP = {
-                    current: result.battleState.playerHP.current,
-                    max: result.battleState.playerHP.max,
-                    percentage: result.battleState.playerHP.percentage
-                };
-                setPlayerHP(newPlayerHP);
-                
-                // Esperar para que se vea la animación de daño
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                // Verificar si el jugador fue derrotado
-                if (result.battleState.isFinished && result.battleState.winner === "rival") {
-                    setBattleOver(true);
-                    setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`);
-                    setIsAnimating(false);
-                    return;
+                // 3.2 Rival ataca (si no ha sido derrotado)
+                if (!result.battleState.isFinished && result.rivalAttackResult) {
+                    // Mostrar mensaje de ataque del rival
+                    setBattleMessage(`${rivalPokemon.name} usa ${result.rivalAttackResult.move}...`);
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                    
+                    // Mostrar resultado del ataque
+                    setBattleLog(prev => [...prev, result.rivalAttackResult.message]);
+                    
+                    // Actualizar HP del jugador con animación
+                    const newPlayerHP = {
+                        current: result.battleState.playerHP.current,
+                        max: result.battleState.playerHP.max,
+                        percentage: result.battleState.playerHP.percentage
+                    };
+                    setPlayerHP(newPlayerHP);
+                    
+                    // Esperar para que se vea la animación de daño
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 }
-            }
-            
-            // 3.4 Jugador ataca (si no ha sido derrotado)
-            if (!result.battleState.isFinished && result.playerAttackResult) {
-                // Mostrar ataque del jugador
-                setBattleMessage(`${playerPokemon.name} usa ${move.name}...`);
-                await new Promise(resolve => setTimeout(resolve, 800));
-                
-                // Mostrar resultado
-                setBattleLog(prev => [...prev, result.playerAttackResult.message]);
-                
-                // Actualizar HP del rival con animación
-                const newRivalHP = {
-                    current: result.battleState.rivalHP.current,
-                    max: result.battleState.rivalHP.max,
-                    percentage: result.battleState.rivalHP.percentage
-                };
-                setRivalHP(newRivalHP);
-                
-                // Esperar para que se vea la animación de daño
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-        }
-        
-        // Paso 4: Verificar estado final de la batalla
-        if (result.battleState.isFinished) {
-            setBattleOver(true);
-            if (result.battleState.winner === "player") {
-                setBattleMessage(`¡Has ganado el combate! Volviendo al mapa...`);
             } else {
-                setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`);
+                // RIVAL ATACA PRIMERO
+                
+                // 3.3 Mostrar ataque del rival
+                if (result.rivalAttackResult) {
+                    setBattleMessage(`${rivalPokemon.name} usa ${result.rivalAttackResult.move}...`);
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                    
+                    // Mostrar resultado del ataque
+                    setBattleLog(prev => [...prev, result.rivalAttackResult.message]);
+                    
+                    // Actualizar HP del jugador with animación
+                    const newPlayerHP = {
+                        current: result.battleState.playerHP.current,
+                        max: result.battleState.playerHP.max,
+                        percentage: result.battleState.playerHP.percentage
+                    };
+                    setPlayerHP(newPlayerHP);
+                    
+                    // Esperar para que se vea la animación de daño
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    // Verificar si el jugador fue derrotado
+                    if (result.battleState.isFinished && result.battleState.winner === "rival") {
+                        setBattleOver(true);
+                        setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`);
+                        setIsAnimating(false);
+                        return;
+                    }
+                }
+                
+                // 3.4 Jugador ataca (si no ha sido derrotado)
+                if (!result.battleState.isFinished && result.playerAttackResult) {
+                    // Mostrar ataque del jugador
+                    setBattleMessage(`${playerPokemon.name} usa ${move.name}...`);
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                    
+                    // Mostrar resultado
+                    setBattleLog(prev => [...prev, result.playerAttackResult.message]);
+                    
+                    // Actualizar HP del rival con animación
+                    const newRivalHP = {
+                        current: result.battleState.rivalHP.current,
+                        max: result.battleState.rivalHP.max,
+                        percentage: result.battleState.rivalHP.percentage
+                    };
+                    setRivalHP(newRivalHP);
+                    
+                    // Esperar para que se vea la animación de daño
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
             }
-        } else {
-            // Continuar la batalla
-            setBattleMessage(`¿Qué debería hacer ${playerPokemon.name}?`);
+            
+            // Paso 4: Verificar estado final de la batalla
+            if (result.battleState.isFinished) {
+                setBattleOver(true);
+                if (result.battleState.winner === "player") {
+                    setBattleMessage(`¡Has ganado el combate! Volviendo al mapa...`);
+                } else {
+                    setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`);
+                }
+            } else {
+                // Continuar la batalla
+                setBattleMessage(`¿Qué debería hacer ${playerPokemon.name}?`);
+            }
+            
+        } catch (error) {
+            console.error("Error en handleUseMove:", error);
+            setBattleLog(prev => [...prev, "¡Ha ocurrido un error durante el combate!"]);
+        } finally {
+            setIsAnimating(false);
         }
-        
-    } catch (error) {
-        console.error("Error en handleUseMove:", error);
-        setBattleLog(prev => [...prev, "¡Ha ocurrido un error durante el combate!"]);
-    } finally {
-        setIsAnimating(false);
-    }
-};
+    };
 
     if (!playerPokemon || !rivalPokemon || !battleEngine) {
         return <div className="battle-container text-center">Cargando combate...</div>;
@@ -433,7 +422,9 @@ const Battle = () => {
                 </div>
 
                 <img
-                    src={rivalPokemon.sprites.front}
+                    src={rivalPokemon.sprites.front || 
+                         (rivalPokemon.id ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${rivalPokemon.id}.png` :
+                         'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png')}
                     alt={rivalPokemon.name}
                     className="pokemon-sprite rival-sprite"
                     style={{
@@ -446,11 +437,13 @@ const Battle = () => {
             {/* Pokémon del jugador */}
             <div className="player-section">
                 <img
-                    src={playerPokemon.sprites.back || playerPokemon.sprites.front}
+                    src={playerPokemon.sprites.back || playerPokemon.sprites.front ||
+                         (playerPokemon.id ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${playerPokemon.id}.png` :
+                         'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png')}
                     alt={playerPokemon.name}
                     className="pokemon-sprite player-sprite"
                     style={{
-                        transform: !playerPokemon.sprites.back ? 'scaleX(-1)' : 'none',
+                        transform: !playerPokemon.sprites.back && playerPokemon.sprites.front ? 'scaleX(-1)' : 'none',
                         opacity: playerHP.current <= 0 ? 0.5 : 1,
                         filter: playerHP.current <= 0 ? 'grayscale(100%)' : 'none'
                     }}

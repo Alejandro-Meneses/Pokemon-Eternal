@@ -1,55 +1,67 @@
+/* Estilo para centrar el tablero */
 .board {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 20px;
-  }
-  
-  .board-row {
+    justify-content: center;
+    margin: 20px auto; /* Auto en los márgenes laterales lo centra */
+    width: 100%;      /* Ocupar todo el ancho disponible */
+    height: 100vh;    /* Altura completa de la ventana */
+    max-width: 100%;  /* Evitar desbordamiento */
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* Contenedor para el tablero en sí */
+.board-content {
     display: flex;
-  }
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
   
-  .cell {
+.board-row {
+    display: flex;
+}
+  
+.board .cell {
     width: 48px;
     height: 48px;
     image-rendering: pixelated;
-  }
+}
   
-  /* Tipos de terreno */
-  .grass {
+/* Tipos de terreno - hacerlos más específicos */
+.board .grass-terrain {
     background-image: url('../images/Grass.jpeg');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: top left;
     image-rendering: pixelated;
-  }
+}
   
-  
-  .wall {
+.board .wall-block {
     background-image: url('../images/Wall.jpeg');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: top left;
     image-rendering: pixelated;
-  }
+}
   
-  
-  .floor {
+.board .floor-tile {
     background-image: url('../images/Floor.jpeg');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: top left;
     image-rendering: pixelated;
-  }
+}
   
-  .player {
+.board .player-character {
     width: 100%;
     height: 100%;
-    background-image: url('../images/Rojo_mini_RFVH.png'); /* Asegúrate de tener esta imagen */
+    background-image: url('../images/Rojo_mini_RFVH.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center;
     image-rendering: pixelated;
     z-index: 5;
-  }
-  
+}

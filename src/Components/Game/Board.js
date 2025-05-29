@@ -1,30 +1,25 @@
-import React, { useEffect, useState,useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "../../Styles/Board.css";
-import { useNavigate } from "react-router-dom"; // Importar para la navegación
+import { useNavigate } from "react-router-dom";
 
 export default function Board() {
   const [grid, setGrid] = useState([]);
   const [playerPosition, setPlayerPosition] = useState({ row: 5, col: 5 });
-  const [encounterCooldown, setEncounterCooldown] = useState(false); // Para evitar encuentros consecutivos
-  const navigate = useNavigate(); // Hook para navegación
+  const [encounterCooldown, setEncounterCooldown] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const newGrid = generateGridConBordes(11, 11);
     setGrid(newGrid);
   }, []);
 
-  // Función para manejar encuentros de Pokémon
-   const handleEncounter = useCallback(() => {
-    // Verificar si estamos en grass y aplicar probabilidad de encuentro (10%)
+  const handleEncounter = useCallback(() => {
     if (grid[playerPosition.row]?.[playerPosition.col] === "grass" && 
         !encounterCooldown && 
-        Math.random() < 0.1) { // 10% de probabilidad
+        Math.random() < 0.1) {
       
-      // Activar cooldown para evitar encuentros consecutivos
       setEncounterCooldown(true);
       setTimeout(() => setEncounterCooldown(false), 1000);
-      
-      // Navegar a la pantalla de batalla
       navigate('/battle');
     }
   }, [grid, playerPosition.row, playerPosition.col, encounterCooldown, navigate]);
@@ -55,13 +50,11 @@ export default function Board() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [playerPosition, grid]);
 
-  // Efecto para verificar encuentros cuando la posición del jugador cambia
   useEffect(() => {
-    // Verificar posibles encuentros después de cada movimiento
     if (grid.length > 0) {
       handleEncounter();
     }
-  }, [playerPosition ,grid.length, handleEncounter]);
+  }, [playerPosition, grid.length, handleEncounter]);
 
   const generateGridConBordes = (rows, cols) => {
     const getRandomTile = () => {
@@ -84,25 +77,33 @@ export default function Board() {
 
     return grid;
   };
+  
+  // Función para mapear tipos de terreno a clases CSS correctas
+  const getTileClass = (tileType) => {
+    switch (tileType) {
+      case "grass": return "grass-terrain";
+      case "wall": return "wall-block";
+      case "floor": return "floor-tile";
+      default: return "";
+    }
+  };
 
   return (
     <div className="board">
       {grid.map((row, rowIdx) => (
         <div key={rowIdx} className="board-row">
           {row.map((tile, colIdx) => (
-            <div key={colIdx} className={`cell ${tile}`}>
+            <div 
+              key={colIdx} 
+              className={`cell ${getTileClass(tile)}`}
+            >
               {playerPosition.row === rowIdx && playerPosition.col === colIdx && (
-                <div className="player"></div>
+                <div className="player-character"></div>
               )}
             </div>
           ))}
         </div>
       ))}
-      {grid.length > 0 && grid[playerPosition.row][playerPosition.col] === "grass" && (
-        <div className="encounter-indicator">
-          Estás en zona de hierba. Posible encuentro: 10%
-        </div>
-      )}
     </div>
   );
 }
