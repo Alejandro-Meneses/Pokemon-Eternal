@@ -182,3 +182,135 @@ export const moveToPC = async (position, token) => {
     return { error: error.message || "Error desconocido" };
   }
 };
+
+/**
+ * Actualiza el HP actual de un Pokémon
+ * @param {string} pokemonId - ID del documento del Pokémon en la base de datos
+ * @param {number} currentHP - HP actual
+ * @param {number} maxHP - HP máximo (opcional)
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} Resultado de la actualización
+ */
+export const updatePokemonHP = async (pokemonId, currentHP, maxHP = null, token) => {
+  try {
+    const response = await fetch(`${API_URL_POKEMON}/update-hp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-auth-token": token
+      },
+      body: JSON.stringify({ 
+        pokemonId, 
+        currentHP,
+        maxHP 
+      })
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error al actualizar HP:', errorText);
+      return { error: `Error del servidor: ${response.status}` };
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error al actualizar HP del Pokémon:", error);
+    return { error: error.message || "Error desconocido" };
+  }
+};
+
+/**
+ * Intercambia un Pokémon del equipo con uno del almacenamiento
+ * @param {string} teamPokemonId - ID del Pokémon en el equipo
+ * @param {string} storagePokemonId - ID del Pokémon en el almacenamiento
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} - Resultado del intercambio
+ */
+export const swapPokemon = async (teamPosition, storageIndex, token) => {
+  try {
+    console.log('Enviando swap con:', { teamPosition, storageIndex });
+    
+    const response = await fetch(`${API_URL_POKEMON}/swap`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-auth-token': token
+      },
+      body: JSON.stringify({ 
+        teamPosition,
+        storageIndex 
+      })
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error al intercambiar Pokémon:', errorText);
+      return { error: `Error del servidor: ${response.status}` };
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error intercambiando Pokémon:", error);
+    return { error: error.message || "Error desconocido" };
+  }
+};
+/**
+ * Cura a todos los Pokémon del equipo
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} - Resultado de la operación
+ */
+export const healTeam = async (token) => {
+  try {
+    const response = await fetch(`${API_URL_POKEMON}/heal-team`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-auth-token': token
+      }
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error al curar equipo:', errorText);
+      return { error: `Error del servidor: ${response.status}` };
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error curando equipo:", error);
+    return { error: error.message || "Error desconocido" };
+  }
+};
+
+/**
+ * Obtiene información detallada de un Pokémon específico del equipo
+ * @param {string} pokemonId - ID del documento del Pokémon
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} - Datos detallados del Pokémon
+ */
+export const getPokemonDetails = async (pokemonId, token) => {
+  try {
+    const response = await fetch(`${API_URL_POKEMON}/details/${pokemonId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-auth-token": token
+      }
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error al obtener detalles del Pokémon:', errorText);
+      return { error: `Error del servidor: ${response.status}` };
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error al obtener detalles del Pokémon:", error);
+    return { error: error.message || "Error desconocido" };
+  }
+};

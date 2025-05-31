@@ -666,7 +666,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.8);
     z-index: 1000;
     display: flex;
     justify-content: center;
@@ -675,86 +675,224 @@
 }
 
 .pokemon-selector-modal {
-    background-color: #1a2541;
-    border: 2px solid #3c5aa6;
+    background-color: var(--theme-bg);
+    border: 4px solid var(--secondary-color);
     border-radius: 10px;
     padding: 20px;
     width: 90%;
     max-width: 600px;
-    color: white;
+    color: var(--light-color);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     pointer-events: auto;
-
+    position: relative;
+    overflow: hidden;
 }
 
 .pokemon-selector-modal h3 {
     text-align: center;
     margin-bottom: 15px;
-    color: #ffcb05;
+    color: var(--type-electric-bg);
+    font-size: 1.8rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .pokemon-team-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    gap: 15px;
     margin-bottom: 20px;
     pointer-events: auto;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 5px;
+}
 
+/* Estilo para la barra de scroll del grid */
+.pokemon-team-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.pokemon-team-grid::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.pokemon-team-grid::-webkit-scrollbar-thumb {
+    background-color: var(--secondary-color);
+    border-radius: 3px;
+}
+
+.pokemon-team-grid::-webkit-scrollbar-thumb:hover {
+    background-color: var(--secondary-color-dark);
 }
 
 .pokemon-team-item {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--button-bg);
+    border: 2px solid var(--border-color);
     border-radius: 8px;
-    padding: 10px;
+    padding: 12px;
     text-align: center;
     cursor: pointer;
-    transition: transform 0.2s, background-color 0.2s;
+    transition: all var(--transition-speed);
     pointer-events: auto;
-    position: relative
+    position: relative;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 }
 
 .pokemon-team-item:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-3px);
+    transform: translateY(-5px);
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.pokemon-team-item:active {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.pokemon-team-item.fainted {
+    opacity: 0.7;
+    filter: grayscale(70%);
 }
 
 .pokemon-team-sprite {
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
     margin: 0 auto;
     display: block;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: transform 0.3s;
+}
+
+.pokemon-team-item:hover .pokemon-team-sprite {
+    animation: bounce 0.5s ease;
+}
+
+/* Animación de rebote para sprites */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
 }
 
 .pokemon-team-name {
-    font-size: 0.9rem;
-    margin: 5px 0;
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 8px 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    pointer-events: auto;
+    color: var(--light-color);
+    text-transform: uppercase;
+}
 
+.pokemon-team-hp-text {
+    font-size: 0.85rem;
+    margin: 5px 0;
+    color: var(--body-color);
 }
 
 .pokemon-team-hp-bar {
-    height: 6px;
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 3px;
+    height: 8px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
     overflow: hidden;
-    margin-top: 5px;
+    margin-top: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .pokemon-team-hp-fill {
     height: 100%;
+    transition: width 0.3s, background-color 0.3s;
+    border-radius: 4px;
+}
+
+/* Colores de la barra de HP basados en cantidad */
+.hp-high {
+    background-color: #78C850;
+}
+
+.hp-medium {
+    background-color: #F8D030;
+}
+
+.hp-low {
+    background-color: #F03030;
+}
+
+/* Mostrar posición del Pokémon en el equipo */
+.pokemon-team-position {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: var(--secondary-color);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Botones de acción */
+.pokemon-selector-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
 }
 
 .pokemon-selector-close {
+    background-color: var(--action-back-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
     display: block;
     margin: 0 auto;
-    padding: 8px 20px;
-    pointer-events: auto;
-    cursor: pointer;
 }
 
+.pokemon-selector-close:hover {
+    background-color: var(--action-back-color-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.pokemon-selector-close:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Etiqueta de tipo de Pokémon */
+.pokemon-team-type {
+    display: inline-block;
+    padding: 3px 8px;
+    margin: 2px;
+    font-size: 0.7rem;
+    border-radius: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+    background-color: var(--type-normal-bg);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+/* Mensaje de selección */
+.pokemon-selection-message {
+    text-align: center;
+    color: var(--type-electric-bg);
+    font-weight: bold;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+/* Diseño responsivo */
 @media (max-width: 576px) {
     .pokemon-team-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -762,5 +900,39 @@
 
     .pokemon-selector-modal {
         padding: 15px;
+        width: 95%;
+    }
+    
+    .pokemon-team-sprite {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .pokemon-selector-modal h3 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Para pantallas muy pequeñas */
+@media (max-width: 360px) {
+    .pokemon-team-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .pokemon-team-item {
+        display: flex;
+        align-items: center;
+        text-align: left;
+        padding: 8px;
+    }
+    
+    .pokemon-team-sprite {
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+    }
+    
+    .pokemon-team-info {
+        flex: 1;
     }
 }

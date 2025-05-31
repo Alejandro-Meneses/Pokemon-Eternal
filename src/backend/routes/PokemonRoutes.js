@@ -61,6 +61,47 @@ router.get('/pokedex/complete', auth, async (req, res) => {
   }
 });
 
+// Agregar en la sección donde defines tus rutas
+/**
+ * @route POST /api/pokemon/swap
+ * @desc Intercambiar un Pokémon entre equipo y almacenamiento
+ * @access Private
+ */
+router.post('/swap', auth, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { teamPosition, storageIndex } = req.body;
+        
+        console.log('Solicitud de intercambio:', {
+            userId,
+            teamPosition, 
+            storageIndex
+        });
+        
+        // Validar los datos recibidos
+        if (teamPosition === undefined || storageIndex === undefined) {
+            return res.status(400).json({ 
+                error: 'Se requiere posición del equipo y índice del almacenamiento' 
+            });
+        }
+        
+        // Llamar al servicio para realizar el intercambio
+        await PokemonService.moveToTeam(
+            userId, 
+            parseInt(storageIndex),
+            parseInt(teamPosition)
+        );
+        
+        res.json({ 
+            success: true, 
+            message: 'Pokémon intercambiado exitosamente' 
+        });
+    } catch (error) {
+        console.error('Error al intercambiar Pokémon:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // @route   GET api/pokemon/team
 // @desc    Obtener el equipo Pokémon del usuario
 // @access  Private

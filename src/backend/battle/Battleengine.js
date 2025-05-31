@@ -15,9 +15,9 @@ class BattleEngine {
         this.playerPokemon = playerPokemon;
         this.rivalPokemon = rivalPokemon;
         
-        // Inicializar HP actual basado en stats
-        this.playerPokemon.currentHP = this.playerPokemon.stats.hp;
-        this.rivalPokemon.currentHP = this.rivalPokemon.stats.hp;
+        // Inicializar HP actual respetando el HP actual si existe
+        this.playerPokemon.currentHP = this.playerPokemon.currentHP || this.playerPokemon.stats.hp;
+        this.rivalPokemon.currentHP = this.rivalPokemon.currentHP || this.rivalPokemon.stats.hp;
         
         // Estado de la batalla
         this.battleLog = [];
@@ -25,7 +25,33 @@ class BattleEngine {
         this.winner = null;
         this.currentTurn = null; // Se determinará por velocidad cuando se ejecute el turno
     }
-    
+
+    /**
+     * Cambia el Pokémon del jugador durante la batalla
+     * @param {Object} newPokemon - Nuevo Pokémon a usar
+     * @returns {Object} - Resultado del cambio
+     */
+    switchPlayerPokemon(newPokemon) {
+        // Guardar una referencia al Pokémon anterior
+        const oldPokemon = {...this.playerPokemon};
+        
+        // Actualizar el Pokémon del jugador
+        this.playerPokemon = newPokemon;
+        
+        // Si el Pokémon no tiene HP definido, usar su máximo
+        if (this.playerPokemon.currentHP === undefined) {
+            this.playerPokemon.currentHP = this.playerPokemon.stats.hp;
+        }
+        
+        return {
+            success: true,
+            previousPokemon: oldPokemon.name,
+            newPokemon: newPokemon.name,
+            currentHP: this.playerPokemon.currentHP,
+            maxHP: this.playerPokemon.stats.hp
+        };
+    }
+
     /**
      * Determina el orden de los movimientos basado en velocidad
      * @param {Object} playerMove - Movimiento seleccionado por el jugador
@@ -214,7 +240,6 @@ class BattleEngine {
             effectiveness: typeMultiplier,
             move: move.name
         };
-    
     }
     
     /**
@@ -290,6 +315,7 @@ class BattleEngine {
             damage: attackResult.damage,
             effectiveness: attackResult.effectiveness,
             isFinished: this.isFinished,
+            winner: this.winner,  // Añadido para coherencia
             playerHP: {
                 current: this.playerPokemon.currentHP,
                 max: this.playerPokemon.stats.hp,

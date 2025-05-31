@@ -49,45 +49,28 @@ const PokemonDatabaseService = {
      * @returns {Promise<Array>} Equipo Pokémon con detalles
      */
     getTeamWithDetails: async (userId) => {
-        try {
-            const user = await User.findById(userId).select('team');
-            if (!user) throw new Error('Usuario no encontrado');
-            
-            const teamWithDetails = await Promise.all(
-                user.team.sort((a, b) => a.position - b.position).map(async (teamMember) => {
-                    try {
-                        const pokemon = await Pokemon.fetchPokemon(teamMember.pokemonId);
-                        return {
-                            ...teamMember.toObject(),
-                            details: {
-                                name: pokemon.name,
-                                types: pokemon.types,
-                                stats: pokemon.stats,
-                                moves: pokemon.moves,
-                                sprites: teamMember.isShiny ?
-                                    {
-                                        front: pokemon.sprites.shiny || pokemon.sprites.front_default,
-                                        back: pokemon.sprites.shinyBack || pokemon.sprites.back_default
-                                    } :
-                                    {
-                                        front: pokemon.sprites.front || pokemon.sprites.front_default,
-                                        back: pokemon.sprites.back || pokemon.sprites.back_default
-                                    }
-                            }
-                        };
-                    } catch (error) {
-                        console.error(`Error al obtener detalles para Pokémon ID ${teamMember.pokemonId}:`, error);
-                        return teamMember.toObject();
-                    }
-                })
-            );
-            
-            return teamWithDetails;
-        } catch (error) {
-            console.error('Error en getTeamWithDetails:', error);
-            throw error;
-        }
-    },
+    try {
+        const user = await User.findById(userId).select('team');
+        if (!user) throw new Error('Usuario no encontrado');
+        
+        // Devolver solo los datos básicos sin intentar obtener detalles adicionales
+        return user.team.sort((a, b) => a.position - b.position).map(teamMember => ({
+            ...teamMember.toObject(),
+            // Datos mínimos necesarios sin hacer fetch
+            details: {
+                name: `Pokemon ${teamMember.pokemonId}`,
+                sprites: {
+                    front: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${teamMember.pokemonId}.png`,
+                    back: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${teamMember.pokemonId}.png`
+                }
+            }
+        }));
+    } catch (error) {
+        console.error('Error en getTeamWithDetails:', error);
+        throw error;
+    }
+},
+
     
     /**
      * Añade un Pokémon al equipo
@@ -282,38 +265,25 @@ const PokemonDatabaseService = {
      * @returns {Promise<Array>} Almacenamiento con detalles
      */
     getStorageWithDetails: async (userId) => {
-        try {
-            const user = await User.findById(userId).select('storage');
-            if (!user) throw new Error('Usuario no encontrado');
-            
-            const storageWithDetails = await Promise.all(
-                user.storage.map(async (storedPokemon, index) => {
-                    try {
-                        const pokemon = await Pokemon.fetchPokemon(storedPokemon.pokemonId);
-                        return {
-                            ...storedPokemon.toObject(),
-                            index, // Añadir índice para facilitar referencias
-                            details: {
-                                name: pokemon.name,
-                                types: pokemon.types,
-                                sprites: storedPokemon.isShiny ?
-                                    { front: pokemon.sprites.shiny || pokemon.sprites.front_default } :
-                                    { front: pokemon.sprites.front || pokemon.sprites.front_default }
-                            }
-                        };
-                    } catch (error) {
-                        console.error(`Error al obtener detalles para Pokémon ID ${storedPokemon.pokemonId}:`, error);
-                        return { ...storedPokemon.toObject(), index };
-                    }
-                })
-            );
-            
-            return storageWithDetails;
-        } catch (error) {
-            console.error('Error en getStorageWithDetails:', error);
-            throw error;
-        }
-    },
+    try {
+        const user = await User.findById(userId).select('storage');
+        if (!user) throw new Error('Usuario no encontrado');
+        
+        return user.storage.map((storedPokemon, index) => ({
+            ...storedPokemon.toObject(),
+            index,
+            details: {
+                name: `Pokemon ${storedPokemon.pokemonId}`,
+                sprites: {
+                    front: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${storedPokemon.pokemonId}.png`
+                }
+            }
+        }));
+    } catch (error) {
+        console.error('Error en getStorageWithDetails:', error);
+        throw error;
+    }
+},
 };
 
 module.exports = PokemonDatabaseService;

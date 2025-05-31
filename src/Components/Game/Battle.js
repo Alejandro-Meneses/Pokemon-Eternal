@@ -24,6 +24,9 @@ const Battle = () => {
     const [showPokemonSelector, setShowPokemonSelector] = useState(false);
     const [teamPokemon, setTeamPokemon] = useState([]);
 
+    // Estado para mantener el HP actual de todos los Pokémon del equipo
+    const [teamHP, setTeamHP] = useState({});
+
     // Tooltip personalizado
     const [tooltipContent, setTooltipContent] = useState(null);
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
@@ -45,10 +48,35 @@ const Battle = () => {
         setTooltipContent(null);
     };
 
+    // Función para actualizar el HP de un Pokémon en el equipo
+    const updateTeamPokemonHP = (pokemonId, currentHP) => {
+        // Actualizar el estado de HP para todo el equipo
+        setTeamHP(prev => ({
+            ...prev,
+            [pokemonId]: currentHP
+        }));
+
+        // También actualizar el HP en el array del equipo para reflejar en UI
+        setTeamPokemon(prevTeam => prevTeam.map(pokemon => 
+            pokemon.id === pokemonId 
+                ? { ...pokemon, currentHP } 
+                : pokemon
+        ));
+
+        // Guardar en localStorage para persistencia básica
+        const savedTeamHP = JSON.parse(localStorage.getItem('pokemon_team_hp') || '{}');
+        savedTeamHP[pokemonId] = currentHP;
+        localStorage.setItem('pokemon_team_hp', JSON.stringify(savedTeamHP));
+    };
+
     useEffect(() => {
         const fetchBattlePokemons = async () => {
             try {
-                // 1. Obtener el equipo del jugador
+                // 1. Cargar HP guardado de localStorage si existe
+                const savedTeamHP = JSON.parse(localStorage.getItem('pokemon_team_hp') || '{}');
+                setTeamHP(savedTeamHP);
+
+                // 2. Obtener el equipo del jugador
                 const token = localStorage.getItem('token');
                 if (!token) {
                     console.error("No se encontró token de autenticación");
@@ -68,25 +96,48 @@ const Battle = () => {
 
                 console.log("Equipo del jugador:", teamData);
                 
-                // Guardar todo el equipo para el selector
-                setTeamPokemon(teamData);
+                // 3. Cargar los datos completos de cada Pokémon del equipo
+                const completeTeam = await Promise.all(
+                    teamData.map(async (pokemon) => {
+                        const fullPokemon = await Pokemon.fetchPokemon(pokemon.pokemonId);
+                        // Copiar datos como isShiny del equipo original
+                        fullPokemon.isShiny = pokemon.isShiny || false;
+                        fullPokemon._id = pokemon._id;
+                        fullPokemon.position = pokemon.position;
 
-                // 2. Obtener el ID del primer Pokémon del equipo
-                const playerPokemonId = teamData[0].pokemonId;
+                        // Usar HP guardado o el máximo
+                        if (savedTeamHP[fullPokemon.id]) {
+                            fullPokemon.currentHP = savedTeamHP[fullPokemon.id];
+                        } else {
+                            fullPokemon.currentHP = fullPokemon.stats.hp;
+                            // Inicializar en el estado de HP del equipo
+                            setTeamHP(prev => ({
+                                ...prev,
+                                [fullPokemon.id]: fullPokemon.currentHP
+                            }));
+                        }
+                        
+                        return fullPokemon;
+                    })
+                );
+                
+                // 4. Guardar todo el equipo completo para el selector
+                setTeamPokemon(completeTeam);
+                console.log("Equipo completo cargado:", completeTeam);
 
-                // 3. Cargar los datos completos usando el modelo Pokemon
-                let playerInstance = await Pokemon.fetchPokemon(playerPokemonId);
+                // 5. Usar el primer Pokémon con HP > 0 como activo
+                let playerInstance = completeTeam.find(pokemon => pokemon.currentHP > 0) || completeTeam[0];
                 const rivalId = Math.floor(Math.random() * 1025) + 1;
                 let rivalInstance = await Pokemon.fetchPokemon(rivalId);
 
                 console.log("Pokémon del jugador completo:", playerInstance);
                 console.log("Pokémon rival:", rivalInstance);
 
-                // 4. Inicializar HP y UI
+                // 6. Inicializar HP y UI
                 setPlayerHP({
-                    current: playerInstance.stats.hp,
+                    current: playerInstance.currentHP,
                     max: playerInstance.stats.hp,
-                    percentage: 100
+                    percentage: (playerInstance.currentHP / playerInstance.stats.hp) * 100
                 });
 
                 setRivalHP({
@@ -95,15 +146,15 @@ const Battle = () => {
                     percentage: 100
                 });
 
-                // 5. Configurar movimientos
+                // 7. Configurar movimientos
                 setMoves(playerInstance.moves || []);
                 console.log("Movimientos del jugador:", playerInstance.moves);
 
-                // 6. Establecer los Pokémon y el motor de batalla
+                // 8. Establecer los Pokémon y el motor de batalla
                 setPlayerPokemon(playerInstance);
                 setRivalPokemon(rivalInstance);
 
-                // 7. Inicializar el motor de batalla
+                // 9. Inicializar el motor de batalla
                 const engine = new BattleEngine(playerInstance, rivalInstance);
                 setBattleEngine(engine);
                 setBattleLog(["¡Comienza el combate!"]);
@@ -147,12 +198,65 @@ const Battle = () => {
         setShowPokemonSelector(true);
     };
 
-    // Nuevas funciones para el selector de Pokémon
-    const handlePokemonChange = (selectedPokemon) => {
-        // Implementación básica - solo mostrar mensaje por ahora
-        console.log("Pokémon seleccionado:", selectedPokemon);
-        setBattleLog(prev => [...prev, `Intentaste cambiar a ${selectedPokemon.name}, pero esta función no está implementada completamente.`]);
+    // Función mejorada para el cambio de Pokémon
+    const handlePokemonChange = async (selectedPokemon) => {
+        if (selectedPokemon.id === playerPokemon.id) {
+            setBattleLog(prev => [...prev, `${selectedPokemon.name} ya está en combate.`]);
+            setShowPokemonSelector(false);
+            return;
+        }
+
+        if (selectedPokemon.currentHP <= 0) {
+            setBattleLog(prev => [...prev, `¡${selectedPokemon.name} está debilitado y no puede combatir!`]);
+            setShowPokemonSelector(false);
+            return;
+        }
+
+        setIsAnimating(true);
         setShowPokemonSelector(false);
+
+        try {
+            // 1. Guardar HP del Pokémon actual antes de cambiarlo
+            updateTeamPokemonHP(playerPokemon.id, playerHP.current);
+
+            // 2. Registrar el cambio en el log de batalla
+            setBattleMessage(`¡Vuelve, ${playerPokemon.name}!`);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // 3. Actualizar el motor de batalla con el nuevo Pokémon
+            const switchResult = battleEngine.switchPlayerPokemon(selectedPokemon);
+            
+            // 4. Actualizar el Pokémon actual en la batalla
+            const previousPokemon = playerPokemon;
+            setPlayerPokemon(selectedPokemon);
+
+            // 5. Actualizar el HP en la interfaz
+            setPlayerHP({
+                current: selectedPokemon.currentHP,
+                max: selectedPokemon.stats.hp,
+                percentage: (selectedPokemon.currentHP / selectedPokemon.stats.hp) * 100
+            });
+
+            // 6. Actualizar los movimientos disponibles
+            setMoves(selectedPokemon.moves || []);
+            
+            // 7. Mostrar mensaje de entrada del nuevo Pokémon
+            setBattleLog(prev => [...prev, `¡Vuelve, ${previousPokemon.name}! ¡Adelante, ${selectedPokemon.name}!`]);
+            setBattleMessage(`¡Adelante, ${selectedPokemon.name}!`);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // 8. El rival ataca al nuevo Pokémon (pierde el turno por cambiar)
+            setBattleMessage(`Tu rival aprovecha el cambio...`);
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // 9. Ejecutar el ataque del rival directamente
+            await executeRivalAttack();
+        } catch (error) {
+            console.error("Error al cambiar Pokémon:", error);
+            setBattleLog(prev => [...prev, "¡Ha ocurrido un error al cambiar de Pokémon!"]);
+        } finally {
+            setIsAnimating(false);
+        }
     };
 
     const handleClosePokemonSelector = () => {
@@ -185,13 +289,13 @@ const Battle = () => {
         setShowMoves(false);
     };
 
-    // Función executeRivalAttack corregida
+    // Función executeRivalAttack mejorada
     const executeRivalAttack = async () => {
         if (!battleEngine || battleOver) return;
 
         setIsAnimating(true);
         setBattleMessage(`${rivalPokemon.name} está eligiendo un movimiento...`);
-
+        
         // Pausa para simular que el rival está pensando
         await new Promise(resolve => setTimeout(resolve, 2000));
 
@@ -208,11 +312,15 @@ const Battle = () => {
             // Actualizar HP del jugador - CORREGIDO
             // Verificar si result.playerHP existe antes de usarlo
             if (result.playerHP) {
+                const newHP = result.playerHP.current;
                 setPlayerHP({
-                    current: result.playerHP.current,
+                    current: newHP,
                     max: result.playerHP.max,
                     percentage: result.playerHP.percentage
                 });
+                
+                // Actualizar HP en estado del equipo
+                updateTeamPokemonHP(playerPokemon.id, newHP);
             }
 
             // Verificar si la batalla ha terminado - CORREGIDO
@@ -222,7 +330,7 @@ const Battle = () => {
                 if (result.winner === "player") {
                     setBattleMessage(`¡Has ganado el combate! Volviendo al mapa...`);
                 } else {
-                    setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`);
+                    setBattleMessage(`¡Te han ganado en el combate! Volviendo al mapa...`);
                 }
             } else {
                 setBattleMessage("¿Qué debería hacer " + playerPokemon.name + "?");
@@ -297,6 +405,9 @@ const Battle = () => {
                         percentage: result.battleState.playerHP.percentage
                     };
                     setPlayerHP(newPlayerHP);
+                    
+                    // Actualizar HP en estado del equipo
+                    updateTeamPokemonHP(playerPokemon.id, newPlayerHP.current);
 
                     // Esperar para que se vea la animación de daño
                     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -319,6 +430,9 @@ const Battle = () => {
                         percentage: result.battleState.playerHP.percentage
                     };
                     setPlayerHP(newPlayerHP);
+                    
+                    // Actualizar HP en estado del equipo
+                    updateTeamPokemonHP(playerPokemon.id, newPlayerHP.current);
 
                     // Esperar para que se vea la animación de daño
                     await new Promise(resolve => setTimeout(resolve, 1500));
@@ -326,7 +440,7 @@ const Battle = () => {
                     // Verificar si el jugador fue derrotado
                     if (result.battleState.isFinished && result.battleState.winner === "rival") {
                         setBattleOver(true);
-                        setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`);
+                        setBattleMessage(`¡Te han ganado en el combate! Volviendo al mapa...`);
                         setIsAnimating(false);
                         return;
                     }
@@ -360,7 +474,7 @@ const Battle = () => {
                 if (result.battleState.winner === "player") {
                     setBattleMessage(`¡Has ganado el combate! Volviendo al mapa...`);
                 } else {
-                    setBattleMessage(`¡Te han ganado que pena el combate! Volviendo al mapa...`);
+                    setBattleMessage(`¡Te han ganado en el combate! Volviendo al mapa...`);
                 }
             } else {
                 // Continuar la batalla
@@ -422,7 +536,7 @@ const Battle = () => {
             {/* Pokémon rival */}
             <div className="rival-section">
                 <div className="rival-info">
-                    <p className="pokemon-name">{rivalPokemon.name}</p>
+                    <p className="pokemon-name">{rivalPokemon.name && rivalPokemon.name.toUpperCase()}</p>
                     <div className="rival-hp-bar-container">
                         <div className="hp-bar-background">
                             <div
@@ -443,9 +557,11 @@ const Battle = () => {
                 </div>
 
                 <img
-                    src={rivalPokemon.sprites.front ||
+                    src={
+                        (rivalPokemon.sprites && rivalPokemon.sprites.front) ||
                         (rivalPokemon.id ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${rivalPokemon.id}.png` :
-                            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png')}
+                            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png')
+                    }
                     alt={rivalPokemon.name}
                     className="pokemon-sprite rival-sprite"
                     style={{
@@ -458,19 +574,27 @@ const Battle = () => {
             {/* Pokémon del jugador */}
             <div className="player-section">
                 <img
-                    src={playerPokemon.sprites.back || playerPokemon.sprites.front ||
+                    src={
                         (playerPokemon.id ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${playerPokemon.id}.png` :
-                            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png')}
+                        (playerPokemon.sprites && playerPokemon.sprites.back) || 
+                        (playerPokemon.sprites && playerPokemon.sprites.front) ||
+                        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png')
+                    }
                     alt={playerPokemon.name}
                     className="pokemon-sprite player-sprite"
                     style={{
-                        transform: !playerPokemon.sprites.back && playerPokemon.sprites.front ? 'scaleX(-1)' : 'none',
+                        transform: !playerPokemon.sprites?.back && playerPokemon.sprites?.front ? 'scaleX(-1)' : 'none',
                         opacity: playerHP.current <= 0 ? 0.5 : 1,
                         filter: playerHP.current <= 0 ? 'grayscale(100%)' : 'none'
                     }}
+                    onError={(e) => {
+                        e.target.onerror = null; 
+                        e.target.src = (playerPokemon.sprites && playerPokemon.sprites.front) || 
+                            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${playerPokemon.id}.png`;
+                    }}
                 />
                 <div className="player-info">
-                    <p className="pokemon-name">{playerPokemon.name}</p>
+                    <p className="pokemon-name">{playerPokemon.name && playerPokemon.name.toUpperCase()}</p>
                     <div className="player-hp-bar-container">
                         <PokeballIcon className="hp-icon" />
                         <div className="hp-bar-background">
@@ -540,7 +664,8 @@ const Battle = () => {
                                             move.getTooltipDescription() :
                                             `${move.name}\nPoder: ${move.power || '?'}\nTipo: ${move.type || '?'}\nClase: ${move.damageClass || '?'}`;
                                         showTooltip(tooltip, e);
-                                    }} onMouseLeave={hideTooltip}
+                                    }} 
+                                    onMouseLeave={hideTooltip}
                                     disabled={isAnimating || battleOver}
                                     aria-label={`Usar ${move.name}`}
                                 >
@@ -571,26 +696,43 @@ const Battle = () => {
                             {teamPokemon.map((pokemon, index) => (
                                 <div 
                                     key={index} 
-                                    className="pokemon-team-item"
+                                    className={`pokemon-team-item ${pokemon.currentHP <= 0 ? 'pokemon-fainted' : ''} ${pokemon.id === playerPokemon.id ? 'pokemon-active' : ''}`}
                                     onClick={() => handlePokemonChange(pokemon)}
                                     style={{ pointerEvents: 'auto' }}
                                 >
                                     <img 
-                                        src={(pokemon.isShiny && pokemon.sprites?.shiny_front) || 
-                                             pokemon.sprites?.front || 
-                                             `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`}
+                                        src={
+                                            (pokemon.isShiny && pokemon.sprites?.shiny_front) || 
+                                            pokemon.sprites?.front || 
+                                            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`
+                                        }
                                         alt={pokemon.name}
                                         className="pokemon-team-sprite"
+                                        style={{
+                                            opacity: pokemon.currentHP <= 0 ? 0.5 : 1,
+                                            filter: pokemon.currentHP <= 0 ? 'grayscale(100%)' : 'none'
+                                        }}
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
+                                        }}
                                     />
                                     <p className="pokemon-team-name" style={{color: 'white', fontWeight: 'bold'}}>
-                                        {pokemon.name}
+                                        {(pokemon.name || `Pokémon #${pokemon.id}`).toUpperCase()}
+                                    </p>
+                                    <p className="pokemon-team-hp-text" style={{color: pokemon.currentHP <= 0 ? '#F03030' : 'white'}}>
+                                        {Math.ceil(pokemon.currentHP)}/{pokemon.stats?.hp || 0}
                                     </p>
                                     <div className="pokemon-team-hp-bar">
                                         <div 
                                             className="pokemon-team-hp-fill"
                                             style={{ 
-                                                width: '100%', 
-                                                backgroundColor: pokemon.isShiny ? '#FFD700' : '#78C850'
+                                                width: `${pokemon.stats && pokemon.stats.hp ? (pokemon.currentHP / pokemon.stats.hp) * 100 : 0}%`, 
+                                                backgroundColor: pokemon.currentHP / pokemon.stats?.hp > 0.5
+                                                    ? '#78C850'  // Verde
+                                                    : pokemon.currentHP / pokemon.stats?.hp > 0.2
+                                                        ? '#F8D030'  // Amarillo
+                                                        : '#F03030'  // Rojo
                                             }}
                                         ></div>
                                     </div>

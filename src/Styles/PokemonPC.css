@@ -1,0 +1,482 @@
+.pokemon-pc-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    pointer-events: auto;
+}
+
+.pokemon-pc-modal {
+    background-color: var(--theme-bg);
+    border: 4px solid var(--secondary-color); /* Cambiado de primary-color a secondary-color */
+    border-radius: 10px;
+    width: 90%;
+    max-width: 900px;
+    height: 80vh;
+    max-height: 80vh;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    color: var(--light-color);
+    position: relative;
+    overflow: hidden;
+    pointer-events: auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.pokemon-pc-modal h2 {
+    color: var(--type-electric-bg);
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+}
+
+.pokemon-pc-modal h3 {
+    color: var(--type-electric-bg);
+    margin-bottom: 0.8rem;
+    font-size: 1.4rem;
+}
+
+.pc-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1;
+    width: 100%;
+    height: calc(80vh - 260px);
+    overflow: hidden;
+    pointer-events: auto;
+}
+
+.pc-section {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    height: 100%;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    pointer-events: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Estilos personalizados para la barra de scroll */
+.pc-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.pc-section::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.pc-section::-webkit-scrollbar-thumb {
+    background-color: var(--secondary-color); /* Cambiado de primary-color */
+    border-radius: 3px;
+}
+
+.pc-section::-webkit-scrollbar-thumb:hover {
+    background-color: var(--secondary-color-dark); /* Actualizado para usar la versión oscura del color secundario */
+}
+
+.pc-pokemon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    padding-right: 5px;
+    pointer-events: auto;
+}
+
+.pc-pokemon-card {
+    background-color: var(--button-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.8rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    position: relative;
+    z-index: 5;
+    pointer-events: auto;
+}
+
+.pc-pokemon-card:hover {
+    transform: translateY(-5px);
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.pc-pokemon-card.selected {
+    border-color: var(--type-electric-bg);
+    background-color: rgba(248, 208, 48, 0.15);
+    box-shadow: 0 0 10px rgba(248, 208, 48, 0.3);
+    transform: translateY(-3px);
+}
+
+.pc-pokemon-position {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background-color: var(--secondary-color); /* Cambiado de primary-color */
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: white;
+}
+
+.pc-pokemon-sprite {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.pc-pokemon-name {
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+    color: var(--light-color);
+}
+
+.pc-pokemon-hp {
+    margin-top: 0.5rem;
+}
+
+.pc-pokemon-hp-bar {
+    height: 6px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.pc-pokemon-hp-fill {
+    height: 100%;
+    transition: width 0.3s;
+}
+
+.pc-pokemon-hp-text {
+    font-size: 0.8rem;
+    margin: 0;
+    color: var(--body-color);
+}
+
+.pc-swap-section {
+    background-color: var(--card-bg);
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 8px;
+    text-align: center;
+    pointer-events: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pc-swap-section h4 {
+    color: var(--type-electric-bg);
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.pc-swap-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    pointer-events: auto;
+}
+
+.pc-swap-buttons button,
+.pc-actions button {
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.pc-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    pointer-events: auto;
+}
+
+.pc-actions button {
+    margin: 5px;
+    flex-grow: 1;
+    box-shadow: var(--button-shadow);
+}
+
+.heal-button {
+    background-color: var(--action-attack-color);
+    border-color: var(--action-attack-color);
+    color: white;
+}
+
+.heal-button:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+}
+
+.btn-success {
+    background-color: var(--action-pokemon-color);
+    border-color: var(--action-pokemon-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #219653;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+}
+
+.btn-danger {
+    background-color: var(--action-attack-color);
+    border-color: var(--action-attack-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+}
+
+.btn-secondary {
+    background-color: var(--action-back-color);
+    border-color: var(--action-back-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: var(--action-back-color-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(127, 140, 141, 0.3);
+}
+
+.pc-error {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+    padding: 0.8rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    text-align: center;
+    border-left: 4px solid var(--action-attack-color);
+}
+
+.pc-message {
+    background-color: rgba(39, 174, 96, 0.2);
+    color: #2ecc71;
+    padding: 0.8rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    text-align: center;
+    border-left: 4px solid var(--action-pokemon-color);
+    animation: fadeInOut 3s forwards;
+}
+
+.pc-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    font-size: 1.2rem;
+    color: var(--body-color);
+}
+
+/* Estilos para el botón del PC */
+.pc-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+    box-shadow: var(--button-shadow);
+}
+
+.pc-button:hover {
+    background-color: var(--primary-color-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(61, 125, 202, 0.4);
+}
+
+.pc-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(61, 125, 202, 0.2);
+}
+
+/* Diseño responsivo */
+@media (min-width: 768px) {
+    .pc-container {
+        flex-direction: row;
+        height: calc(80vh - 230px);
+    }
+
+    .pc-section {
+        flex: 1;
+        margin-right: 10px;
+        height: 100%;
+        max-height: none;
+    }
+    
+    .pc-section:last-child {
+        margin-right: 0;
+    }
+}
+
+/* Mejoras para pantallas pequeñas */
+@media (max-width: 767px) {
+    .pokemon-pc-modal {
+        padding: 1rem;
+        height: 90vh;
+        width: 95%;
+    }
+
+    .pc-section {
+        max-height: 35vh;
+        padding: 0.8rem;
+    }
+
+    .pc-pokemon-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 8px;
+    }
+
+    .pc-pokemon-sprite {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .pokemon-pc-modal h2 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .pokemon-pc-modal h3 {
+        font-size: 1.2rem;
+    }
+}
+
+/* Animación para mensajes */
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Mejora de accesibilidad - focus visible */
+.pc-button:focus,
+.pc-pokemon-card:focus {
+    outline: 2px solid var(--type-electric-bg);
+    outline-offset: 2px;
+}
+
+/* Añadir un indicador visual cuando un elemento sea interactivo */
+.pc-pokemon-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.pc-pokemon-card::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--secondary-color); /* Cambiado de primary-color */
+    opacity: 0;
+    transition: opacity var(--transition-speed);
+}
+
+.pc-pokemon-card:hover::after {
+    opacity: 1;
+}
+
+/* Hacer que todos los elementos clicables sean realmente clicables */
+.pokemon-pc-overlay,
+.pokemon-pc-modal,
+.pc-pokemon-card,
+.pc-section,
+.pc-actions button,
+.pc-swap-buttons button,
+.pc-pokemon-grid,
+button {
+    pointer-events: auto !important;
+}
+
+/* Asegurarse de que los elementos que deben ser clicables lo sean */
+.pc-pokemon-card {
+    z-index: 5;
+    cursor: pointer;
+}
+
+.pc-actions button,
+.pc-swap-buttons button {
+    z-index: 10;
+    position: relative;
+    cursor: pointer;
+}
+
+/* Asegurarse de que el contenedor de la modal tenga eventos de puntero */
+.pokemon-pc-overlay {
+    pointer-events: auto;
+}
+
+/* Para elementos dentro del modal */
+.pokemon-pc-modal * {
+    pointer-events: auto;
+}
+
+/* Efecto hover para las tarjetas de Pokémon */
+.pc-pokemon-card {
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed), background-color var(--transition-speed);
+}
+
+.pc-pokemon-card:hover .pc-pokemon-sprite {
+    animation: bounce 0.5s ease;
+}
+
+/* Animación de rebote para sprites */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Mejoras visuales y feedback */
+.pc-pokemon-card:active {
+    transform: scale(0.98);
+}
+
+.pc-swap-section {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

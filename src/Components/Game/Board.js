@@ -1,12 +1,16 @@
 import React, { useEffect, useState, useCallback } from "react";
 import "../../Styles/Board.css";
 import { useNavigate } from "react-router-dom";
+import PokemonPC from "./PokemonPC"; // Nuevo componente que crearemos
 
 export default function Board() {
   const [grid, setGrid] = useState([]);
   const [playerPosition, setPlayerPosition] = useState({ row: 5, col: 5 });
   const [encounterCooldown, setEncounterCooldown] = useState(false);
   const navigate = useNavigate();
+  
+  // Nuevo estado para controlar la visibilidad del PC
+  const [showPC, setShowPC] = useState(false);
 
   useEffect(() => {
     const newGrid = generateGridConBordes(11, 11);
@@ -88,22 +92,52 @@ export default function Board() {
     }
   };
 
+  const handleOpenPC = () => {
+    setShowPC(true);
+  };
+
+  const handleClosePC = () => {
+    setShowPC(false);
+  };
+
   return (
-    <div className="board">
-      {grid.map((row, rowIdx) => (
-        <div key={rowIdx} className="board-row">
-          {row.map((tile, colIdx) => (
-            <div 
-              key={colIdx} 
-              className={`cell ${getTileClass(tile)}`}
-            >
-              {playerPosition.row === rowIdx && playerPosition.col === colIdx && (
-                <div className="player-character"></div>
-              )}
-            </div>
-          ))}
-        </div>
-      ))}
+    <div className="game-container">
+      <div className="board">
+        {grid.map((row, rowIdx) => (
+          <div key={rowIdx} className="board-row">
+            {row.map((tile, colIdx) => (
+              <div 
+                key={colIdx} 
+                className={`cell ${getTileClass(tile)}`}
+              >
+                {playerPosition.row === rowIdx && playerPosition.col === colIdx && (
+                  <div className="player-character"></div>
+                )}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Barra de herramientas del juego */}
+      <div className="game-toolbar">
+        <button 
+          className="pc-button"
+          onClick={handleOpenPC}
+          title="PC Pokémon"
+        >
+          PC Pokémon
+        </button>
+        
+        {/* Puedes agregar más botones aquí como Centro Pokémon, Tienda, etc. */}
+      </div>
+
+      {/* Modal del PC Pokémon */}
+      {showPC && (
+        <PokemonPC 
+          onClose={handleClosePC}
+        />
+      )}
     </div>
   );
 }

@@ -27,6 +27,15 @@ const teamPokemonSchema = new mongoose.Schema({
   isShiny: {
     type: Boolean,
     default: false
+  },
+  // Nuevos campos para gestionar el HP
+  currentHP: {
+    type: Number,
+    default: null  // Se inicializará al cargar el Pokémon por primera vez
+  },
+  maxHP: {
+    type: Number,
+    default: null  // Se guardará para referencia y calcular porcentajes
   }
 });
 
@@ -42,6 +51,15 @@ const storagePokemonSchema = new mongoose.Schema({
   isShiny: {
     type: Boolean,
     default: false
+  },
+  // Nuevos campos para gestionar el HP
+  currentHP: {
+    type: Number,
+    default: null
+  },
+  maxHP: {
+    type: Number,
+    default: null
   }
 });
 
