@@ -10,10 +10,12 @@ class Pokemon {
       return acc;
     }, {});
     
+    // Corregir los nombres de los sprites para que coincidan con la API
     this.sprites = {
       front: data.sprites.front_default,
       back: data.sprites.back_default,
-      shiny: data.sprites.front_shiny,
+      front_shiny: data.sprites.front_shiny,   // Usar front_shiny en lugar de shiny
+      back_shiny: data.sprites.back_shiny,     // Añadir back_shiny
       officialArtwork: data.sprites.other["official-artwork"].front_default,
     }; // Sprites
 

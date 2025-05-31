@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../Styles/PokemonPC.css';
 import Pokemon from '../../backend/models/Pokemon';
-import { getTeam, getStorage, swapPokemon, healTeam } from '../../Services/PokemonService';
+import { getTeam, getStorage, swapPokemon } from '../../Services/PokemonService';
 
 const PokemonPC = ({ onClose }) => {
     const [teamPokemon, setTeamPokemon] = useState([]);
@@ -140,36 +140,6 @@ const PokemonPC = ({ onClose }) => {
         }
     };
 
-    // Función para curar a todos los Pokémon del equipo
-    const handleHealTeam = async () => {
-        try {
-            setLoading(true);
-            const token = localStorage.getItem('token');
-
-            const result = await healTeam(token);
-
-            if (result && result.error) {
-                setError(result.error);
-                return;
-            }
-
-            // Actualizar HP de todos los Pokémon del equipo
-            setTeamPokemon(prev =>
-                prev.map(pokemon => ({
-                    ...pokemon,
-                    currentHP: pokemon.stats.hp
-                }))
-            );
-
-            setMessage("¡Todo tu equipo ha sido curado!");
-        } catch (err) {
-            console.error("Error al curar:", err);
-            setError("Error al curar el equipo");
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleCancelSwap = () => {
         setSelectedTeamPokemon(null);
         setSelectedTeamIndex(null);
@@ -209,13 +179,14 @@ const PokemonPC = ({ onClose }) => {
                             {teamPokemon.map((pokemon, index) => (
                                 <div
                                     key={`team-${index}`}
-                                    className={`pc-pokemon-card ${selectedTeamPokemon?._id === pokemon._id ? 'selected' : ''}`}
+                                    className={`pc-pokemon-card ${selectedTeamPokemon?._id === pokemon._id ? 'selected' : ''} ${pokemon.isShiny ? 'shiny-pokemon' : ''}`}
                                     onClick={() => handleSelectTeamPokemon(pokemon, index)}
                                 >
                                     <div className="pc-pokemon-position">{pokemon.position}</div>
+                                    {pokemon.isShiny && <div className="pc-pokemon-shiny-indicator">★</div>}
                                     <img
                                         src={
-                                            (pokemon.isShiny && pokemon.sprites?.shiny_front) ||
+                                            (pokemon.isShiny && pokemon.sprites?.front_shiny) ||
                                             pokemon.sprites?.front ||
                                             `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`
                                         }
@@ -252,12 +223,13 @@ const PokemonPC = ({ onClose }) => {
                             {storagePokemon.map((pokemon, index) => (
                                 <div
                                     key={`storage-${index}`}
-                                    className={`pc-pokemon-card ${selectedStoragePokemon?._id === pokemon._id ? 'selected' : ''}`}
+                                    className={`pc-pokemon-card ${selectedStoragePokemon?._id === pokemon._id ? 'selected' : ''} ${pokemon.isShiny ? 'shiny-pokemon' : ''}`}
                                     onClick={() => handleSelectStoragePokemon(pokemon, index)}
                                 >
+                                    {pokemon.isShiny && <div className="pc-pokemon-shiny-indicator">★</div>}
                                     <img
                                         src={
-                                            (pokemon.isShiny && pokemon.sprites?.shiny_front) ||
+                                            (pokemon.isShiny && pokemon.sprites?.front_shiny) ||
                                             pokemon.sprites?.front ||
                                             `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`
                                         }
@@ -295,13 +267,6 @@ const PokemonPC = ({ onClose }) => {
                 )}
 
                 <div className="pc-actions">
-                    <button
-                        onClick={handleHealTeam}
-                        disabled={loading}
-                        className="btn btn-primary heal-button"
-                    >
-                        Curar Equipo
-                    </button>
                     <button
                         onClick={onClose}
                         disabled={loading}

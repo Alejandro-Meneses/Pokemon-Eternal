@@ -891,7 +891,33 @@
     margin-bottom: 15px;
     font-size: 1.1rem;
 }
+/* Estilos para Pokémon shiny en batalla */
+.pokemon-team-item.shiny-pokemon {
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,215,0,0.2) 100%);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
 
+.pokemon-shiny-indicator {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 1.2rem;
+    color: gold;
+    text-shadow: 0 0 3px rgba(0,0,0,0.5);
+    animation: sparkle 2s infinite;
+}
+
+/* Añadir efecto de brillo a sprites shiny en batalla */
+.player-sprite.shiny-sprite,
+.rival-sprite.shiny-sprite {
+    filter: drop-shadow(0 0 3px gold);
+}
+
+@keyframes sparkle {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
 /* Diseño responsivo */
 @media (max-width: 576px) {
     .pokemon-team-grid {

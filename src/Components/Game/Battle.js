@@ -19,7 +19,7 @@ const Battle = () => {
     const [rivalHP, setRivalHP] = useState({ current: 0, max: 0, percentage: 100 });
     const [isAnimating, setIsAnimating] = useState(false);
     const [battleOver, setBattleOver] = useState(false);
-    
+
     // Nuevo estado para el selector de Pokémon
     const [showPokemonSelector, setShowPokemonSelector] = useState(false);
     const [teamPokemon, setTeamPokemon] = useState([]);
@@ -57,9 +57,9 @@ const Battle = () => {
         }));
 
         // También actualizar el HP en el array del equipo para reflejar en UI
-        setTeamPokemon(prevTeam => prevTeam.map(pokemon => 
-            pokemon.id === pokemonId 
-                ? { ...pokemon, currentHP } 
+        setTeamPokemon(prevTeam => prevTeam.map(pokemon =>
+            pokemon.id === pokemonId
+                ? { ...pokemon, currentHP }
                 : pokemon
         ));
 
@@ -95,7 +95,7 @@ const Battle = () => {
                 }
 
                 console.log("Equipo del jugador:", teamData);
-                
+
                 // 3. Cargar los datos completos de cada Pokémon del equipo
                 const completeTeam = await Promise.all(
                     teamData.map(async (pokemon) => {
@@ -116,11 +116,11 @@ const Battle = () => {
                                 [fullPokemon.id]: fullPokemon.currentHP
                             }));
                         }
-                        
+
                         return fullPokemon;
                     })
                 );
-                
+
                 // 4. Guardar todo el equipo completo para el selector
                 setTeamPokemon(completeTeam);
                 console.log("Equipo completo cargado:", completeTeam);
@@ -222,10 +222,10 @@ const Battle = () => {
             // 2. Registrar el cambio en el log de batalla
             setBattleMessage(`¡Vuelve, ${playerPokemon.name}!`);
             await new Promise(resolve => setTimeout(resolve, 1000));
-            
+
             // 3. Actualizar el motor de batalla con el nuevo Pokémon
             const switchResult = battleEngine.switchPlayerPokemon(selectedPokemon);
-            
+
             // 4. Actualizar el Pokémon actual en la batalla
             const previousPokemon = playerPokemon;
             setPlayerPokemon(selectedPokemon);
@@ -239,7 +239,7 @@ const Battle = () => {
 
             // 6. Actualizar los movimientos disponibles
             setMoves(selectedPokemon.moves || []);
-            
+
             // 7. Mostrar mensaje de entrada del nuevo Pokémon
             setBattleLog(prev => [...prev, `¡Vuelve, ${previousPokemon.name}! ¡Adelante, ${selectedPokemon.name}!`]);
             setBattleMessage(`¡Adelante, ${selectedPokemon.name}!`);
@@ -248,7 +248,7 @@ const Battle = () => {
             // 8. El rival ataca al nuevo Pokémon (pierde el turno por cambiar)
             setBattleMessage(`Tu rival aprovecha el cambio...`);
             await new Promise(resolve => setTimeout(resolve, 800));
-            
+
             // 9. Ejecutar el ataque del rival directamente
             await executeRivalAttack();
         } catch (error) {
@@ -295,7 +295,7 @@ const Battle = () => {
 
         setIsAnimating(true);
         setBattleMessage(`${rivalPokemon.name} está eligiendo un movimiento...`);
-        
+
         // Pausa para simular que el rival está pensando
         await new Promise(resolve => setTimeout(resolve, 2000));
 
@@ -318,7 +318,7 @@ const Battle = () => {
                     max: result.playerHP.max,
                     percentage: result.playerHP.percentage
                 });
-                
+
                 // Actualizar HP en estado del equipo
                 updateTeamPokemonHP(playerPokemon.id, newHP);
             }
@@ -405,7 +405,7 @@ const Battle = () => {
                         percentage: result.battleState.playerHP.percentage
                     };
                     setPlayerHP(newPlayerHP);
-                    
+
                     // Actualizar HP en estado del equipo
                     updateTeamPokemonHP(playerPokemon.id, newPlayerHP.current);
 
@@ -430,7 +430,7 @@ const Battle = () => {
                         percentage: result.battleState.playerHP.percentage
                     };
                     setPlayerHP(newPlayerHP);
-                    
+
                     // Actualizar HP en estado del equipo
                     updateTeamPokemonHP(playerPokemon.id, newPlayerHP.current);
 
@@ -571,25 +571,33 @@ const Battle = () => {
                 />
             </div>
 
-            {/* Pokémon del jugador */}
+            {/* Pokémon del jugador - ACTUALIZADO PARA SHINY */}
             <div className="player-section">
                 <img
                     src={
-                        (playerPokemon.id ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${playerPokemon.id}.png` :
-                        (playerPokemon.sprites && playerPokemon.sprites.back) || 
-                        (playerPokemon.sprites && playerPokemon.sprites.front) ||
-                        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png')
+                        // Si es shiny, utilizar el sprite shiny de espalda
+                        (playerPokemon.isShiny && playerPokemon.sprites?.back_shiny) ||
+                        // Si no es shiny o no tiene sprite shiny de espalda, usar el normal
+                        playerPokemon.sprites?.back ||
+                        // Como fallback, usar la URL directa con la variante correspondiente
+                        (playerPokemon.isShiny ?
+                            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/shiny/${playerPokemon.id}.png` :
+                            `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${playerPokemon.id}.png`) ||
+                        // Si todo falla, usar el sprite frontal
+                        playerPokemon.sprites?.front ||
+                        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png'
                     }
                     alt={playerPokemon.name}
-                    className="pokemon-sprite player-sprite"
+                    className={`pokemon-sprite player-sprite ${playerPokemon.isShiny ? 'shiny-sprite' : ''}`}
                     style={{
                         transform: !playerPokemon.sprites?.back && playerPokemon.sprites?.front ? 'scaleX(-1)' : 'none',
                         opacity: playerHP.current <= 0 ? 0.5 : 1,
                         filter: playerHP.current <= 0 ? 'grayscale(100%)' : 'none'
                     }}
                     onError={(e) => {
-                        e.target.onerror = null; 
-                        e.target.src = (playerPokemon.sprites && playerPokemon.sprites.front) || 
+                        e.target.onerror = null;
+                        e.target.src = (playerPokemon.isShiny && playerPokemon.sprites?.front_shiny) ||
+                            playerPokemon.sprites?.front ||
                             `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${playerPokemon.id}.png`;
                     }}
                 />
@@ -664,7 +672,7 @@ const Battle = () => {
                                             move.getTooltipDescription() :
                                             `${move.name}\nPoder: ${move.power || '?'}\nTipo: ${move.type || '?'}\nClase: ${move.damageClass || '?'}`;
                                         showTooltip(tooltip, e);
-                                    }} 
+                                    }}
                                     onMouseLeave={hideTooltip}
                                     disabled={isAnimating || battleOver}
                                     aria-label={`Usar ${move.name}`}
@@ -687,23 +695,24 @@ const Battle = () => {
                 )}
             </div>
 
-            {/* Modal de selección de Pokémon */}
+            {/* Modal de selección de Pokémon - ACTUALIZADO PARA SHINY */}
             {showPokemonSelector && (
                 <div className="pokemon-selector-overlay" style={{ pointerEvents: 'auto' }}>
                     <div className="pokemon-selector-modal" style={{ pointerEvents: 'auto' }}>
                         <h3>Selecciona un Pokémon</h3>
                         <div className="pokemon-team-grid">
                             {teamPokemon.map((pokemon, index) => (
-                                <div 
-                                    key={index} 
-                                    className={`pokemon-team-item ${pokemon.currentHP <= 0 ? 'pokemon-fainted' : ''} ${pokemon.id === playerPokemon.id ? 'pokemon-active' : ''}`}
+                                <div
+                                    key={index}
+                                    className={`pokemon-team-item ${pokemon.currentHP <= 0 ? 'pokemon-fainted' : ''} ${pokemon.id === playerPokemon.id ? 'pokemon-active' : ''} ${pokemon.isShiny ? 'shiny-pokemon' : ''}`}
                                     onClick={() => handlePokemonChange(pokemon)}
                                     style={{ pointerEvents: 'auto' }}
                                 >
-                                    <img 
+                                    {pokemon.isShiny && <div className="pokemon-shiny-indicator">★</div>}
+                                    <img
                                         src={
-                                            (pokemon.isShiny && pokemon.sprites?.shiny_front) || 
-                                            pokemon.sprites?.front || 
+                                            (pokemon.isShiny && pokemon.sprites?.front_shiny) ||
+                                            pokemon.sprites?.front ||
                                             `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`
                                         }
                                         alt={pokemon.name}
@@ -717,17 +726,17 @@ const Battle = () => {
                                             e.target.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
                                         }}
                                     />
-                                    <p className="pokemon-team-name" style={{color: 'white', fontWeight: 'bold'}}>
+                                    <p className="pokemon-team-name" style={{ color: 'white', fontWeight: 'bold' }}>
                                         {(pokemon.name || `Pokémon #${pokemon.id}`).toUpperCase()}
                                     </p>
-                                    <p className="pokemon-team-hp-text" style={{color: pokemon.currentHP <= 0 ? '#F03030' : 'white'}}>
+                                    <p className="pokemon-team-hp-text" style={{ color: pokemon.currentHP <= 0 ? '#F03030' : 'white' }}>
                                         {Math.ceil(pokemon.currentHP)}/{pokemon.stats?.hp || 0}
                                     </p>
                                     <div className="pokemon-team-hp-bar">
-                                        <div 
+                                        <div
                                             className="pokemon-team-hp-fill"
-                                            style={{ 
-                                                width: `${pokemon.stats && pokemon.stats.hp ? (pokemon.currentHP / pokemon.stats.hp) * 100 : 0}%`, 
+                                            style={{
+                                                width: `${pokemon.stats && pokemon.stats.hp ? (pokemon.currentHP / pokemon.stats.hp) * 100 : 0}%`,
                                                 backgroundColor: pokemon.currentHP / pokemon.stats?.hp > 0.5
                                                     ? '#78C850'  // Verde
                                                     : pokemon.currentHP / pokemon.stats?.hp > 0.2
@@ -739,7 +748,7 @@ const Battle = () => {
                                 </div>
                             ))}
                         </div>
-                        <button 
+                        <button
                             className="btn btn-secondary pokemon-selector-close"
                             onClick={handleClosePokemonSelector}
                             style={{ pointerEvents: 'auto' }}
