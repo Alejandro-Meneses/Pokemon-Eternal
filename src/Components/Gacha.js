@@ -22,7 +22,7 @@ const Gacha = () => {
   const GACHA_COST = 250;
 
   //Probabilidad de Shiny
-  const SHINY_CHANCE = 1 / 2;
+  const SHINY_CHANCE = 1 / 4096;
 
 
   // Efecto optimizado para cargar los Pokedólares
