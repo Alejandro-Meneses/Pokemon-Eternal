@@ -3,11 +3,16 @@ import "../../Styles/Battle.css";
 import Pokemon from "../../backend/models/Pokemon";
 import BattleEngine from "../../backend/battle/Battleengine";
 import { ReactComponent as PokeballIcon } from "../../images/Pokeball.svg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // Añadido useLocation
 import { getTeam } from "../../Services/PokemonService"; // Importar getTeam
 
 const Battle = () => {
     const navigate = useNavigate();
+    const location = useLocation(); // Para obtener el playerLevel
+    
+    // Obtener el nivel del jugador (por defecto 1)
+    const playerLevel = location.state?.playerLevel || 1;
+    
     const [playerPokemon, setPlayerPokemon] = useState(null);
     const [rivalPokemon, setRivalPokemon] = useState(null);
     const [showMoves, setShowMoves] = useState(false);
@@ -19,8 +24,9 @@ const Battle = () => {
     const [rivalHP, setRivalHP] = useState({ current: 0, max: 0, percentage: 100 });
     const [isAnimating, setIsAnimating] = useState(false);
     const [battleOver, setBattleOver] = useState(false);
+    const [battleResult, setBattleResult] = useState(null); // Añadido para resultado
 
-    // Nuevo estado para el selector de Pokémon
+    // Estado para el selector de Pokémon
     const [showPokemonSelector, setShowPokemonSelector] = useState(false);
     const [teamPokemon, setTeamPokemon] = useState([]);
 
@@ -67,6 +73,25 @@ const Battle = () => {
         const savedTeamHP = JSON.parse(localStorage.getItem('pokemon_team_hp') || '{}');
         savedTeamHP[pokemonId] = currentHP;
         localStorage.setItem('pokemon_team_hp', JSON.stringify(savedTeamHP));
+    };
+
+    // Función para calcular el factor de boost del rival según el nivel del jugador
+    const calculateRivalLevelBoost = (level) => {
+        // Nivel 1: sin boost, Nivel 10: 2x boost
+        return 1 + ((level - 1) * 0.11);
+    };
+
+    // Función para aplicar boost a los stats del rival
+    const applyRivalBoost = (pokemon, boostFactor) => {
+        // Crear copia profunda del Pokémon
+        const boostedPokemon = JSON.parse(JSON.stringify(pokemon));
+        
+        // Aplicar boost a las estadísticas
+        Object.keys(boostedPokemon.stats).forEach(stat => {
+            boostedPokemon.stats[stat] = Math.ceil(boostedPokemon.stats[stat] * boostFactor);
+        });
+        
+        return boostedPokemon;
     };
 
     useEffect(() => {
@@ -127,9 +152,18 @@ const Battle = () => {
 
                 // 5. Usar el primer Pokémon con HP > 0 como activo
                 let playerInstance = completeTeam.find(pokemon => pokemon.currentHP > 0) || completeTeam[0];
+                
+                // Generar rival
                 const rivalId = Math.floor(Math.random() * 1025) + 1;
                 let rivalInstance = await Pokemon.fetchPokemon(rivalId);
+                
+                // Ajustar el nivel del rival según el nivel del jugador
+                const rivalLevelBoost = calculateRivalLevelBoost(playerLevel);
+                
+                // Aplicar boost de stats al rival basado en el nivel del jugador
+                rivalInstance = applyRivalBoost(rivalInstance, rivalLevelBoost);
 
+                console.log(`Pokémon rival ajustado al nivel del jugador ${playerLevel} (boost: ${rivalLevelBoost}x)`);
                 console.log("Pokémon del jugador completo:", playerInstance);
                 console.log("Pokémon rival:", rivalInstance);
 
@@ -167,7 +201,7 @@ const Battle = () => {
         };
 
         fetchBattlePokemons();
-    }, [navigate]);
+    }, [navigate, playerLevel]);
 
     // Auto-scroll para el log de batalla
     useEffect(() => {
@@ -179,6 +213,18 @@ const Battle = () => {
     useEffect(() => {
         // Cuando battleOver cambia a true, configurar un temporizador para volver al mapa
         if (battleOver) {
+            // Si el jugador ganó, enviar evento de victoria
+            if (battleResult === 'victory') {
+                // Enviar evento personalizado para informar al Board
+                const battleEvent = new CustomEvent('battleResult', { 
+                    detail: { 
+                        victory: true,
+                        pokeDollars: 25
+                    } 
+                });
+                window.dispatchEvent(battleEvent);
+            }
+            
             const timer = setTimeout(() => {
                 navigate('/Board');
             }, 2500); // 2.5 segundos de espera
@@ -186,7 +232,7 @@ const Battle = () => {
             // Limpieza del temporizador si el componente se desmonta
             return () => clearTimeout(timer);
         }
-    }, [battleOver, navigate]);
+    }, [battleOver, battleResult, navigate]);
 
     // Funciones para manejar los clics en los botones
     const handleAttack = () => {
@@ -328,8 +374,10 @@ const Battle = () => {
             if (result.isFinished) {
                 setBattleOver(true);
                 if (result.winner === "player") {
-                    setBattleMessage(`¡Has ganado el combate! Volviendo al mapa...`);
+                    setBattleResult('victory'); // Registrar victoria
+                    setBattleMessage(`¡Has ganado el combate! Ganaste 25 PokeDólares. Volviendo al mapa...`);
                 } else {
+                    setBattleResult('defeat'); // Registrar derrota
                     setBattleMessage(`¡Te han ganado en el combate! Volviendo al mapa...`);
                 }
             } else {
@@ -383,7 +431,8 @@ const Battle = () => {
                     // Verificar si el rival fue derrotado
                     if (result.battleState.isFinished && result.battleState.winner === "player") {
                         setBattleOver(true);
-                        setBattleMessage(`¡Has ganado el combate! Volviendo al mapa...`);
+                        setBattleResult('victory'); // Registrar victoria
+                        setBattleMessage(`¡Has ganado el combate! Ganaste 25 PokeDólares. Volviendo al mapa...`);
                         setIsAnimating(false);
                         return;
                     }
@@ -440,6 +489,7 @@ const Battle = () => {
                     // Verificar si el jugador fue derrotado
                     if (result.battleState.isFinished && result.battleState.winner === "rival") {
                         setBattleOver(true);
+                        setBattleResult('defeat'); // Registrar derrota
                         setBattleMessage(`¡Te han ganado en el combate! Volviendo al mapa...`);
                         setIsAnimating(false);
                         return;
@@ -472,8 +522,10 @@ const Battle = () => {
             if (result.battleState.isFinished) {
                 setBattleOver(true);
                 if (result.battleState.winner === "player") {
-                    setBattleMessage(`¡Has ganado el combate! Volviendo al mapa...`);
+                    setBattleResult('victory'); // Registrar victoria
+                    setBattleMessage(`¡Has ganado el combate! Ganaste 25 PokeDólares. Volviendo al mapa...`);
                 } else {
+                    setBattleResult('defeat'); // Registrar derrota
                     setBattleMessage(`¡Te han ganado en el combate! Volviendo al mapa...`);
                 }
             } else {
@@ -495,6 +547,11 @@ const Battle = () => {
 
     return (
         <div className="battle-container">
+            {/* Indicador de nivel de dificultad */}
+            <div className="battle-level-indicator">
+                Nivel de dificultad: {playerLevel}
+            </div>
+
             {/* Tooltip personalizado */}
             {tooltipContent && (
                 <div
@@ -571,19 +628,15 @@ const Battle = () => {
                 />
             </div>
 
-            {/* Pokémon del jugador - ACTUALIZADO PARA SHINY */}
+            {/* Pokémon del jugador */}
             <div className="player-section">
                 <img
                     src={
-                        // Si es shiny, utilizar el sprite shiny de espalda
                         (playerPokemon.isShiny && playerPokemon.sprites?.back_shiny) ||
-                        // Si no es shiny o no tiene sprite shiny de espalda, usar el normal
                         playerPokemon.sprites?.back ||
-                        // Como fallback, usar la URL directa con la variante correspondiente
                         (playerPokemon.isShiny ?
                             `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/shiny/${playerPokemon.id}.png` :
                             `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${playerPokemon.id}.png`) ||
-                        // Si todo falla, usar el sprite frontal
                         playerPokemon.sprites?.front ||
                         'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png'
                     }
@@ -695,7 +748,7 @@ const Battle = () => {
                 )}
             </div>
 
-            {/* Modal de selección de Pokémon - ACTUALIZADO PARA SHINY */}
+            {/* Modal de selección de Pokémon */}
             {showPokemonSelector && (
                 <div className="pokemon-selector-overlay" style={{ pointerEvents: 'auto' }}>
                     <div className="pokemon-selector-modal" style={{ pointerEvents: 'auto' }}>

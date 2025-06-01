@@ -1,32 +1,127 @@
 import React, { useEffect, useState, useCallback } from "react";
 import "../../Styles/Board.css";
 import { useNavigate } from "react-router-dom";
-import PokemonPC from "./PokemonPC"; // Nuevo componente que crearemos
+import PokemonPC from "./PokemonPC";
 
 export default function Board() {
   const [grid, setGrid] = useState([]);
   const [playerPosition, setPlayerPosition] = useState({ row: 5, col: 5 });
   const [encounterCooldown, setEncounterCooldown] = useState(false);
   const navigate = useNavigate();
-  
-  // Nuevo estado para controlar la visibilidad del PC
+
+  // Estado para el PC
   const [showPC, setShowPC] = useState(false);
 
+  // Nuevo estado para el sistema de niveles y recompensas
+  const [playerLevel, setPlayerLevel] = useState(1);
+  const [defeatedPokemon, setDefeatedPokemon] = useState(0);
+  const [pokeDollars, setPokeDollars] = useState(0);
+
+  // Bloquear scroll completamente
   useEffect(() => {
+    // Función para prevenir las teclas que causan scroll
+    const preventScrollKeys = (e) => {
+      // Teclas que causan scroll: flechas, espacio, inicio, fin, Re Pág, Av Pág
+      const keys = [32, 33, 34, 35, 36, 37, 38, 39, 40];
+      
+      if (keys.includes(e.keyCode)) {
+        // Si la tecla está en el control del juego, permitirla pero prevenir el scroll
+        if ([37, 38, 39, 40].includes(e.keyCode)) {
+          // Permitir el evento para el juego pero prevenir el scroll
+          e.preventDefault();
+          return;
+        }
+        
+        // Para otras teclas que causan scroll, simplemente prevenirlas
+        e.preventDefault();
+        return false;
+      }
+    };
+    
+    // Prevenir scroll con rueda o trackpad
+    const preventWheelScroll = (e) => {
+      e.preventDefault();
+      return false;
+    };
+    
+    // Agregar listeners para todos los tipos de eventos
+    window.addEventListener('keydown', preventScrollKeys, { passive: false });
+    document.addEventListener('wheel', preventWheelScroll, { passive: false });
+    document.addEventListener('touchmove', preventWheelScroll, { passive: false });
+    document.addEventListener('mousewheel', preventWheelScroll, { passive: false });
+    document.addEventListener('DOMMouseScroll', preventWheelScroll, { passive: false });
+    
+    // También podemos deshabilitar el comportamiento de scroll en el body
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      // Limpieza al desmontar el componente
+      window.removeEventListener('keydown', preventScrollKeys);
+      document.removeEventListener('wheel', preventWheelScroll);
+      document.removeEventListener('touchmove', preventWheelScroll);
+      document.removeEventListener('mousewheel', preventWheelScroll);
+      document.removeEventListener('DOMMouseScroll', preventWheelScroll);
+      
+      // Restaurar el comportamiento de scroll del body
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  // Cargar datos del jugador al inicio
+  useEffect(() => {
+    // Cargar datos guardados del localStorage
+    const savedLevel = localStorage.getItem('player_level') || 1;
+    const savedDefeated = localStorage.getItem('defeated_pokemon') || 0;
+    const savedDollars = localStorage.getItem('poke_dollars') || 0;
+
+    setPlayerLevel(Number(savedLevel));
+    setDefeatedPokemon(Number(savedDefeated));
+    setPokeDollars(Number(savedDollars));
+
     const newGrid = generateGridConBordes(11, 11);
     setGrid(newGrid);
   }, []);
 
+  // Función para actualizar después de una victoria
+  const updatePlayerProgress = (victoriesCount, dollarsEarned) => {
+    // Actualizar derrotas
+    const newDefeatedCount = defeatedPokemon + victoriesCount;
+    setDefeatedPokemon(newDefeatedCount);
+
+    // Actualizar PokeDólares
+    const newDollars = pokeDollars + dollarsEarned;
+    setPokeDollars(newDollars);
+
+    // Calcular nivel (1 nivel por cada 5 victorias)
+    const newLevel = Math.floor(newDefeatedCount / 5) + 1;
+    if (newLevel !== playerLevel) {
+      setPlayerLevel(newLevel);
+      // Mostrar notificación de subida de nivel
+      alert(`¡Felicidades! Has subido al nivel ${newLevel}. Los Pokémon salvajes serán más fuertes.`);
+    }
+
+    // Guardar progreso
+    localStorage.setItem('player_level', newLevel);
+    localStorage.setItem('defeated_pokemon', newDefeatedCount);
+    localStorage.setItem('poke_dollars', newDollars);
+  };
+
   const handleEncounter = useCallback(() => {
-    if (grid[playerPosition.row]?.[playerPosition.col] === "grass" && 
-        !encounterCooldown && 
-        Math.random() < 0.1) {
-      
+    if (grid[playerPosition.row]?.[playerPosition.col] === "grass" &&
+      !encounterCooldown &&
+      Math.random() < 0.1) {
+
       setEncounterCooldown(true);
       setTimeout(() => setEncounterCooldown(false), 1000);
-      navigate('/battle');
+
+      // Pasar el nivel del jugador como parámetro para la dificultad
+      navigate('/battle', {
+        state: {
+          playerLevel: playerLevel
+        }
+      });
     }
-  }, [grid, playerPosition.row, playerPosition.col, encounterCooldown, navigate]);
+  }, [grid, playerPosition.row, playerPosition.col, encounterCooldown, navigate, playerLevel]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -60,6 +155,19 @@ export default function Board() {
     }
   }, [playerPosition, grid.length, handleEncounter]);
 
+  // Escuchar eventos de batallas ganadas
+  useEffect(() => {
+    const handleBattleVictory = (e) => {
+      if (e.detail && e.detail.victory) {
+        // Actualizar progreso con 1 victoria y 25 PokeDólares
+        updatePlayerProgress(1, 25);
+      }
+    };
+
+    window.addEventListener('battleResult', handleBattleVictory);
+    return () => window.removeEventListener('battleResult', handleBattleVictory);
+  }, [defeatedPokemon, pokeDollars, playerLevel]);
+
   const generateGridConBordes = (rows, cols) => {
     const getRandomTile = () => {
       return Math.random() < 0.5 ? "grass" : "floor";
@@ -81,8 +189,7 @@ export default function Board() {
 
     return grid;
   };
-  
-  // Función para mapear tipos de terreno a clases CSS correctas
+
   const getTileClass = (tileType) => {
     switch (tileType) {
       case "grass": return "grass-terrain";
@@ -99,15 +206,32 @@ export default function Board() {
   const handleClosePC = () => {
     setShowPC(false);
   };
-
+  
   return (
     <div className="game-container">
+      {/* Indicadores de nivel y moneda en la parte superior */}
+      <div className="game-stats">
+        <div className="level-indicator">
+          <span className="level-label">Nivel:</span>
+          <span className="level-value">{playerLevel}</span>
+        </div>
+        {/* Nuevo indicador de victorias */}
+        <div className="victories-indicator">
+          <span className="victories-value">{defeatedPokemon % 5}</span>
+          <span className="victories-label">/ 5</span>
+        </div>
+        <div className="money-indicator">
+          <span className="money-value">{pokeDollars}</span>
+          <span className="money-label">PokeDólares</span>
+        </div>
+      </div>
+
       <div className="board">
         {grid.map((row, rowIdx) => (
           <div key={rowIdx} className="board-row">
             {row.map((tile, colIdx) => (
-              <div 
-                key={colIdx} 
+              <div
+                key={colIdx}
                 className={`cell ${getTileClass(tile)}`}
               >
                 {playerPosition.row === rowIdx && playerPosition.col === colIdx && (
@@ -119,22 +243,18 @@ export default function Board() {
         ))}
       </div>
 
-      {/* Barra de herramientas del juego */}
-      <div className="game-toolbar">
-        <button 
-          className="pc-button"
-          onClick={handleOpenPC}
-          title="PC Pokémon"
-        >
-          PC Pokémon
-        </button>
-        
-        {/* Puedes agregar más botones aquí como Centro Pokémon, Tienda, etc. */}
-      </div>
+      {/* Botón PC Pokémon (sin contenedor toolbar) */}
+      <button
+        className="pc-button"
+        onClick={handleOpenPC}
+        title="PC Pokémon"
+      >
+        PC Pokémon
+      </button>
 
       {/* Modal del PC Pokémon */}
       {showPC && (
-        <PokemonPC 
+        <PokemonPC
           onClose={handleClosePC}
         />
       )}
