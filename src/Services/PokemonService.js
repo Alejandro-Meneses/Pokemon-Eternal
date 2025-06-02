@@ -191,34 +191,6 @@ export const moveToPC = async (position, token) => {
  * @param {string} token - Token de autenticación
  * @returns {Promise<Object>} Resultado de la actualización
  */
-export const updatePokemonHP = async (pokemonId, currentHP, maxHP = null, token) => {
-  try {
-    const response = await fetch(`${API_URL_POKEMON}/update-hp`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-auth-token": token
-      },
-      body: JSON.stringify({ 
-        pokemonId, 
-        currentHP,
-        maxHP 
-      })
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error al actualizar HP:', errorText);
-      return { error: `Error del servidor: ${response.status}` };
-    }
-    
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error al actualizar HP del Pokémon:", error);
-    return { error: error.message || "Error desconocido" };
-  }
-};
 
 /**
  * Intercambia un Pokémon del equipo con uno del almacenamiento
@@ -257,30 +229,31 @@ export const swapPokemon = async (teamPosition, storageIndex, token) => {
   }
 };
 /**
- * Cura a todos los Pokémon del equipo
- * @param {string} token - Token de autenticación
- * @returns {Promise<Object>} - Resultado de la operación
+ * Updates a Pokémon's HP in the database
+ * @param {string} pokemonId - ID of the Pokémon
+ * @param {number} currentHP - Current HP value
+ * @param {string} token - Auth token
+ * @returns {Promise<Object>} Result of the update
  */
-export const healTeam = async (token) => {
+export const updatePokemonHP = async (pokemonId, currentHP, token) => {
   try {
-    const response = await fetch(`${API_URL_POKEMON}/heal-team`, {
-      method: 'POST',
+    // Corrige la URL - usa API_URL_POKEMON en lugar de API_URL
+    const response = await fetch(`${API_URL_POKEMON}/update-hp`, {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'x-auth-token': token
-      }
+        "Content-Type": "application/json",
+        "x-auth-token": token
+      },
+      body: JSON.stringify({ pokemonId, currentHP })
     });
     
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error al curar equipo:', errorText);
       return { error: `Error del servidor: ${response.status}` };
     }
     
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error("Error curando equipo:", error);
+    console.error("Error updating Pokémon HP:", error);
     return { error: error.message || "Error desconocido" };
   }
 };

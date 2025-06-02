@@ -26,10 +26,10 @@ const PokemonPC = ({ onClose }) => {
                     return;
                 }
 
-                // Cargar datos del equipo y almacenamiento en paralelo
-                const [teamData, storageData] = await Promise.all([
+                // Cargar datos del equipo, HP y almacenamiento en paralelo
+                const [teamData, storageData, teamHPData] = await Promise.all([
                     getTeam(token),
-                    getStorage(token)
+                    getStorage(token),
                 ]);
 
                 if (!teamData || teamData.error) {
@@ -42,6 +42,21 @@ const PokemonPC = ({ onClose }) => {
                     return;
                 }
 
+                // Crear un mapa de HP por ID para acceso rápido
+                const hpMap = {};
+                if (teamHPData && Array.isArray(teamHPData)) {
+                    teamHPData.forEach(pokemon => {
+                        if (pokemon._id) {
+                            hpMap[pokemon._id.toString()] = {
+                                currentHP: pokemon.currentHP,
+                                maxHP: pokemon.maxHP
+                            };
+                        }
+                    });
+                }
+
+                console.log("Datos de HP cargados:", hpMap);
+
                 // Procesar equipo y almacenamiento en paralelo
                 const [team, storage] = await Promise.all([
                     Promise.all(
@@ -50,7 +65,18 @@ const PokemonPC = ({ onClose }) => {
                             fullPokemon._id = pokemon._id;
                             fullPokemon.position = pokemon.position;
                             fullPokemon.isShiny = pokemon.isShiny || false;
-                            fullPokemon.currentHP = pokemon.currentHP || fullPokemon.stats.hp;
+                            
+                            // Usar HP de la base de datos si está disponible
+                            const pokemonHP = hpMap[pokemon._id.toString()];
+                            if (pokemonHP) {
+                                fullPokemon.currentHP = pokemonHP.currentHP;
+                                fullPokemon.maxHP = pokemonHP.maxHP || fullPokemon.stats.hp;
+                            } else {
+                                // Como fallback, usar HP de la base local o valor máximo
+                                fullPokemon.currentHP = pokemon.currentHP || fullPokemon.stats.hp;
+                                fullPokemon.maxHP = pokemon.maxHP || fullPokemon.stats.hp;
+                            }
+                            
                             return fullPokemon;
                         })
                     ),
@@ -59,12 +85,19 @@ const PokemonPC = ({ onClose }) => {
                             const fullPokemon = await Pokemon.fetchPokemon(pokemon.pokemonId);
                             fullPokemon._id = pokemon._id;
                             fullPokemon.isShiny = pokemon.isShiny || false;
-                            fullPokemon.currentHP = pokemon.currentHP || fullPokemon.stats.hp;
+                            
+                            // Para almacenamiento, suponemos que están curados
+                            fullPokemon.currentHP = fullPokemon.stats.hp;
+                            fullPokemon.maxHP = fullPokemon.stats.hp;
+                            
                             return fullPokemon;
                         })
                     )
                 ]);
 
+                // Ordenar equipo por posición
+                team.sort((a, b) => a.position - b.position);
+                
                 setTeamPokemon(team);
                 setStoragePokemon(storage);
                 setError(null);
@@ -200,15 +233,15 @@ const PokemonPC = ({ onClose }) => {
                                                 <div
                                                     className="pc-pokemon-hp-fill"
                                                     style={{
-                                                        width: `${(pokemon.currentHP / pokemon.stats.hp) * 100}%`,
-                                                        backgroundColor: pokemon.currentHP / pokemon.stats.hp > 0.5
-                                                            ? '#78C850' : pokemon.currentHP / pokemon.stats.hp > 0.2
+                                                        width: `${(pokemon.currentHP / (pokemon.maxHP || pokemon.stats.hp)) * 100}%`,
+                                                        backgroundColor: pokemon.currentHP / (pokemon.maxHP || pokemon.stats.hp) > 0.5
+                                                            ? '#78C850' : pokemon.currentHP / (pokemon.maxHP || pokemon.stats.hp) > 0.2
                                                                 ? '#F8D030' : '#F03030'
                                                     }}
                                                 ></div>
                                             </div>
                                             <p className="pc-pokemon-hp-text">
-                                                {Math.ceil(pokemon.currentHP)}/{pokemon.stats.hp}
+                                                {Math.ceil(pokemon.currentHP)}/{pokemon.maxHP || pokemon.stats.hp}
                                             </p>
                                         </div>
                                     </div>

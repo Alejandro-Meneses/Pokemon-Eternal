@@ -36,6 +36,7 @@ router.get('/pokedex', auth, async (req, res) => {
   }
 });
 
+
 // @route   GET api/pokemon/pokedex/complete
 // @desc    Obtener la Pokedex del usuario con detalles completos
 // @access  Private
@@ -192,7 +193,49 @@ router.post('/team', auth, async (req, res) => {
     return res.status(500).json({ msg: 'Error del servidor' });
   }
 });
+// Add this route to your backend Pokemon routes
 
+/**
+ * @route   POST /api/pokemon/update-hp
+ * @desc    Update a specific Pokemon's HP
+ * @access  Private
+ */
+router.post('/update-hp', auth, async (req, res) => {
+  try {
+    const { pokemonId, currentHP } = req.body;
+    
+    if (!pokemonId || currentHP === undefined) {
+      return res.status(400).json({ error: 'Se requiere pokemonId y currentHP' });
+    }
+    
+    // Validar que currentHP es no-negativo
+    if (typeof currentHP !== 'number' || currentHP < 0) {
+      return res.status(400).json({ error: 'currentHP debe ser un número no negativo' });
+    }
+    
+    // Buscar el usuario y actualizar el Pokémon en una sola operación
+    const result = await User.findOneAndUpdate(
+      { 
+        _id: req.user.id, 
+        'team._id': pokemonId 
+      },
+      { 
+        $set: { 'team.$.currentHP': currentHP } 
+      },
+      { new: true }
+    );
+    
+    if (!result) {
+      return res.status(404).json({ error: 'No se pudo actualizar el Pokémon' });
+    }
+    
+    return res.json({ success: true });
+    
+  } catch (error) {
+    console.error('Error updating Pokemon HP:', error);
+    res.status(500).json({ error: 'Error del servidor al actualizar HP del Pokémon' });
+  }
+});
 // @route   POST api/pokemon/catch
 // @desc    Capturar un nuevo Pokémon
 // @access  Private

@@ -127,4 +127,120 @@ userSchema.methods.addToPokedex = function(pokemonId) {
   this.playerStats.pokemonCaught += 1;
 };
 
+
+// Inicializar HP para un nuevo Pokémon
+userSchema.methods.initializePokemonHP = async function(pokemonId, isTeam = false, position = null) {
+  try {
+    // Obtener HP base de la PokeAPI
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
+    if (!response.ok) {
+      throw new Error(`Error al obtener datos de Pokémon ${pokemonId}`);
+    }
+    
+    const data = await response.json();
+    
+    // Extraer el HP base
+    const hpStat = data.stats.find(stat => stat.stat.name === 'hp');
+    const maxHP = hpStat ? hpStat.base_stat : 100; // Valor por defecto si no se encuentra
+    
+    // Si es para el equipo, añadir con posición
+    if (isTeam && position) {
+      // Verificar si ya existe un Pokémon en esa posición
+      const existingIndex = this.team.findIndex(p => p.position === position);
+      if (existingIndex !== -1) {
+        // Actualizar el Pokémon existente con los datos de HP
+        this.team[existingIndex].currentHP = maxHP;
+        this.team[existingIndex].maxHP = maxHP;
+      } else {
+        // Añadir nuevo Pokémon al equipo
+        this.team.push({
+          pokemonId,
+          position,
+          currentHP: maxHP,
+          maxHP,
+          isShiny: false // Por defecto no es shiny
+        });
+      }
+    } 
+    // Si es para almacenamiento
+    else {
+      this.storage.push({
+        pokemonId,
+        currentHP: maxHP,
+        maxHP,
+        isShiny: false, // Por defecto no es shiny
+        dateAdded: new Date()
+      });
+    }
+    
+    await this.save();
+    return { success: true, maxHP };
+  } catch (error) {
+    console.error('Error inicializando HP:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Método para intercambiar Pokémon entre equipo y almacenamiento
+userSchema.methods.swapTeamWithStorage = async function(teamPosition, storageId) {
+  try {
+    // Encontrar el Pokémon en el equipo
+    const teamPokemon = this.team.find(p => p.position === teamPosition);
+    if (!teamPokemon) {
+      return { success: false, message: 'Posición de equipo no válida' };
+    }
+    
+    // Encontrar el Pokémon en almacenamiento
+    const storageIndex = this.storage.findIndex(p => p._id.toString() === storageId);
+    if (storageIndex === -1) {
+      return { success: false, message: 'Pokémon de almacenamiento no encontrado' };
+    }
+    
+    // Obtener datos del Pokémon de almacenamiento
+    const storagePokemon = this.storage[storageIndex];
+    
+    // Crear copia temporal del equipo para almacenamiento
+    const tempTeam = {
+      pokemonId: teamPokemon.pokemonId,
+      isShiny: teamPokemon.isShiny || false,
+      currentHP: teamPokemon.currentHP,
+      maxHP: teamPokemon.maxHP,
+      dateAdded: new Date()
+    };
+    
+    // Actualizar el equipo con el Pokémon de almacenamiento
+    teamPokemon.pokemonId = storagePokemon.pokemonId;
+    teamPokemon.isShiny = storagePokemon.isShiny || false;
+    
+    // IMPORTANTE: Preservar el HP cuando se intercambian Pokémon
+    teamPokemon.currentHP = storagePokemon.currentHP || (storagePokemon.maxHP || teamPokemon.maxHP);
+    teamPokemon.maxHP = storagePokemon.maxHP || teamPokemon.maxHP;
+    
+    // Eliminar de almacenamiento y añadir el del equipo
+    this.storage.splice(storageIndex, 1);
+    this.storage.push(tempTeam);
+    
+    await this.save();
+    return { success: true, message: 'Intercambio completado' };
+  } catch (error) {
+    console.error('Error en intercambio:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Obtener estadísticas del HP del equipo
+userSchema.methods.getTeamHPStats = function() {
+  return this.team.map(pokemon => ({
+    _id: pokemon._id,
+    pokemonId: pokemon.pokemonId,
+    position: pokemon.position,
+    currentHP: pokemon.currentHP,
+    maxHP: pokemon.maxHP,
+    percentage: pokemon.currentHP && pokemon.maxHP 
+      ? Math.floor((pokemon.currentHP / pokemon.maxHP) * 100)
+      : null,
+    isShiny: pokemon.isShiny
+  }));
+};
+
 module.exports = mongoose.model('User', userSchema);
