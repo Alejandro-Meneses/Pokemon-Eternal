@@ -1,3 +1,7 @@
-# https://www.robotstxt.org/robotstxt.html
+# Pokémon Eternal - https://pokemoneternal.vercel.app
+
 User-agent: *
-Disallow:
+Allow: /
+
+# Sitemap
+Sitemap: https://pokemoneternal.vercel.app/sitemap.xml

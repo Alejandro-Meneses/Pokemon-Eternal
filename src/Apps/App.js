@@ -68,10 +68,13 @@ export default function App() {
         <div className="container">
           {/* Sidebar */}
           <div className="sidebar">
-            <span className="logo"></span>
             {/* Corregido: reemplazado <a> con href inválido por un <div> */}
-            <div className="logo-expand">Pokemon Eternal</div>
-            <div className="side-wrapper">
+<Link to="/" className="logo-link">
+    <div className="logo-expand" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <img src={require("../images/Logo.png")} alt="Logo Pokémon Eternal" style={{ height: "40px", width: "40px" }} />
+      <span>Pokemon Eternal</span>
+    </div>
+  </Link>            <div className="side-wrapper">
               <div className="side-title"></div>
               <div className="side-menu">
                 <Link className="sidebar-link" to="/">

@@ -58,6 +58,27 @@ body:before {
 /* ===== DESKTOP LAYOUT ===== */
 
 /* Container Styles */
+.logo-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  margin-bottom: 20px;
+  transition: background 0.2s;
+  pointer-events: auto;
+}
+.logo-link:hover {
+  background: rgba(61, 125, 202, 0.08);
+  border-radius: 12px;
+}
+.logo-expand img {
+  display: block;
+}
+.logo-expand span {
+  font-size: 1.4rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  
+}
 .container {
   background-color: var(--theme-bg);
   max-width: 1240px;
