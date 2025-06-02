@@ -140,7 +140,6 @@ router.post("/reset-password", async (req, res) => {
             <p style="margin: 0; font-size: 14px;">Tu nueva contraseña es:</p>
             <h3 style="margin: 10px 0; color: #FF5350; letter-spacing: 2px; font-family: monospace;">${newPassword}</h3>
           </div>
-          <p>Te recomendamos <strong>cambiar esta contraseña</strong> por una personal una vez inicies sesión.</p>
           <p style="color: #888; font-size: 13px; margin-top: 40px;">Si no solicitaste este cambio, por favor contacta con nuestro soporte inmediatamente.</p>
         </div>
       `,

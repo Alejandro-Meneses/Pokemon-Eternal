@@ -28,7 +28,14 @@ export default function Login({ onLogin }) {
       confirmButtonColor: '#3D7DCA',
       cancelButtonColor: '#6c757d',
       background: '#1f1d2b',
-      color: '#f8f9fa'
+      color: '#f8f9fa',
+      customClass: {
+        popup: 'pokemon-alert-popup',
+        title: 'pokemon-alert-title',
+        confirmButton: 'pokemon-alert-button',
+        htmlContainer: 'swal2-html-container',
+        input: 'pokemon-alert-input'
+      }
     });
 
     if (!isConfirmed || !forgotEmail) return;
@@ -44,12 +51,19 @@ export default function Login({ onLogin }) {
           Swal.showLoading();
         },
         background: '#1f1d2b',
-        color: '#f8f9fa'
+        color: '#f8f9fa',
+        customClass: {
+          popup: 'pokemon-alert-popup',
+          title: 'pokemon-alert-title',
+          confirmButton: 'pokemon-alert-button',
+          htmlContainer: 'swal2-html-container',
+          input: 'pokemon-alert-input'
+        }
       });
 
       // Llamar a la API real de reseteo
       const result = await resetPassword(forgotEmail);
-      
+
       if (result.success) {
         // Éxito 
         Swal.fire({
@@ -59,7 +73,14 @@ export default function Login({ onLogin }) {
           confirmButtonText: 'Entendido',
           confirmButtonColor: '#3D7DCA',
           background: '#1f1d2b',
-          color: '#f8f9fa'
+          color: '#f8f9fa',
+          customClass: {
+            popup: 'pokemon-alert-popup',
+            title: 'pokemon-alert-title',
+            confirmButton: 'pokemon-alert-button',
+            htmlContainer: 'swal2-html-container',
+            input: 'pokemon-alert-input'
+          }
         });
       } else {
         throw new Error(result.error || 'Error al procesar la solicitud');
@@ -73,7 +94,14 @@ export default function Login({ onLogin }) {
         confirmButtonText: 'Entendido',
         confirmButtonColor: '#FF5350',
         background: '#1f1d2b',
-        color: '#f8f9fa'
+        color: '#f8f9fa',
+        customClass: {
+          popup: 'pokemon-alert-popup',
+          title: 'pokemon-alert-title',
+          confirmButton: 'pokemon-alert-button',
+          htmlContainer: 'swal2-html-container',
+          input: 'pokemon-alert-input'
+        }
       });
     }
   };
@@ -81,32 +109,32 @@ export default function Login({ onLogin }) {
   // Mantener el resto del código de Login sin cambios
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validaciones básicas
     if (!email.trim()) {
       setError("Por favor ingresa tu correo electrónico");
       return;
     }
-    
+
     if (!password) {
       setError("Por favor ingresa tu contraseña");
       return;
     }
-    
+
     setIsLoading(true);
     setError("");
-    
+
     try {
       const response = await login({ email, password });
-      
+
       if (response.token) {
         // Inicio de sesión exitoso
         localStorage.setItem("token", response.token);
         localStorage.setItem("user", JSON.stringify(response.user));
-        
+
         // Actualizar estado de autenticación
         onLogin();
-        
+
         // Redirigir a la página principal
         navigate("/");
       } else if (response.error) {
@@ -151,7 +179,7 @@ export default function Login({ onLogin }) {
           {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
         </button>
         {error && <p className="error-message">{error}</p>}
-        
+
         {/* Añadir enlace de olvidé contraseña */}
         <div className="forgot-password">
           <span onClick={handleForgotPassword}>
