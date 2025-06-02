@@ -1,3 +1,67 @@
+// Implementación simple de caché en memoria
+const pokemonCache = {
+  data: {},
+  moveData: {},
+  
+  // Método para obtener un elemento del caché
+  get: function(key) {
+    const item = this.data[key];
+    if (!item) return null;
+    
+    // Verificar si el ítem ha expirado
+    if (item.expiry < Date.now()) {
+      delete this.data[key];
+      return null;
+    }
+    
+    return item.value;
+  },
+  
+  // Método para guardar un elemento en caché
+  set: function(key, value, ttlSeconds = 3600) {
+    const expiry = Date.now() + (ttlSeconds * 1000);
+    this.data[key] = { value, expiry };
+  },
+  
+  // Método para obtener un movimiento del caché
+  getMove: function(key) {
+    const item = this.moveData[key];
+    if (!item) return null;
+    
+    if (item.expiry < Date.now()) {
+      delete this.moveData[key];
+      return null;
+    }
+    
+    return item.value;
+  },
+  
+  // Método para guardar un movimiento en caché
+  setMove: function(key, value, ttlSeconds = 3600) {
+    const expiry = Date.now() + (ttlSeconds * 1000);
+    this.moveData[key] = { value, expiry };
+  },
+  
+  // Método para limpiar el caché
+  clear: function() {
+    this.data = {};
+    this.moveData = {};
+    return "Caché limpiado";
+  },
+  
+  // Método para obtener estadísticas del caché
+  getStats: function() {
+    let pokemonCount = Object.keys(this.data).length;
+    let moveCount = Object.keys(this.moveData).length;
+    
+    return {
+      pokemonCount,
+      moveCount,
+      totalEntries: pokemonCount + moveCount
+    };
+  }
+};
+
 class Pokemon {
   constructor(data) {
     this.id = data.id; // ID del Pokémon
@@ -14,28 +78,27 @@ class Pokemon {
     this.sprites = {
       front: data.sprites.front_default,
       back: data.sprites.back_default,
-      front_shiny: data.sprites.front_shiny,   // Usar front_shiny en lugar de shiny
-      back_shiny: data.sprites.back_shiny,     // Añadir back_shiny
-      officialArtwork: data.sprites.other["official-artwork"].front_default,
-    }; // Sprites
+      front_shiny: data.sprites.front_shiny,
+      back_shiny: data.sprites.back_shiny,
+      officialArtwork: data.sprites.other["official-artwork"]?.front_default || data.sprites.front_default,
+    };
 
     // Guarda la lista completa de movimientos para procesarlos después
     this.allMoves = data.moves;
     
-    // Configurar los mejores movimientos
-    this.moves = this.selectBestMoves(data.moves);
+    // Los movimientos se configurarán asíncronamente
+    this.moves = [];
   }
 
   // Método para determinar qué tipo de ataque es mejor para este Pokémon
   getBestAttackType() {
-    // Comparar ataque físico vs especial
     const physicalAttack = this.stats.attack || 0;
     const specialAttack = this.stats['special-attack'] || 0;
     
     return physicalAttack >= specialAttack ? 'physical' : 'special';
   }
 
-  // Método para seleccionar los 4 mejores movimientos
+  // Método para seleccionar los 4 mejores movimientos (con caché)
   async selectBestMoves(allMoves) {
     if (!allMoves || allMoves.length === 0) {
       console.warn(`Pokémon ${this.name} no tiene movimientos disponibles`);
@@ -51,12 +114,48 @@ class Pokemon {
       // Crear una copia para no modificar el original
       const movesToProcess = [...allMoves];
       
-      // Función para obtener información detallada de un movimiento
+      // Función para obtener información detallada de un movimiento (con caché)
       const fetchMoveDetails = async (moveUrl) => {
+        // Extraer ID del movimiento de la URL para usar como clave de caché
+        const moveId = moveUrl.split("/").filter(Boolean).pop();
+        const cacheKey = `move-${moveId}`;
+        
+        // Verificar si el movimiento está en caché
+        const cachedMove = pokemonCache.getMove(cacheKey);
+        if (cachedMove) {
+          console.log(`[CACHE HIT] Movimiento ${moveId}`);
+          return cachedMove;
+        }
+        
+        console.log(`[CACHE MISS] Obteniendo movimiento ${moveId}`);
+        
         try {
-          const response = await fetch(moveUrl);
-          if (!response.ok) return null;
-          return await response.json();
+          // Implementación mejorada con reintentos
+          let retries = 0;
+          const maxRetries = 3;
+          let response = null;
+          
+          while (retries < maxRetries) {
+            try {
+              response = await fetch(moveUrl);
+              if (response.ok) break;
+              retries++;
+              await new Promise(r => setTimeout(r, 1000 * retries)); // Esperar más tiempo en cada reintento
+            } catch (err) {
+              retries++;
+              if (retries >= maxRetries) throw err;
+              await new Promise(r => setTimeout(r, 1000 * retries));
+            }
+          }
+          
+          if (!response || !response.ok) return null;
+          
+          const moveData = await response.json();
+          
+          // Guardar en caché
+          pokemonCache.setMove(cacheKey, moveData);
+          
+          return moveData;
         } catch (error) {
           console.error(`Error obteniendo detalles del movimiento: ${error}`);
           return null;
@@ -137,11 +236,41 @@ class Pokemon {
     }));
   }
 
-  // Método estático para obtener un Pokémon desde la API con sus mejores movimientos
+  // Método estático para obtener un Pokémon desde la API con sus mejores movimientos (con caché)
   static async fetchPokemon(id) {
     try {
-      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-      if (!response.ok) {
+      // Normalizar el ID para usarlo como clave de caché
+      const normalizedId = String(id).toLowerCase();
+      const cacheKey = `pokemon-${normalizedId}`;
+      
+      // Verificar si el Pokémon está en caché
+      const cachedPokemon = pokemonCache.get(cacheKey);
+      if (cachedPokemon) {
+        console.log(`[CACHE HIT] Pokémon ${normalizedId}`);
+        return cachedPokemon;
+      }
+      
+      console.log(`[CACHE MISS] Obteniendo Pokémon ${normalizedId}`);
+      
+      // Implementación mejorada con reintentos
+      let retries = 0;
+      const maxRetries = 3;
+      let response = null;
+      
+      while (retries < maxRetries) {
+        try {
+          response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+          if (response.ok) break;
+          retries++;
+          await new Promise(r => setTimeout(r, 1000 * retries));
+        } catch (err) {
+          retries++;
+          if (retries >= maxRetries) throw err;
+          await new Promise(r => setTimeout(r, 1000 * retries));
+        }
+      }
+      
+      if (!response || !response.ok) {
         throw new Error(`Error al obtener el Pokémon con ID ${id}`);
       }
       
@@ -151,11 +280,23 @@ class Pokemon {
       // Procesar los movimientos de forma asíncrona
       pokemon.moves = await pokemon.selectBestMoves(data.moves);
       
+      // Guardar en caché
+      pokemonCache.set(cacheKey, pokemon);
+      
       return pokemon;
     } catch (error) {
       console.error("Error en fetchPokemon:", error);
       throw error;
     }
+  }
+  
+  // Métodos estáticos para administrar el caché
+  static clearCache() {
+    return pokemonCache.clear();
+  }
+  
+  static getCacheStats() {
+    return pokemonCache.getStats();
   }
 }
 

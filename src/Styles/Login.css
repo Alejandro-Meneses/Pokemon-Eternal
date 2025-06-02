@@ -10,6 +10,55 @@ body {
   font-family: Arial, sans-serif;
 }
 
+/* Añadir estos estilos al archivo existente para asegurar consistencia de fuentes */
+
+.pokemon-alert-popup {
+  border-radius: 20px;
+  border: 2px solid var(--primary-color);
+  box-shadow: 0 0 20px rgba(61, 125, 202, 0.3);
+  font-family: 'Poppins', sans-serif !important; /* Usar la misma fuente que el resto de la app */
+}
+
+.pokemon-alert-title {
+  color: var(--light-color);
+  font-weight: 600; /* Semi-bold en lugar de bold para mayor refinamiento */
+  font-size: 1.5rem;
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.pokemon-alert-button {
+  border-radius: 10px !important;
+  text-transform: uppercase !important;
+  font-weight: 500 !important; /* Medium weight para botones */
+  padding: 10px 25px !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  font-family: 'Poppins', sans-serif !important;
+  letter-spacing: 0.5px; /* Mejora la legibilidad */
+}
+
+/* Estilo para el contenido HTML de los alerts */
+.swal2-html-container {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 1rem !important;
+  color: var(--light-color) !important;
+}
+
+/* Estilo para el input de correo en el alert */
+.pokemon-alert-input {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: var(--light-color) !important;
+  border-radius: 10px !important;
+  padding: 10px !important;
+  margin: 10px 0 !important;
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.pokemon-alert-input:focus {
+  box-shadow: 0 0 0 2px rgba(61, 125, 202, 0.5) !important;
+  border-color: var(--primary-color) !important;
+}
+
 /* Contenedor del formulario */
 .login-container {
   display: flex;
@@ -141,4 +190,115 @@ body {
 
 .auth-toggle a:hover {
   text-decoration: underline;
+}
+
+/* Añadir al final del archivo */
+
+/* Estilos personalizados para SweetAlert */
+.pokemon-alert-popup {
+  border-radius: 20px;
+  border: 2px solid var(--primary-color);
+  box-shadow: 0 0 20px rgba(61, 125, 202, 0.3);
+  font-family: 'Poppins', sans-serif !important; /* Usar la misma fuente que el resto de la app */
+}
+
+.pokemon-alert-title {
+  color: var(--light-color);
+  font-weight: 600; /* Semi-bold en lugar de bold para mayor refinamiento */
+  font-size: 1.5rem;
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.pokemon-alert-button {
+  border-radius: 10px !important;
+  text-transform: uppercase !important;
+  font-weight: 500 !important; /* Medium weight para botones */
+  padding: 10px 25px !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  font-family: 'Poppins', sans-serif !important;
+  letter-spacing: 0.5px; /* Mejora la legibilidad */
+}
+
+/* Estilo para el contenido HTML de los alerts */
+.swal2-html-container {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 1rem !important;
+  color: var(--light-color) !important;
+}
+
+/* Estilo para el input de correo en el alert */
+.pokemon-alert-input {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: var(--light-color) !important;
+  border-radius: 10px !important;
+  padding: 10px !important;
+  margin: 10px 0 !important;
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.pokemon-alert-input:focus {
+  box-shadow: 0 0 0 2px rgba(61, 125, 202, 0.5) !important;
+  border-color: var(--primary-color) !important;
+}
+
+/* Enlace para recuperación de contraseña */
+.forgot-password {
+  margin-top: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+.forgot-password span {
+  color: var(--accent-color);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.forgot-password span:hover {
+  color: #ff7875;
+  text-decoration: underline;
+}
+
+.password-strength-container {
+  margin-top: 5px;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.password-strength-label {
+  font-size: 0.8rem;
+  margin-bottom: 5px;
+  text-align: left;
+  color: var(--light-color);
+}
+
+.password-strength-meter {
+  display: flex;
+  height: 5px;
+  width: 100%;
+  gap: 3px;
+}
+
+.strength-segment {
+  flex: 1;
+  height: 100%;
+  background-color: #444;
+  border-radius: 2px;
+  transition: background-color 0.3s ease;
+}
+
+.strength-segment.active {
+  background-color: var(--primary-color); /* Por defecto, se sobreescribirá */
+}
+
+.password-match-error {
+  color: var(--accent-color);
+  font-size: 0.8rem;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  text-align: left;
+  width: 100%;
 }

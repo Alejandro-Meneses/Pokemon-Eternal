@@ -101,9 +101,16 @@ const userSchema = new mongoose.Schema({
   
   // 4. Estadísticas del jugador
   playerStats: {
-    battlesWon: { type: Number, default: 0 },
-    battlesLost: { type: Number, default: 0 },
-    pokemonCaught: { type: Number, default: 0 }
+     // Estadísticas existentes
+  battlesWon: { type: Number, default: 0 },
+  battlesLost: { type: Number, default: 0 },
+  pokemonCaught: { type: Number, default: 0 },
+  
+  // Nuevos campos para el sistema de niveles
+  consecutiveVictories: { type: Number, default: 0 }, // Para calcular el nivel
+  playerLevel: { type: Number, default: 1 },          // Nivel actual
+  levelProgress: { type: Number, default: 0 },        // Progreso actual en el nivel (0-4)
+  nextLevelThreshold: { type: Number, default: 5 }    // Victorias necesarias para el siguiente nivel
   }
 });
 
@@ -127,7 +134,62 @@ userSchema.methods.addToPokedex = function(pokemonId) {
   this.playerStats.pokemonCaught += 1;
 };
 
+// Añadir después de los métodos existentes
 
+// Actualizar estadísticas de batalla
+userSchema.methods.updateBattleStats = function(victory, pokeDollarsEarned = 0) {
+  // Actualizar contadores de batallas
+  if (victory) {
+    this.playerStats.battlesWon += 1;
+    this.playerStats.consecutiveVictories += 1;
+    
+    // Añadir PokeDollars ganados
+    this.pokedollars += pokeDollarsEarned;
+    
+    // Actualizar progreso de nivel
+    this.playerStats.levelProgress = this.playerStats.consecutiveVictories % 5;
+    
+    // Calcular nivel: cada 5 victorias consecutivas = 1 nivel
+    const newLevel = Math.floor(this.playerStats.consecutiveVictories / 5) + 1;
+    
+    // Si subió de nivel
+    if (newLevel > this.playerStats.playerLevel) {
+      this.playerStats.playerLevel = newLevel;
+      // También podríamos dar una bonificación por subir de nivel
+      this.pokedollars += 100 * newLevel; // Bonificación por subir de nivel
+    }
+  } else {
+    this.playerStats.battlesLost += 1;
+    // Reiniciar victorias consecutivas al perder
+    this.playerStats.consecutiveVictories = 0;
+    this.playerStats.levelProgress = 0;
+    
+    // El nivel se mantiene en 1 como mínimo
+    this.playerStats.playerLevel = 1;
+  }
+  
+  return {
+    battlesWon: this.playerStats.battlesWon,
+    battlesLost: this.playerStats.battlesLost,
+    consecutiveVictories: this.playerStats.consecutiveVictories,
+    playerLevel: this.playerStats.playerLevel,
+    levelProgress: this.playerStats.levelProgress,
+    pokedollars: this.pokedollars
+  };
+};
+
+// Obtener estadísticas para mostrar en la UI
+userSchema.methods.getBattleStats = function() {
+  return {
+    battlesWon: this.playerStats.battlesWon,
+    battlesLost: this.playerStats.battlesLost,
+    consecutiveVictories: this.playerStats.consecutiveVictories,
+    playerLevel: this.playerStats.playerLevel,
+    levelProgress: this.playerStats.levelProgress,
+    pokedollars: this.pokedollars,
+    victoriesNeeded: 5 - (this.playerStats.consecutiveVictories % 5)
+  };
+};
 // Inicializar HP para un nuevo Pokémon
 userSchema.methods.initializePokemonHP = async function(pokemonId, isTeam = false, position = null) {
   try {

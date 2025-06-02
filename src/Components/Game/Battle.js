@@ -3,19 +3,21 @@ import "../../Styles/Battle.css";
 import Pokemon from "../../backend/models/Pokemon";
 import BattleEngine from "../../backend/battle/Battleengine";
 import { ReactComponent as PokeballIcon } from "../../images/Pokeball.svg";
-import { useNavigate, useLocation } from "react-router-dom"; 
+import { useNavigate, useLocation } from "react-router-dom";
 import { getTeam, updatePokemonHP } from "../../Services/PokemonService";
+import { updatePlayerStats, updateBattleResult } from "../../Services/UserService";
+import Swal from 'sweetalert2';
 
 const Battle = () => {
     const navigate = useNavigate();
-    const location = useLocation(); 
-    
+    const location = useLocation();
+
     // Obtener el nivel del jugador (por defecto 1)
     const playerLevel = location.state?.playerLevel || 1;
-    
+
     // Obtener token para llamadas a la API
     const token = localStorage.getItem('token');
-    
+    const [defeatedPokemon, setDefeatedPokemon] = useState(0);
     const [playerPokemon, setPlayerPokemon] = useState(null);
     const [rivalPokemon, setRivalPokemon] = useState(null);
     const [showMoves, setShowMoves] = useState(false);
@@ -38,8 +40,35 @@ const Battle = () => {
     const [tooltipContent, setTooltipContent] = useState(null);
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
+    // Referencia para evitar ejecuciones múltiples
+    const processed = useRef(false);
+
     // Referencia para auto-scroll del log de batalla
     const logContainerRef = useRef(null);
+
+    // FUNCIONES HELPER PARA REDUCIR REDUNDANCIA
+
+    // Función para esperar un tiempo determinado
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    // Función para calcular recompensa según nivel
+    const calculatePokeDollarsReward = (level) => {
+        switch (level) {
+            case 1: return 25;
+            case 2: return 40;
+            case 3: return 50;
+            case 4: return 70;
+            case 5:
+            default: return 100;
+        }
+    };
+
+    // Función para obtener el color de la barra de HP basado en porcentaje
+    const getHPBarColor = (percentage) => {
+        if (percentage > 50) return '#78C850';  // Verde
+        if (percentage > 20) return '#F8D030';  // Amarillo
+        return '#F03030';  // Rojo
+    };
 
     // Funciones para el tooltip personalizado
     const showTooltip = (content, event) => {
@@ -55,26 +84,39 @@ const Battle = () => {
         setTooltipContent(null);
     };
 
-    // NUEVO: Función para sincronizar HP con la base de datos
+    // Función unificada para actualizar HP del jugador
+    const updatePlayerHP = (newHP, shouldSync = false) => {
+        // Actualizar UI
+        setPlayerHP({
+            current: newHP,
+            max: playerHP.max,
+            percentage: (newHP / playerHP.max) * 100
+        });
+
+        // Actualizar estado interno
+        updatePokemonInTeam(playerPokemon.id, newHP);
+
+        // Sincronizar si es necesario
+        if (shouldSync && playerPokemon?._id) {
+            syncPokemonHP(playerPokemon._id, newHP, true);
+        }
+    };
+
+    // Función para sincronizar HP con la base de datos
     const syncPokemonHP = async (pokemonId, currentHP, forceSync = false) => {
         try {
             if (!token || syncInProgress) return;
-            
+
             // Evitar sincronizaciones múltiples simultáneas
             setSyncInProgress(true);
-            
-            // Primero actualizar localmente (para que la UI sea responsiva)
-            updatePokemonInTeam(pokemonId, currentHP);
-            
+
             // Solo sincronizar con la DB en momentos importantes o si forceSync es true
             if (forceSync || currentHP <= 0 || Math.random() < 0.2) { // 20% de probabilidad para sincronizaciones aleatorias
                 console.log(`Sincronizando HP de ${pokemonId} a la base de datos: ${currentHP}`);
                 const result = await updatePokemonHP(pokemonId, currentHP, token);
-                
+
                 if (result.error) {
                     console.error("Error al sincronizar HP con la base de datos:", result.error);
-                } else {
-                    console.log(`HP sincronizado correctamente para Pokémon ID ${pokemonId}`);
                 }
             }
         } catch (error) {
@@ -84,18 +126,9 @@ const Battle = () => {
         }
     };
 
-    // 1. Solo actualiza la UI (barra de HP)
-    const updateUIPlayerHP = (currentHP) => {
-        setPlayerHP({
-            current: currentHP,
-            max: playerHP.max,
-            percentage: (currentHP / playerHP.max) * 100
-        });
-    };
-
-    // 2. Solo actualiza el HP en el array de equipo
+    // Solo actualiza el HP en el array de equipo
     const updatePokemonInTeam = (pokemonId, currentHP) => {
-        setTeamPokemon(prev => prev.map(pokemon => 
+        setTeamPokemon(prev => prev.map(pokemon =>
             pokemon.id === pokemonId ? { ...pokemon, currentHP } : pokemon
         ));
     };
@@ -110,12 +143,12 @@ const Battle = () => {
     const applyRivalBoost = (pokemon, boostFactor) => {
         // Crear copia profunda del Pokémon
         const boostedPokemon = JSON.parse(JSON.stringify(pokemon));
-        
+
         // Aplicar boost a las estadísticas
         Object.keys(boostedPokemon.stats).forEach(stat => {
             boostedPokemon.stats[stat] = Math.ceil(boostedPokemon.stats[stat] * boostFactor);
         });
-        
+
         return boostedPokemon;
     };
 
@@ -139,8 +172,6 @@ const Battle = () => {
                     return;
                 }
 
-                console.log("Equipo del jugador:", teamData);
-
                 // 2. Cargar los datos completos de cada Pokémon del equipo
                 const completeTeam = await Promise.all(
                     teamData.map(async (pokemon) => {
@@ -156,27 +187,25 @@ const Battle = () => {
                         return fullPokemon;
                     })
                 );
+                if (location.state?.defeatedPokemon !== undefined) {
+                    setDefeatedPokemon(location.state.defeatedPokemon);
+                }
 
                 // 3. Guardar todo el equipo completo para el selector
                 setTeamPokemon(completeTeam);
-                console.log("Equipo completo cargado:", completeTeam);
 
                 // 4. Usar el primer Pokémon como activo
                 let playerInstance = completeTeam[0];
-                
+
                 // 5. Generar rival
                 const rivalId = Math.floor(Math.random() * 1025) + 1;
                 let rivalInstance = await Pokemon.fetchPokemon(rivalId);
-                
+
                 // Ajustar el nivel del rival según el nivel del jugador
                 const rivalLevelBoost = calculateRivalLevelBoost(playerLevel);
-                
+
                 // Aplicar boost de stats al rival basado en el nivel del jugador
                 rivalInstance = applyRivalBoost(rivalInstance, rivalLevelBoost);
-
-                console.log(`Pokémon rival ajustado al nivel del jugador ${playerLevel} (boost: ${rivalLevelBoost}x)`);
-                console.log("Pokémon del jugador completo:", playerInstance);
-                console.log("Pokémon rival:", rivalInstance);
 
                 // 6. Inicializar HP y UI
                 setPlayerHP({
@@ -193,7 +222,6 @@ const Battle = () => {
 
                 // 7. Configurar movimientos
                 setMoves(playerInstance.moves || []);
-                console.log("Movimientos del jugador:", playerInstance.moves);
 
                 // 8. Establecer los Pokémon y el motor de batalla
                 setPlayerPokemon(playerInstance);
@@ -221,101 +249,165 @@ const Battle = () => {
         }
     }, [battleLog]);
 
-    // MODIFICADO: Cuando la batalla termina, restauramos HP completo a todo el equipo y sincronizamos con DB
+    // Efecto unificado para manejar fin de batalla (victoria, derrota, restauración de HP)
     useEffect(() => {
-        if (battleOver) {
-            // Si el jugador ganó, enviar evento de victoria
+        if (battleOver && !processed.current) {
+            processed.current = true;
+
+            // Manejar evento según resultado de batalla
             if (battleResult === 'victory') {
-                // Enviar evento personalizado para informar al Board
-                const battleEvent = new CustomEvent('battleResult', { 
-                    detail: { 
-                        victory: true,
-                        pokeDollars: 25
-                    } 
-                });
-                window.dispatchEvent(battleEvent);
+                // Calcular recompensa según nivel del jugador
+                const pokeDollarsReward = calculatePokeDollarsReward(playerLevel);
+
+                // NUEVO: Llamar a la API para actualizar estadísticas en el servidor
+                updateBattleResult(true, pokeDollarsReward, token)
+                    .then(result => {
+                        if (!result.error) {
+                            console.log("Estadísticas actualizadas en servidor:", result);
+
+                            // Mostrar mensaje de subida de nivel si corresponde
+                            if (result.levelUp) {
+                                Swal.fire({
+                                    title: '¡Subida de Nivel!',
+                                    html: `<p>¡Enhorabuena! Has subido al <b>nivel ${result.playerLevel}</b>.</p>
+         <p>¡Los Pokémon salvajes serán más fuertes!</p>`,
+                                    icon: 'success',
+                                    confirmButtonText: '¡Genial!',
+                                    confirmButtonColor: '#78C850', // Verde Pokémon
+                                    background: '#f8f8f8',
+                                    customClass: {
+                                        title: 'pokemon-alert-title',
+                                        popup: 'pokemon-alert-popup',
+                                        confirmButton: 'pokemon-alert-button'
+                                    }
+                                });
+                            }
+
+                            // Enviar evento con los datos ACTUALIZADOS del servidor
+                            const battleEvent = new CustomEvent('battleResult', {
+                                detail: {
+                                    victory: true,
+                                    pokeDollars: result.pokedollars,
+                                    playerLevel: result.playerLevel,
+                                    levelProgress: result.levelProgress
+                                }
+                            });
+                            window.dispatchEvent(battleEvent);
+                        } else {
+                            console.error("Error al actualizar estadísticas:", result.error);
+                            // Fallback: Enviar evento con datos locales estimados
+                            fallbackBattleEvent(true, pokeDollarsReward);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error en la llamada API:", error);
+                        // Fallback: Enviar evento con datos locales estimados
+                        fallbackBattleEvent(true, pokeDollarsReward);
+                    });
+
+                // Actualizar mensaje con la recompensa específica
+                setBattleMessage(`¡Has ganado el combate! Ganaste ${pokeDollarsReward} PokeDólares. Volviendo al mapa...`);
+
+            } else if (battleResult === 'defeat') {
+                // Registrar derrota en el servidor
+                updateBattleResult(false, 0, token)
+                    .then(result => {
+                        if (!result.error) {
+                            console.log("Derrota registrada en el servidor:", result);
+
+                            // Enviar evento con los datos ACTUALIZADOS
+                            const battleEvent = new CustomEvent('battleResult', {
+                                detail: {
+                                    victory: false,
+                                    pokeDollars: result.pokedollars,
+                                    playerLevel: result.playerLevel,
+                                    levelProgress: result.levelProgress
+                                }
+                            });
+                            window.dispatchEvent(battleEvent);
+                        } else {
+                            console.error("Error al registrar derrota:", result.error);
+                            // Fallback: Enviar evento con datos locales
+                            fallbackBattleEvent(false, 0);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error en la llamada API:", error);
+                        // Fallback: Enviar evento con datos locales
+                        fallbackBattleEvent(false, 0);
+                    });
+
+                // Mensaje de derrota
+                setBattleMessage(`¡Te han ganado en el combate! Volviendo al mapa...`);
             }
-            
+
             // Restaurar HP completo a todo el equipo al finalizar
             const restoredTeam = teamPokemon.map(pokemon => ({
                 ...pokemon,
                 currentHP: pokemon.stats.hp
             }));
-            
-            setTeamPokemon(restoredTeam);
-            
+
             // Sincronizar HP restaurado con la base de datos
             const syncTeamHP = async () => {
                 if (!token) return;
-                
+
                 try {
                     for (const pokemon of restoredTeam) {
                         await syncPokemonHP(pokemon._id, pokemon.stats.hp, true);
-                        // Pequeña pausa para no sobrecargar el servidor
-                        await new Promise(resolve => setTimeout(resolve, 100));
+                        await delay(100);
                     }
-                    console.log("HP de todo el equipo restaurado y sincronizado con la base de datos");
                 } catch (error) {
                     console.error("Error al sincronizar HP del equipo:", error);
                 }
             };
-            
+
+            // Ejecutar sincronización sin esperar
             syncTeamHP();
-            
+
+            // Navegar después de un tiempo
             const timer = setTimeout(() => {
                 navigate('/Board');
-            }, 2500); // 2.5 segundos de espera
+            }, 2500);
 
-            // Limpieza del temporizador si el componente se desmonta
             return () => clearTimeout(timer);
         }
-    }, [battleOver, battleResult, navigate, teamPokemon, token]);
+    }, [battleOver, battleResult, navigate, token, teamPokemon, playerLevel]);
 
+    // Función auxiliar para fallbacks cuando falle la API
+    const fallbackBattleEvent = (isVictory, reward) => {
+        // Estimar valores locales cuando la API falla
+        const estimatedLevel = playerLevel;
+        const estimatedProgress = isVictory ? (defeatedPokemon + 1) % 5 : defeatedPokemon;
+
+        // En lugar de intentar actualizar el saldo, simplemente enviamos la recompensa calculada
+        // El componente que recibe el evento deberá decidir cómo manejarla
+        const battleEvent = new CustomEvent('battleResult', {
+            detail: {
+                victory: isVictory,
+                pokeDollars: isVictory ? reward : 0,  // Solo enviamos la recompensa si es victoria
+                playerLevel: estimatedLevel,
+                levelProgress: estimatedProgress
+            }
+        });
+        window.dispatchEvent(battleEvent);
+    };
     // Funciones para manejar los clics en los botones
     const handleAttack = () => {
         setShowMoves(true);
     };
 
-    // MODIFICADO: Función para mostrar el selector de Pokémon
-   // ACTUALIZADO: Función para mostrar el selector de Pokémon con datos frescos
-const handlePokemon = () => {
-    // 1. Antes de mostrar el selector, crear una copia actualizada del equipo
-    if (playerPokemon && battleEngine) {
-        // Actualizar todo el equipo con datos frescos del battleEngine
-        const updatedTeam = teamPokemon.map(pokemon => {
-            // Si es el Pokémon activo, usar los datos de la UI
-            if (pokemon.id === playerPokemon.id) {
-                return {
-                    ...pokemon,
-                    currentHP: playerHP.current
-                };
-            } 
-            
-            // Para los demás, intentar obtener el HP del battleEngine
-            const storedHP = battleEngine.getPokemonHP(pokemon.id);
-            if (storedHP !== null) {
-                return {
-                    ...pokemon,
-                    currentHP: storedHP
-                };
-            }
-            
-            // Si no hay datos en el battleEngine, no modificar
-            return pokemon;
-        });
-        
-        // Actualizar el estado con la copia actualizada
-        setTeamPokemon(updatedTeam);
-        console.log("Equipo actualizado para el selector:", updatedTeam.map(p => 
-            `${p.name}: ${p.currentHP}/${p.stats.hp}`
-        ));
-    }
-    
-    // 2. Usar un pequeño retraso para asegurar que el estado se actualice antes de mostrar el selector
-    setTimeout(() => setShowPokemonSelector(true), 50);
-};
+    // Función para mostrar el selector de Pokémon
+    const handlePokemon = () => {
+        // Actualizar HP del Pokémon actual antes de mostrar el selector
+        if (playerPokemon && playerHP.current !== undefined) {
+            updatePokemonInTeam(playerPokemon.id, playerHP.current);
+        }
 
-    // MODIFICADO: Función para el cambio de Pokémon con sincronización a DB
+        // Mostrar el selector con un pequeño retraso para asegurar actualización
+        setTimeout(() => setShowPokemonSelector(true), 50);
+    };
+
+    // Función para el cambio de Pokémon con sincronización a DB
     const handlePokemonChange = async (selectedPokemon) => {
         if (selectedPokemon.id === playerPokemon.id) {
             setBattleLog(prev => [...prev, `${selectedPokemon.name} ya está en combate.`]);
@@ -335,20 +427,20 @@ const handlePokemon = () => {
         try {
             // 1. Determinar si es un cambio forzado (Pokémon actual derrotado)
             const isForced = playerHP.current <= 0;
-            
+
             // 2. Guardar el HP del Pokémon actual en la base de datos (si no está debilitado)
-            if (!isForced && playerPokemon.id) {
+            if (!isForced && playerPokemon._id) {
                 await syncPokemonHP(playerPokemon._id, playerHP.current, true);
             }
 
             // 3. Crear una copia independiente del Pokémon seleccionado
             const selectedPokemonCopy = JSON.parse(JSON.stringify(selectedPokemon));
-            
+
             // 4. Mensaje de cambio
-            setBattleMessage(isForced ? 
-                `¡Adelante, ${selectedPokemonCopy.name}!` : 
+            setBattleMessage(isForced ?
+                `¡Adelante, ${selectedPokemonCopy.name}!` :
                 `¡Vuelve, ${playerPokemon.name}!`);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await delay(1000);
 
             // 5. Actualizar el motor de batalla con el nuevo Pokémon
             battleEngine.switchPlayerPokemon(selectedPokemonCopy);
@@ -363,9 +455,6 @@ const handlePokemon = () => {
                 max: selectedPokemonCopy.stats.hp,
                 percentage: (selectedPokemonCopy.currentHP / selectedPokemonCopy.stats.hp) * 100
             });
-            
-            // Para debug: Verificar el HP del nuevo Pokémon
-            console.log(`Cambiando a ${selectedPokemonCopy.name} con HP: ${selectedPokemonCopy.currentHP}/${selectedPokemonCopy.stats.hp}`);
 
             // 8. Actualizar los movimientos disponibles
             setMoves(selectedPokemonCopy.moves || []);
@@ -376,14 +465,14 @@ const handlePokemon = () => {
             } else {
                 setBattleLog(prev => [...prev, `¡Vuelve, ${previousPokemon.name}! ¡Adelante, ${selectedPokemonCopy.name}!`]);
             }
-            
+
             setBattleMessage(`¡Adelante, ${selectedPokemonCopy.name}!`);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await delay(1000);
 
             // 10. El rival solo ataca si el cambio no fue forzado
             if (!isForced) {
                 setBattleMessage(`Tu rival aprovecha el cambio...`);
-                await new Promise(resolve => setTimeout(resolve, 800));
+                await delay(800);
                 await executeRivalAttack();
             } else {
                 setBattleMessage(`¿Qué debería hacer ${selectedPokemonCopy.name}?`);
@@ -401,12 +490,12 @@ const handlePokemon = () => {
         if (playerPokemon.currentHP <= 0) {
             // Si está debilitado, mostrar mensaje de error
             setBattleLog(prev => [
-                ...prev, 
+                ...prev,
                 "¡No puedes continuar con un Pokémon debilitado! Debes seleccionar otro Pokémon."
             ]);
             return; // No permitir cerrar el selector
         }
-        
+
         // Si el Pokémon activo tiene HP > 0, permitir cerrar el selector
         setShowPokemonSelector(false);
     };
@@ -424,7 +513,7 @@ const handlePokemon = () => {
             setBattleMessage("Has escapado del combate. ¡Hasta la próxima!");
         } else {
             setBattleLog(prev => [...prev, "¡No has podido escapar!"]);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await delay(1000);
 
             // El rival ataca después de un intento fallido de huida
             await executeRivalAttack();
@@ -437,9 +526,15 @@ const handlePokemon = () => {
         setShowMoves(false);
     };
 
-    // MODIFICADO: handleUseMove con sincronización a DB en momentos críticos
+    // Función para manejar el uso de movimientos
     const handleUseMove = async (move) => {
-        if (!battleEngine || isAnimating || battleOver) return;
+        // Verificación explícita adicional antes de iniciar cualquier acción
+        if (!battleEngine || isAnimating || battleOver) {
+            if (battleOver) {
+                setBattleMessage("La batalla ya ha terminado");
+            }
+            return;
+        }
 
         try {
             setIsAnimating(true);
@@ -447,7 +542,7 @@ const handlePokemon = () => {
 
             // Paso 1: Mostrar mensaje de ataque inicial
             setBattleMessage(`${playerPokemon.name} usa ${move.name}...`);
-            await new Promise(resolve => setTimeout(resolve, 800));
+            await delay(800);
 
             // Paso 2: Ejecutar el turno en el motor de batalla
             const result = battleEngine.executeTurn(move);
@@ -474,13 +569,16 @@ const handlePokemon = () => {
                     setRivalHP(newRivalHP);
 
                     // Esperar para que se vea la animación de daño
-                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    await delay(1500);
 
                     // Verificar si el rival fue derrotado
                     if (result.battleState.isFinished && result.battleState.winner === "player") {
+                        // Calcular recompensa según nivel del jugador - solo calcular una vez
+                        const pokeDollarsReward = calculatePokeDollarsReward(playerLevel);
+
                         setBattleOver(true);
                         setBattleResult('victory'); // Registrar victoria
-                        setBattleMessage(`¡Has ganado el combate! Ganaste 25 PokeDólares. Volviendo al mapa...`);
+                        setBattleMessage(`¡Has ganado el combate! Ganaste ${pokeDollarsReward} PokeDólares. Volviendo al mapa...`);
                         setIsAnimating(false);
                         return;
                     }
@@ -490,58 +588,48 @@ const handlePokemon = () => {
                 if (!result.battleState.isFinished && result.rivalAttackResult) {
                     // Mostrar mensaje de ataque del rival
                     setBattleMessage(`${rivalPokemon.name} usa ${result.rivalAttackResult.move}...`);
-                    await new Promise(resolve => setTimeout(resolve, 800));
+                    await delay(800);
 
                     // Mostrar resultado del ataque
                     setBattleLog(prev => [...prev, result.rivalAttackResult.message]);
 
-                    // Actualizar HP del jugador con animación
-                    const newPlayerHP = {
-                        current: result.battleState.playerHP.current,
-                        max: result.battleState.playerHP.max,
-                        percentage: result.battleState.playerHP.percentage
-                    };
-                    
-                    // CAMBIO: Usar las nuevas funciones separadas
-                    updateUIPlayerHP(newPlayerHP.current);
-                    
-                    // Sincronizar con la base de datos si el daño es significativo
-                    if (Math.abs(playerHP.current - newPlayerHP.current) > playerHP.max * 0.3) {
-                        // 30% o más de cambio de HP merece una sincronización
-                        await syncPokemonHP(playerPokemon._id, newPlayerHP.current, true);
-                    } else {
-                        // Sino, actualización local solamente
-                        updatePokemonInTeam(playerPokemon.id, newPlayerHP.current);
-                    }
+                    // Obtener nuevo HP del jugador
+                    const newHP = result.battleState.playerHP.current;
+
+                    // Determinar si el cambio es significativo para sincronizar
+                    const isSignificantChange = Math.abs(playerHP.current - newHP) > playerHP.max * 0.3 || newHP <= 0;
+
+                    // Actualizar HP con la función unificada
+                    updatePlayerHP(newHP, isSignificantChange);
 
                     // Esperar para que se vea la animación de daño
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    
-                    // IMPORTANTE: Verificar si tu Pokémon fue derrotado por el ataque del rival
-                    if (newPlayerHP.current <= 0) {
+                    await delay(1000);
+
+                    // Verificar si tu Pokémon fue derrotado por el ataque del rival
+                    if (newHP <= 0) {
                         setBattleLog(prev => [...prev, `¡${playerPokemon.name} se ha debilitado!`]);
-                        
-                        // IMPORTANTE: Sincronizar con la base de datos que este Pokémon está debilitado
+
+                        // Asegurar que el HP es 0 exacto en la DB
                         await syncPokemonHP(playerPokemon._id, 0, true);
-                        
+
                         // Verificar si hay más Pokémon disponibles
-                        const healthyPokemon = teamPokemon.filter(pokemon => 
+                        const healthyPokemon = teamPokemon.filter(pokemon =>
                             pokemon.id !== playerPokemon.id && pokemon.currentHP > 0
                         );
-                        
+
                         if (healthyPokemon.length > 0) {
                             // Todavía hay Pokémon disponibles
                             setBattleMessage("Selecciona otro Pokémon para continuar la batalla.");
                             setShowPokemonSelector(true);
                             setIsAnimating(false);
-                            return; // Detener la ejecución aquí
+                            return; // Detener la ejecución
                         } else {
                             // Todo el equipo está debilitado, fin de la batalla
                             setBattleOver(true);
                             setBattleResult('defeat');
                             setBattleMessage(`¡Todo tu equipo ha sido derrotado! Volviendo al mapa...`);
                             setIsAnimating(false);
-                            return; // Detener la ejecución aquí
+                            return; // Detener la ejecución
                         }
                     }
                 }
@@ -551,58 +639,48 @@ const handlePokemon = () => {
                 // 3.3 Mostrar ataque del rival
                 if (result.rivalAttackResult) {
                     setBattleMessage(`${rivalPokemon.name} usa ${result.rivalAttackResult.move}...`);
-                    await new Promise(resolve => setTimeout(resolve, 800));
+                    await delay(800);
 
                     // Mostrar resultado del ataque
                     setBattleLog(prev => [...prev, result.rivalAttackResult.message]);
 
-                    // Actualizar HP del jugador with animación
-                    const newPlayerHP = {
-                        current: result.battleState.playerHP.current,
-                        max: result.battleState.playerHP.max,
-                        percentage: result.battleState.playerHP.percentage
-                    };
-                    
-                    // CAMBIO: Usar las funciones para actualizar UI y sincronizar
-                    updateUIPlayerHP(newPlayerHP.current);
-                    
-                    // Sincronizar con la base de datos si el daño es significativo
-                    if (Math.abs(playerHP.current - newPlayerHP.current) > playerHP.max * 0.3) {
-                        // 30% o más de cambio de HP merece una sincronización
-                        await syncPokemonHP(playerPokemon._id, newPlayerHP.current, true);
-                    } else {
-                        // Sino, actualización local solamente
-                        updatePokemonInTeam(playerPokemon.id, newPlayerHP.current);
-                    }
+                    // Obtener nuevo HP del jugador
+                    const newHP = result.battleState.playerHP.current;
+
+                    // Determinar si el cambio es significativo para sincronizar
+                    const isSignificantChange = Math.abs(playerHP.current - newHP) > playerHP.max * 0.25 || newHP <= 0;
+
+                    // Actualizar HP con la función unificada
+                    updatePlayerHP(newHP, isSignificantChange);
 
                     // Esperar para que se vea la animación de daño
-                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    await delay(1500);
 
-                    // IMPORTANTE: Verificar si tu Pokémon fue derrotado por el ataque del rival
-                    if (newPlayerHP.current <= 0) {
+                    // Verificar si tu Pokémon fue derrotado por el ataque del rival
+                    if (newHP <= 0) {
                         setBattleLog(prev => [...prev, `¡${playerPokemon.name} se ha debilitado!`]);
-                        
-                        // IMPORTANTE: Sincronizar con la base de datos que este Pokémon está debilitado
+
+                        // Asegurar que el HP es 0 exacto en la DB
                         await syncPokemonHP(playerPokemon._id, 0, true);
-                        
+
                         // Verificar si hay más Pokémon disponibles
-                        const healthyPokemon = teamPokemon.filter(pokemon => 
+                        const healthyPokemon = teamPokemon.filter(pokemon =>
                             pokemon.id !== playerPokemon.id && pokemon.currentHP > 0
                         );
-                        
+
                         if (healthyPokemon.length > 0) {
                             // Todavía hay Pokémon disponibles
                             setBattleMessage("Selecciona otro Pokémon para continuar la batalla.");
                             setShowPokemonSelector(true);
                             setIsAnimating(false);
-                            return; // Detener la ejecución aquí - No continuar con el ataque del jugador
+                            return; // No continuar con el ataque del jugador
                         } else {
                             // Todo el equipo está debilitado, fin de la batalla
                             setBattleOver(true);
                             setBattleResult('defeat');
                             setBattleMessage(`¡Todo tu equipo ha sido derrotado! Volviendo al mapa...`);
                             setIsAnimating(false);
-                            return; // Detener la ejecución aquí
+                            return; // Detener la ejecución
                         }
                     }
 
@@ -620,7 +698,7 @@ const handlePokemon = () => {
                 if (!result.battleState.isFinished && result.playerAttackResult) {
                     // Mostrar ataque del jugador
                     setBattleMessage(`${playerPokemon.name} usa ${move.name}...`);
-                    await new Promise(resolve => setTimeout(resolve, 800));
+                    await delay(800);
 
                     // Mostrar resultado
                     setBattleLog(prev => [...prev, result.playerAttackResult.message]);
@@ -634,7 +712,7 @@ const handlePokemon = () => {
                     setRivalHP(newRivalHP);
 
                     // Esperar para que se vea la animación de daño
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    await delay(1000);
                 }
             }
 
@@ -642,8 +720,11 @@ const handlePokemon = () => {
             if (result.battleState.isFinished) {
                 setBattleOver(true);
                 if (result.battleState.winner === "player") {
+                    // Calcular recompensa según nivel del jugador - usar la función helper
+                    const pokeDollarsReward = calculatePokeDollarsReward(playerLevel);
+
                     setBattleResult('victory'); // Registrar victoria
-                    setBattleMessage(`¡Has ganado el combate! Ganaste 25 PokeDólares. Volviendo al mapa...`);
+                    setBattleMessage(`¡Has ganado el combate! Ganaste ${pokeDollarsReward} PokeDólares. Volviendo al mapa...`);
                 } else {
                     setBattleResult('defeat'); // Registrar derrota
                     setBattleMessage(`¡Te han ganado en el combate! Volviendo al mapa...`);
@@ -652,8 +733,8 @@ const handlePokemon = () => {
                 // Continuar la batalla solo si el Pokémon no está debilitado
                 if (playerHP.current > 0) {
                     setBattleMessage(`¿Qué debería hacer ${playerPokemon.name}?`);
-                    
-                    // NUEVO: Sincronizar periódicamente para evitar pérdidas (con baja probabilidad)
+
+                    // Sincronizar periódicamente para evitar pérdidas (con baja probabilidad)
                     if (Math.random() < 0.1) { // 10% de probabilidad por turno
                         syncPokemonHP(playerPokemon._id, playerHP.current);
                     }
@@ -668,59 +749,45 @@ const handlePokemon = () => {
         }
     };
 
-    // MODIFICADO: executeRivalAttack con sincronización a DB
+    // Función para manejar ataques del rival
     const executeRivalAttack = async () => {
         if (!battleEngine || battleOver) return;
 
         setIsAnimating(true);
         setBattleMessage(`${rivalPokemon.name} está eligiendo un movimiento...`);
 
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await delay(2000);
 
         const result = battleEngine.executeRivalMove();
 
         if (result.success) {
             setBattleMessage(`${rivalPokemon.name} usa ${result.move}...`);
-            await new Promise(resolve => setTimeout(resolve, 800));
+            await delay(800);
 
             setBattleLog(prev => [...prev, result.message]);
 
             if (result.playerHP) {
                 const newHP = result.playerHP.current;
-                
-                // CAMBIO: Actualizar UI y preparar para sincronización
-                updateUIPlayerHP(newHP);
-                
-                // Si el cambio de HP es significativo o el Pokémon está debilitado, sincronizar con DB
-                const hpChange = playerHP.current - newHP;
-                const isSignificant = hpChange > playerHP.max * 0.25 || newHP <= 0;
-                
-                if (isSignificant) {
-                    await syncPokemonHP(playerPokemon._id, newHP, true);
-                } else {
-                    updatePokemonInTeam(playerPokemon.id, newHP);
-                }
-                
-                // Para debug: Verificar el nuevo HP
-                console.log(`${playerPokemon.name} recibió daño, nuevo HP: ${newHP}`);
 
-                // MODIFICADO: Verificar inmediatamente si el Pokémon fue derrotado
+                // Determinar si el cambio es significativo para sincronizar
+                const isSignificantChange = Math.abs(playerHP.current - newHP) > playerHP.max * 0.25 || newHP <= 0;
+
+                // Actualizar HP con la función unificada
+                updatePlayerHP(newHP, isSignificantChange);
+
+                // Verificar si el Pokémon fue derrotado
                 if (newHP <= 0 || result.pokemonFainted) {
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    await delay(1000);
                     setBattleLog(prev => [...prev, `¡${playerPokemon.name} se ha debilitado!`]);
-                    
-                    // IMPORTANTE: Asegurar que el HP es 0 exacto en la DB
+
+                    // Asegurar que el HP es 0 exacto en la DB
                     await syncPokemonHP(playerPokemon._id, 0, true);
-                    
+
                     // Verificar si hay más Pokémon disponibles
-                    // Filtramos excluyendo el Pokémon actual
-                    const healthyPokemon = teamPokemon.filter(pokemon => 
+                    const healthyPokemon = teamPokemon.filter(pokemon =>
                         pokemon.id !== playerPokemon.id && pokemon.currentHP > 0
                     );
-                    
-                    // Para debug: Mostrar Pokémon sanos disponibles
-                    console.log("Pokémon sanos disponibles:", healthyPokemon.map(p => p.name));
-                    
+
                     if (healthyPokemon.length > 0) {
                         // Todavía hay Pokémon disponibles
                         setBattleMessage("Selecciona otro Pokémon para continuar la batalla.");
@@ -731,9 +798,9 @@ const handlePokemon = () => {
                         setBattleResult('defeat');
                         setBattleMessage(`¡Todo tu equipo ha sido derrotado! Volviendo al mapa...`);
                     }
-                    
+
                     setIsAnimating(false);
-                    return; // IMPORTANTE: Detener la ejecución aquí
+                    return; // Detener la ejecución
                 }
             }
 
@@ -807,11 +874,7 @@ const handlePokemon = () => {
                                 className="hp-bar"
                                 style={{
                                     width: `${rivalHP.percentage}%`,
-                                    backgroundColor: rivalHP.percentage > 50
-                                        ? '#78C850'  // Verde (más del 50%)
-                                        : rivalHP.percentage > 20
-                                            ? '#F8D030'  // Amarillo (entre 20% y 50%)
-                                            : '#F03030'  // Rojo (menos del 20%)
+                                    backgroundColor: getHPBarColor(rivalHP.percentage)
                                 }}
                             ></div>
                         </div>
@@ -870,11 +933,7 @@ const handlePokemon = () => {
                                 className="hp-bar"
                                 style={{
                                     width: `${playerHP.percentage}%`,
-                                    backgroundColor: playerHP.percentage > 50
-                                        ? '#78C850'  // Verde (más del 50%)
-                                        : playerHP.percentage > 20
-                                            ? '#F8D030'  // Amarillo (entre 20% y 50%)
-                                            : '#F03030'  // Rojo (menos del 20%)
+                                    backgroundColor: getHPBarColor(playerHP.percentage)
                                 }}
                             ></div>
                         </div>
@@ -997,11 +1056,7 @@ const handlePokemon = () => {
                                             className="pokemon-team-hp-fill"
                                             style={{
                                                 width: `${pokemon.stats && pokemon.stats.hp ? (pokemon.currentHP / pokemon.stats.hp) * 100 : 0}%`,
-                                                backgroundColor: pokemon.currentHP / pokemon.stats?.hp > 0.5
-                                                    ? '#78C850'  // Verde
-                                                    : pokemon.currentHP / pokemon.stats?.hp > 0.2
-                                                        ? '#F8D030'  // Amarillo
-                                                        : '#F03030'  // Rojo
+                                                backgroundColor: getHPBarColor(pokemon.stats && pokemon.stats.hp ? (pokemon.currentHP / pokemon.stats.hp) * 100 : 0)
                                             }}
                                         ></div>
                                     </div>

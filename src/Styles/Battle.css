@@ -224,7 +224,22 @@
     position: relative;
     /* Para el tooltip */
 }
+.pokemon-alert-popup {
+  border-radius: 20px;
+  border: 2px solid #3c5aa6;
+  font-family: 'Press Start 2P', cursive, sans-serif;
+}
 
+.pokemon-alert-title {
+  color: #3c5aa6;
+  font-weight: bold;
+}
+
+.pokemon-alert-button {
+  border-radius: 10px !important;
+  text-transform: uppercase !important;
+  font-weight: bold !important;
+}
 /* Estilos base para todos los botones de movimientos */
 .battle-container .action-buttons .btn-move {
     color: white;

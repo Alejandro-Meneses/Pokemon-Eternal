@@ -43,26 +43,8 @@ export default function App() {
     setIsLoading(false);
   }, []);
 
- /* useEffect(() => {
-    const checkDevice = () => {
-      setIsMobile(window.innerWidth <= 768);
-      setIsLandscape(window.innerWidth > window.innerHeight);
-    };
 
-    // Initial check
-    checkDevice();
 
-    // Add event listener for resize and orientation change
-    window.addEventListener("resize", checkDevice);
-    window.addEventListener("orientationchange", checkDevice);
-
-    // Cleanup
-    return () => {
-      window.removeEventListener("resize", checkDevice);
-      window.removeEventListener("orientationchange", checkDevice);
-    };
-  }, []);
-*/
   const handleLogin = () => {
     setIsLoggedIn(true);
   };

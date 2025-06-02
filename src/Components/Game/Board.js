@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import "../../Styles/Board.css";
 import { useNavigate } from "react-router-dom";
 import PokemonPC from "./PokemonPC";
+import { getPlayerStats } from "../../Services/UserService";
 
 export default function Board() {
   const [grid, setGrid] = useState([]);
@@ -12,10 +13,9 @@ export default function Board() {
   // Estado para el PC
   const [showPC, setShowPC] = useState(false);
 
-  // Nuevo estado para el sistema de niveles y recompensas
+  // Estado para el sistema de niveles y recompensas - Sin PokeDollars
   const [playerLevel, setPlayerLevel] = useState(1);
   const [defeatedPokemon, setDefeatedPokemon] = useState(0);
-  const [pokeDollars, setPokeDollars] = useState(0);
 
   // Bloquear scroll completamente
   useEffect(() => {
@@ -67,43 +67,51 @@ export default function Board() {
     };
   }, []);
 
+  // Token para las llamadas a la API
+  const token = localStorage.getItem('token');
+  
   // Cargar datos del jugador al inicio
   useEffect(() => {
-    // Cargar datos guardados del localStorage
-    const savedLevel = localStorage.getItem('player_level') || 1;
-    const savedDefeated = localStorage.getItem('defeated_pokemon') || 0;
-    const savedDollars = localStorage.getItem('poke_dollars') || 0;
-
-    setPlayerLevel(Number(savedLevel));
-    setDefeatedPokemon(Number(savedDefeated));
-    setPokeDollars(Number(savedDollars));
-
+    // 1. Intentar cargar datos del servidor primero
+    if (token) {
+      getPlayerStats(token)
+        .then(data => {
+          if (!data.error) {
+            console.log("Datos cargados del servidor:", data);
+            // Actualizar estado con datos del servidor - sin pokeDollars
+            setPlayerLevel(data.playerLevel || 1);
+            setDefeatedPokemon((data.playerStats?.battlesWon || 0) % 5); // Para mostrar progreso actual
+            
+            // Guardar también en localStorage como respaldo - sin pokeDollars
+            localStorage.setItem('player_level', data.playerLevel || 1);
+            localStorage.setItem('defeated_pokemon', data.playerStats?.battlesWon || 0);
+          } else {
+            console.error("Error al cargar datos del servidor:", data.error);
+            // Si hay error, usar datos de localStorage como respaldo
+            loadFromLocalStorage();
+          }
+        })
+        .catch(error => {
+          console.error("Error en getPlayerStats:", error);
+          loadFromLocalStorage();
+        });
+    } else {
+      // Si no hay token, usar localStorage
+      loadFromLocalStorage();
+    }
+    
+    // Generar grid en cualquier caso
     const newGrid = generateGridConBordes(11, 11);
     setGrid(newGrid);
-  }, []);
+  }, [token]);
+  
+  // Función para cargar datos desde localStorage (como respaldo)
+  const loadFromLocalStorage = () => {
+    const savedLevel = localStorage.getItem('player_level') || 1;
+    const savedDefeated = localStorage.getItem('defeated_pokemon') || 0;
 
-  // Función para actualizar después de una victoria
-  const updatePlayerProgress = (victoriesCount, dollarsEarned) => {
-    // Actualizar derrotas
-    const newDefeatedCount = defeatedPokemon + victoriesCount;
-    setDefeatedPokemon(newDefeatedCount);
-
-    // Actualizar PokeDólares
-    const newDollars = pokeDollars + dollarsEarned;
-    setPokeDollars(newDollars);
-
-    // Calcular nivel (1 nivel por cada 5 victorias)
-    const newLevel = Math.floor(newDefeatedCount / 5) + 1;
-    if (newLevel !== playerLevel) {
-      setPlayerLevel(newLevel);
-      // Mostrar notificación de subida de nivel
-      alert(`¡Felicidades! Has subido al nivel ${newLevel}. Los Pokémon salvajes serán más fuertes.`);
-    }
-
-    // Guardar progreso
-    localStorage.setItem('player_level', newLevel);
-    localStorage.setItem('defeated_pokemon', newDefeatedCount);
-    localStorage.setItem('poke_dollars', newDollars);
+    setPlayerLevel(Number(savedLevel));
+    setDefeatedPokemon(Number(savedDefeated) % 5); // Solo mostrar el progreso actual
   };
 
   const handleEncounter = useCallback(() => {
@@ -117,11 +125,12 @@ export default function Board() {
       // Pasar el nivel del jugador como parámetro para la dificultad
       navigate('/battle', {
         state: {
-          playerLevel: playerLevel
+          playerLevel: playerLevel,
+          defeatedPokemon: defeatedPokemon // Añadido para seguimiento
         }
       });
     }
-  }, [grid, playerPosition.row, playerPosition.col, encounterCooldown, navigate, playerLevel]);
+  }, [grid, playerPosition.row, playerPosition.col, encounterCooldown, navigate, playerLevel, defeatedPokemon]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -155,18 +164,28 @@ export default function Board() {
     }
   }, [playerPosition, grid.length, handleEncounter]);
 
-  // Escuchar eventos de batallas ganadas
+  // Escuchar eventos de batallas ganadas - Simplificado y sin PokeDollars
   useEffect(() => {
-    const handleBattleVictory = (e) => {
-      if (e.detail && e.detail.victory) {
-        // Actualizar progreso con 1 victoria y 25 PokeDólares
-        updatePlayerProgress(1, 25);
+    const handleBattleResult = (e) => {
+      if (e.detail) {
+        // Simplemente recargar los datos actualizados del servidor
+        if (token) {
+          getPlayerStats(token)
+            .then(data => {
+              if (!data.error) {
+                // Actualizar estado con datos frescos del servidor - sin pokeDollars
+                setPlayerLevel(data.playerLevel || 1);
+                setDefeatedPokemon(data.levelProgress || 0);
+              }
+            })
+            .catch(error => console.error("Error al actualizar estadísticas:", error));
+        }
       }
     };
 
-    window.addEventListener('battleResult', handleBattleVictory);
-    return () => window.removeEventListener('battleResult', handleBattleVictory);
-  }, [defeatedPokemon, pokeDollars, playerLevel]);
+    window.addEventListener('battleResult', handleBattleResult);
+    return () => window.removeEventListener('battleResult', handleBattleResult);
+  }, [token]);
 
   const generateGridConBordes = (rows, cols) => {
     const getRandomTile = () => {
@@ -209,20 +228,16 @@ export default function Board() {
   
   return (
     <div className="game-container">
-      {/* Indicadores de nivel y moneda en la parte superior */}
+      {/* Indicadores de nivel y progreso - Sin mostrar PokeDollars */}
       <div className="game-stats">
         <div className="level-indicator">
           <span className="level-label">Nivel:</span>
           <span className="level-value">{playerLevel}</span>
         </div>
-        {/* Nuevo indicador de victorias */}
+        {/* Indicador de victorias */}
         <div className="victories-indicator">
-          <span className="victories-value">{defeatedPokemon % 5}</span>
+          <span className="victories-value">{defeatedPokemon}</span>
           <span className="victories-label">/ 5</span>
-        </div>
-        <div className="money-indicator">
-          <span className="money-value">{pokeDollars}</span>
-          <span className="money-label">PokeDólares</span>
         </div>
       </div>
 

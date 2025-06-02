@@ -129,21 +129,6 @@
   font-size: 0.9rem;
 }
 
-.money-indicator {
-  display: flex;
-  align-items: center;
-}
-
-.money-value {
-  color: #78c850;
-  font-size: 0.9rem;
-  margin-right: 5px;
-}
-
-.money-label {
-  color: #78c850;
-  font-size: 0.9rem;
-}
 
 /* Botón PC Pokémon - posicionado debajo del board */
 .pc-button {
