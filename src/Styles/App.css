@@ -415,8 +415,11 @@ body:before {
 /* Móviles muy pequeños */
 @media (max-width: 480px) and (orientation: landscape) {
   html, body {
-    font-size: 10px !important;
-    overflow: auto !important;
+    font-size: 8px !important; /* Reducido de 10px */
+    overflow-y: auto !important;
+    height: 100% !important;
+    max-height: none !important;
+    position: relative !important;
   }
   
   /* Contenedor principal */
@@ -426,47 +429,63 @@ body:before {
     width: 100% !important;
     min-height: 0 !important;
     height: auto !important;
+    max-height: none !important;
     border-radius: 0 !important;
     padding: 0 !important;
     margin: 0 !important;
-        overflow: auto !important; /* Añadir esto */
-            max-height: none !important; /* Eliminar restricción de altura */
-
-
+    overflow-y: auto !important; 
   }
   
-  /* Sidebar mínimo - solo iconos */
+  body {
+    overflow-y: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+  }
+  
+  /* Sidebar aún más pequeño */
   .sidebar {
-    width: 40px !important;
-    min-width: 40px !important;
-    padding: 2px !important;
+    width: 32px !important;
+    min-width: 32px !important;
+    padding: 1px !important;
   }
-  .sidebar .logo-expand,
-  .sidebar .side-title,
-  .sidebar .side-wrapper,
-  .sidebar-link span {
-    display: none !important;
-  }
+  
   .side-menu svg, 
   .sidebar-link svg {
-    width: 18px !important;
-    padding: 3px !important;
+    width: 16px !important;
+    padding: 2px !important;
     margin-right: 0 !important;
   }
   
-  /* Ocultar decoraciones globales */
-  .pokeball-decoration {
-    opacity: 0.2 !important;
-    width: 120px !important;
-    height: 120px !important;
+  /* Contenido principal más compacto */
+  .main-header {
+    font-size: 16px !important;
+    padding-bottom: 8px !important;
+  }
+  
+  .small-header {
+    font-size: 14px !important;
+    margin: 10px 0 !important;
+  }
+  
+  /* Hacer todo el contenido más pequeño */
+  .wrapper, .content-wrapper {
+    padding: 5px !important;
   }
 }
 
 /* Móviles pequeños y medianos */
 @media (min-width: 481px) and (max-width: 600px) and (orientation: landscape) {
   html, body {
-    font-size: 11px !important;
-    overflow: auto !important;
+    font-size: 9px !important; /* Reducido de 11px */
+    overflow-y: auto !important;
+    height: 100% !important;
+    position: relative !important;
+  }
+  
+  body {
+    overflow-y: auto !important;
+    height: auto !important;
+    padding: 0 !important;
   }
   
   .container, .main-container {
@@ -475,33 +494,18 @@ body:before {
     width: 100% !important;
     min-height: 0 !important;
     height: auto !important;
+    max-height: none !important;
     border-radius: 0 !important;
     padding: 0 !important;
     margin: 0 !important;
+    overflow-y: auto !important;
   }
   
+  /* Sidebar más pequeño */
   .sidebar {
-    width: 48px !important;
-    min-width: 48px !important;
-    padding: 4px !important;
-  }
-  .sidebar .logo-expand,
-  .sidebar .side-title,
-  .sidebar .side-wrapper,
-  .sidebar-link span {
-    display: none !important;
-  }
-  .side-menu svg, 
-  .sidebar-link svg {
-    width: 22px !important;
-    padding: 4px !important;
-    margin-right: 0 !important;
-  }
-  
-  .pokeball-decoration {
-    opacity: 0.25 !important;
-    width: 150px !important;
-    height: 150px !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    padding: 3px !important;
   }
 }
 
