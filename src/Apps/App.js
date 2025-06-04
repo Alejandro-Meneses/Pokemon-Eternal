@@ -91,7 +91,7 @@ export default function App() {
                 </Link>
                 <Link className="sidebar-link" to="/gacha">
                   <FontAwesomeIcon icon={faTicket} className="icon" />
-                  GachaPon(NEW)
+                  GachaPon
                 </Link>
                 <Link className="sidebar-link" to="/aboutus">
                   <FontAwesomeIcon icon={faInfoCircle} className="icon" />

@@ -25,15 +25,13 @@ export default function Welcome() {
         
         <div className="welcome-body">
           <p className="welcome-text">
-            Explora un vasto mundo lleno de criaturas fascinantes, colecciona y entrena 
-            a tus Pokémon favoritos, enfrenta desafiantes batallas y conviértete en un 
-            legendario Maestro Pokémon.
+            Atrapa, entrena y colecciona Pokémon de todas las generaciones. Descubre nuevas criaturas con el sistema Gacha, enfréntate a desafiantes Pokemon Salvajes y vive una aventura que nunca termina.
           </p>
           
           <div className="welcome-features">
             <div className="feature">
-              <div className="feature-icon">🌍</div>
-              <div className="feature-text">Mundo Infinito</div>
+              <div className="feature-icon">🎮</div>
+              <div className="feature-text">Juego Infinito</div>
             </div>
             <div className="feature">
               <div className="feature-icon">⚔️</div>

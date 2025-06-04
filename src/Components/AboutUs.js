@@ -11,7 +11,7 @@ const AboutUs = () => {
     const timer = setTimeout(() => {
       setLoaded(true);
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -34,12 +34,12 @@ const AboutUs = () => {
           <h1 className="about-title">Sobre Nosotros</h1>
           <div className="about-subtitle">El equipo detrás de Pokémon Eternal</div>
         </div>
-        
+
         <div className="about-navigation">
           <div className="nav-dots">
             {[1, 2, 3, 4].map((num) => (
-              <div 
-                key={num} 
+              <div
+                key={num}
                 className={`nav-dot ${activeSection === num ? 'active' : ''}`}
                 onClick={() => setActiveSection(num)}
               />
@@ -54,22 +54,24 @@ const AboutUs = () => {
               <h2>El Proyecto Pokémon Eternal</h2>
               <div className="about-grid">
                 <div className="about-text">
-                  <p>Pokémon Eternal nació de nuestra pasión por los juegos clásicos de Pokémon y nuestro deseo de crear una experiencia moderna que capture la magia del original.</p>
+                  <p>Pokémon Eternal nació de mi pasión por los juegos de Pokémon y mi deseo de crear una experiencia sencilla y básica que capture la magia del original.</p>
                   <p>Desarrollado como proyecto educativo, esta aplicación combina:</p>
                   <ul>
                     <li>Gráficos inspirados en los juegos clásicos</li>
-                    <li>Mecánicas modernizadas de juego</li>
+                    <li>Mecánicas básicas del juego</li>
                     <li>Experiencia web accesible en cualquier dispositivo</li>
-                    <li>Características sociales y multijugador</li>
+                    <li>Un sistema de Gacha para coleccionar Pokémon</li>
+                    <li>Combates simples contra Pokémon salvajes</li>
+                    <li>Tutoriales y la mejor forma de aprender a combatir en Pokémon</li>
                   </ul>
                 </div>
                 <div className="about-image">
-                  <img 
-                    src="/images/about/project.png" 
-                    alt="Proyecto" 
+                  <img
+                    src="/images/Gameboy.png"
+                    alt="Proyecto"
                     className="about-img"
                   />
-                  <p className="image-caption">Del concepto a la realidad</p>
+                  <p className="image-caption">Cada linea de codigo cuenta</p>
                 </div>
               </div>
             </div>
@@ -78,43 +80,20 @@ const AboutUs = () => {
           {/* Sección 2: Nuestro Equipo */}
           {activeSection === 2 && (
             <div className="about-section">
-              <h2>Nuestro Equipo</h2>
+              <h2>Creador</h2>
               <div className="team-grid">
                 <div className="team-member">
                   <div className="member-avatar">
-                    <img src="/images/about/member1.png" alt="Miembro del equipo" />
+                    <img src="/images/Yo.jpg" alt="Miembro del equipo" />
                   </div>
-                  <h3>Nombre Apellido</h3>
-                  <p className="member-role">Desarrollo Frontend</p>
+                  <h3>Alejandro Meneses Sánchez</h3>
+                  <p className="member-role">Desarrollo</p>
                   <p className="member-description">
-                    Especialista en React y desarrollo de interfaces de usuario. 
-                    Responsable de la experiencia de usuario y animaciones.
+                    Alumno de Desarollo de Aplicaciones Web aplicando todos mis conocimientos
+                    en este proyecto. Me apasiona crear experiencias web únicas y accesibles.
                   </p>
                 </div>
-                
-                <div className="team-member">
-                  <div className="member-avatar">
-                    <img src="/images/about/member2.png" alt="Miembro del equipo" />
-                  </div>
-                  <h3>Nombre Apellido</h3>
-                  <p className="member-role">Desarrollo Backend</p>
-                  <p className="member-description">
-                    Experto en Node.js y bases de datos MongoDB.
-                    Implementó la API RESTful y el sistema de autenticación.
-                  </p>
-                </div>
-                
-                <div className="team-member">
-                  <div className="member-avatar">
-                    <img src="/images/about/member3.png" alt="Miembro del equipo" />
-                  </div>
-                  <h3>Nombre Apellido</h3>
-                  <p className="member-role">Diseño y Arte</p>
-                  <p className="member-description">
-                    Artista digital con experiencia en pixel art.
-                    Creó los sprites, backgrounds y elementos visuales.
-                  </p>
-                </div>
+
               </div>
             </div>
           )}
@@ -141,7 +120,7 @@ const AboutUs = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="tech-category">
                   <h3>Backend</h3>
                   <div className="tech-items">
@@ -157,9 +136,17 @@ const AboutUs = () => {
                       <div className="tech-icon">🍃</div>
                       <div className="tech-name">MongoDB</div>
                     </div>
+                    <div className="tech-item">
+                      <div className="tech-icon">🔒</div>
+                      <div className="tech-name">JWT</div>
+                    </div>
+                    <div className="tech-item">
+                      <div className="tech-icon">🔑</div>
+                      <div className="tech-name">bcrypt</div>
+                    </div>
                   </div>
                 </div>
-                
+
                 <div className="tech-category">
                   <h3>Herramientas</h3>
                   <div className="tech-items">
@@ -172,8 +159,8 @@ const AboutUs = () => {
                       <div className="tech-name">Vercel</div>
                     </div>
                     <div className="tech-item">
-                      <div className="tech-icon">🔍</div>
-                      <div className="tech-name">Jest</div>
+                      <div className="tech-icon">📝</div>
+                      <div className="tech-name">VS Code</div>
                     </div>
                   </div>
                 </div>
@@ -191,29 +178,51 @@ const AboutUs = () => {
                   <div className="contact-methods">
                     <div className="contact-method">
                       <div className="contact-icon">📧</div>
-                      <div className="contact-detail">info@pokemon-eternal.com</div>
+                      <a
+                        className="contact-detail"
+                        href="mailto:alejandro214003@gmail.com"
+                        style={{ color: 'inherit', textDecoration: 'underline' }}
+                      >
+                        alejandro214003@gmail.com
+                      </a>
                     </div>
                     <div className="contact-method">
                       <div className="contact-icon">🐦</div>
-                      <div className="contact-detail">@PokemonEternal</div>
+                      <a
+                        className="contact-detail"
+                        href="https://twitter.com/PokemonEternal"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: 'inherit', textDecoration: 'underline' }}
+                      >
+                        @PokemonEternal
+                      </a>
                     </div>
                     <div className="contact-method">
                       <div className="contact-icon">🐱</div>
-                      <div className="contact-detail">github.com/pokemon-eternal</div>
+                      <a
+                        className="contact-detail"
+                        href="https://github.com/Alejandro-Meneses/Pokemon-Eternal"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: 'inherit', textDecoration: 'underline' }}
+                      >
+                        github.com/Pokemon-Eternal
+                      </a>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="acknowledgements">
-                  <h3>Agradecimientos</h3>
+                  <h3>¡Gracias por llegar hasta aquí!</h3>
                   <p>
-                    Queremos agradecer a la comunidad de desarrolladores de juegos independientes
-                    y a todos los fans de Pokémon cuya pasión nos ha inspirado. Este proyecto no habría
-                    sido posible sin el apoyo de nuestra universidad y profesores.
+                    Si has leído hasta este punto y has probado Pokémon Eternal, ¡muchas gracias por tu interés y tu tiempo! Este proyecto está hecho con mucha pasión y dedicación, y espero que te haya servido para aprender, divertirte o simplemente recordar la magia de Pokémon.
                   </p>
                   <p>
-                    Pokémon y todos los personajes relacionados son propiedad de Nintendo, 
-                    Game Freak y The Pokémon Company. Este es un proyecto educativo sin fines comerciales.
+                    Recuerda que nada supera la experiencia de jugar a los juegos originales de Pokémon, donde descubrirás historias, aventuras y desafíos únicos. Te animo a explorar el mundo Pokémon en todas sus formas y a seguir aprendiendo y disfrutando.
+                  </p>
+                  <p>
+                    Si tienes sugerencias, dudas o simplemente quieres compartir tu experiencia, no dudes en ponerte en contacto. ¡Tu feedback es muy valioso!
                   </p>
                 </div>
               </div>
@@ -222,15 +231,15 @@ const AboutUs = () => {
         </div>
 
         <div className="about-controls">
-          <button 
-            className="about-button secondary" 
+          <button
+            className="about-button secondary"
             onClick={prevSection}
             disabled={activeSection === 1}
           >
             <span className="button-text">Anterior</span>
             <span className="button-icon">←</span>
           </button>
-          
+
           <Link to="/" className="about-button primary">
             <span className="button-text">Inicio</span>
             <span className="button-icon">🏠</span>
@@ -248,13 +257,13 @@ const AboutUs = () => {
             </Link>
           )}
         </div>
-        
+
         <div className="about-footer">
           <div className="version">Versión 1.0</div>
           <div className="copyright">© 2025 Pokémon Eternal</div>
         </div>
       </div>
-      
+
       <div className="pokeball-decoration top-left"></div>
       <div className="pokeball-decoration bottom-right"></div>
     </div>

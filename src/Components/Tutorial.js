@@ -11,7 +11,7 @@ const Tutorial = () => {
     const timer = setTimeout(() => {
       setLoaded(true);
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -33,12 +33,12 @@ const Tutorial = () => {
         <div className="tutorial-header">
           <h1 className="tutorial-title">Tutorial de Pokémon Eternal</h1>
         </div>
-        
+
         <div className="tutorial-navigation">
           <div className="nav-dots">
             {[1, 2, 3, 4, 5].map((num) => (
-              <div 
-                key={num} 
+              <div
+                key={num}
                 className={`nav-dot ${activeSection === num ? 'active' : ''}`}
                 onClick={() => setActiveSection(num)}
               />
@@ -56,15 +56,15 @@ const Tutorial = () => {
                   <p>Pokémon Eternal es un juego inspirado en la clásica saga Pokémon:</p>
                   <ul>
                     <li>Explora y encuentra Pokémon salvajes</li>
-                    <li>Captura y entrena tus Pokémon</li>
-                    <li>Combate contra otros entrenadores</li>
+                    <li>Colecciona Pokémon a través de los puntos en el Gacha</li>
+                    <li>Combate contra Pokémon salvajes desafiantes</li>
                     <li>Conviértete en Maestro Pokémon</li>
                   </ul>
                 </div>
                 <div className="tutorial-image">
-                  <img 
-                    src="/images/tutorial/intro.png" 
-                    alt="Introducción" 
+                  <img
+                    src="/images/Welcome.jpg"
+                    alt="Introducción"
                     className="tutorial-img"
                   />
                   <p className="image-caption">El mundo de Pokémon te espera</p>
@@ -72,34 +72,30 @@ const Tutorial = () => {
               </div>
             </div>
           )}
-
-          {/* Sección 2: Controles y Movimiento - Versión más compacta */}
           {activeSection === 2 && (
             <div className="tutorial-section">
-              <h2>Controles y Movimiento</h2>
+              <h2 className="centered-title">Controles y Movimiento</h2>
               <div className="tutorial-grid">
-                <div className="tutorial-image">
-                  <img 
-                    src="/images/tutorial/controls.png" 
-                    alt="Controles" 
-                    className="tutorial-img"
-                  />
-                  <p className="image-caption">Controles del juego</p>
-                </div>
                 <div className="tutorial-text">
                   <h3>Teclado:</h3>
                   <ul>
-                    <li><strong>↑↓←→</strong> o <strong>WASD</strong>: Mover personaje</li>
-                    <li><strong>Enter/Space</strong>: Interactuar</li>
-                    <li><strong>ESC</strong>: Menú / Cancelar</li>
-                  </ul>
+                    <li><strong>↑↓←→</strong> o <strong>WASD:</strong></li>
+                    <span>Mover personaje</span>                  </ul>
+                </div>
+                <div className="tutorial-text">
                   <h3>Dispositivos táctiles:</h3>
                   <ul>
                     <li>Botones direccionales en pantalla</li>
                     <li>Toca para interactuar</li>
                   </ul>
+
                 </div>
+                
               </div>
+              <br />
+              <p className="centered-paragraph">
+                  Puedes jugar cómodamente tanto en PC como en dispositivos móviles. ¡Elige el método que prefieras y explora el mundo Pokémon a tu ritmo!
+                </p>
             </div>
           )}
 
@@ -112,15 +108,15 @@ const Tutorial = () => {
                   <p>Encuentra Pokémon salvajes en hierba alta:</p>
                   <ul>
                     <li>Encuentros aleatorios en zonas de hierba</li>
-                    <li>Diferentes Pokémon por área</li>
+                    <li>Todos los Pokémon que te imaginas en las hierbas</li>
                     <li>Al encontrar un Pokémon, entra en batalla</li>
                   </ul>
-                  <p>¡Lleva Pokémon sanos y Pokéballs!</p>
+                  <p>Gana a todos los Pokémon posibles para conseguir puntos y tirar en el gacha</p>
                 </div>
                 <div className="tutorial-image">
-                  <img 
-                    src="/images/tutorial/encounter.png" 
-                    alt="Encuentro" 
+                  <img
+                    src="/images/Encounter.png"
+                    alt="Encuentro"
                     className="tutorial-img"
                   />
                   <p className="image-caption">Encuentro en hierba alta</p>
@@ -135,9 +131,9 @@ const Tutorial = () => {
               <h2>Sistema de Combate</h2>
               <div className="tutorial-grid">
                 <div className="tutorial-image">
-                  <img 
-                    src="/images/tutorial/battle.png" 
-                    alt="Combate" 
+                  <img
+                    src="/images/Batalla.png"
+                    alt="Combate"
                     className="tutorial-img"
                   />
                   <p className="image-caption">Pantalla de batalla</p>
@@ -147,10 +143,15 @@ const Tutorial = () => {
                   <ul>
                     <li><strong>Luchar</strong>: Usar movimientos</li>
                     <li><strong>Pokémon</strong>: Cambiar Pokémon</li>
-                    <li><strong>Mochila</strong>: Usar objetos</li>
-                    <li><strong>Huir</strong>: Escape de batallas</li>
+                    <li><strong>Huir</strong>: Escape de batalla (50%)</li>
                   </ul>
                   <p>Batallas por turnos con tipos y ventajas.</p>
+                  <p>
+                    TIP: Cada Pokémon tiene movimientos únicos. Aprende las ventajas de tipo para maximizar tu estrategia.
+                  </p>
+                  <p>
+                    Si dudas, una gran opción es usar <strong>movimientos del tipo del Pokémon</strong>
+                  </p>
                 </div>
               </div>
             </div>
@@ -167,19 +168,30 @@ const Tutorial = () => {
                 </div>
                 <div className="tips-card">
                   <div className="tip-icon">📊</div>
-                  <p><strong>Aprende</strong> las ventajas de tipo.</p>
+                  <p>
+                    <strong>
+                      <a
+                        href="https://pokemonalpha.es/wp-content/uploads/2020/05/tabla-tipos-988x1024.png"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: 'inherit', textDecoration: 'underline' }}
+                      >
+                        Aprende
+                      </a>
+                    </strong>
+                    {" "}las ventajas de tipo.
+                  </p>                </div>
+                <div className="tips-card">
+                  <div className="tip-icon">☁️</div>
+                  <p><strong>Tu partida</strong> está segura, ¡se guarda automáticamente!</p>
                 </div>
                 <div className="tips-card">
-                  <div className="tip-icon">💾</div>
-                  <p><strong>Guarda</strong> tu progreso regularmente.</p>
+                  <div className="tip-icon">🔥</div>
+                  <p><strong>Derrota</strong> Pokémon para avanzar en dificultad.</p>
                 </div>
                 <div className="tips-card">
-                  <div className="tip-icon">🧪</div>
-                  <p><strong>Lleva</strong> pociones y antídotos.</p>
-                </div>
-                <div className="tips-card">
-                  <div className="tip-icon">🗺️</div>
-                  <p><strong>Explora</strong> para encontrar objetos.</p>
+                  <div className="tip-icon">🎁</div>
+                  <p><strong>Consigue</strong> mejores recompensas al superar los Pokémon más difíciles.</p>
                 </div>
               </div>
             </div>
@@ -187,15 +199,15 @@ const Tutorial = () => {
         </div>
 
         <div className="tutorial-controls">
-          <button 
-            className="tutorial-button secondary" 
+          <button
+            className="tutorial-button secondary"
             onClick={prevSection}
             disabled={activeSection === 1}
           >
             <span className="button-text">Anterior</span>
             <span className="button-icon">←</span>
           </button>
-          
+
           <Link to="/" className="tutorial-button primary">
             <span className="button-text">Inicio</span>
             <span className="button-icon">🏠</span>
@@ -214,7 +226,7 @@ const Tutorial = () => {
           )}
         </div>
       </div>
-      
+
       <div className="pokeball-decoration top-left"></div>
       <div className="pokeball-decoration bottom-right"></div>
     </div>

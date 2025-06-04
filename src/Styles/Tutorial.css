@@ -26,7 +26,20 @@
   opacity: 1;
   transform: translateY(0);
 }
-
+.centered-paragraph {
+  text-align: center;
+  margin: 0 auto;
+  display: block;
+}
+.tutorial-tips a,
+.tips-card a {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.centered-title {
+  text-align: center;
+  margin: 20px 0 20px;
+}
 /* Decoraciones */
 .pokeball-decoration {
   position: absolute;
@@ -138,8 +151,7 @@
 .tutorial-section h2 {
   font-size: 1.3rem;
   font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--secondary-color);
+    color: var(--secondary-color);
 }
 
 .tutorial-section h3 {

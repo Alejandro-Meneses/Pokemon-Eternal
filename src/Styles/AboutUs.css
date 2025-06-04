@@ -29,7 +29,6 @@
   opacity: 1;
   transform: translateY(0);
 }
-
 /* Contenedor de contenido principal */
 .about-content {
   max-width: 700px;
@@ -200,9 +199,11 @@
    ==================================================== */
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 12px; /* Reducido de 18px */
   margin-top: 10px; /* Reducido de 15px */
+}
+.contact-detail {
+  pointer-events: auto;
 }
 
 .team-member {
@@ -505,71 +506,3 @@
   }
 }
 
-/* ====================================================
-   RESPONSIVE - TABLETAS
-   ==================================================== */
-@media (max-width: 768px) {
-  .about-content {
-    padding: 20px;
-    z-index: 10;
-    max-height: 80vh;
-  }
-  
-  .about-title {
-    font-size: 2rem;
-  }
-  
-  .about-grid,
-  .team-grid,
-  .tech-grid,
-  .contact-section {
-    grid-template-columns: 1fr;
-  }
-  
-  .team-grid {
-    gap: 15px;
-  }
-  
-  .about-controls {
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-  
-  .about-button {
-    width: 100%;
-  }
-}
-
-/* ====================================================
-   RESPONSIVE - MÓVILES
-   ==================================================== */
-@media (max-width: 480px) {
-  .about-container {
-    padding: 12px;
-  }
-  
-  .about-content {
-    padding: 15px 12px;
-    max-height: 85vh;
-  }
-  
-  .about-title {
-    font-size: 1.6rem;
-  }
-  
-  .about-button {
-    padding: 8px 18px;
-  }
-  
-  .about-footer {
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
-  
-  .pokeball-decoration {
-    width: 150px;
-    height: 150px;
-  }
-}

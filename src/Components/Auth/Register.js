@@ -20,13 +20,13 @@ export default function Register() {
     feedback: "",
     color: ""
   });
-  
+
   const navigate = useNavigate();
 
   // Nueva función para validar contraseña
   const validatePassword = (password) => {
     const errors = [];
-    
+
     if (password.length < 8) {
       errors.push("Al menos 8 caracteres");
     }
@@ -36,10 +36,10 @@ export default function Register() {
     if (!/[0-9]/.test(password)) {
       errors.push("Al menos un número");
     }
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
       errors.push("Al menos un carácter especial (!@#$%^&*etc.)");
     }
-    
+
     return errors;
   };
 
@@ -49,20 +49,20 @@ export default function Register() {
       setPasswordStrength({ score: 0, feedback: "", color: "" });
       return;
     }
-    
+
     const hasLength = newPassword.length >= 8;
     const hasUpper = /[A-Z]/.test(newPassword);
     const hasNumber = /[0-9]/.test(newPassword);
-    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword);
-    
+    const hasSpecial = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(newPassword);
+
     // Calcular puntuación (0-4)
     const score = [hasLength, hasUpper, hasNumber, hasSpecial].filter(Boolean).length;
-    
+
     // Determinar mensaje basado en puntuación
     let feedback = "";
     let color = "";
-    
-    switch(score) {
+
+    switch (score) {
       case 0:
         feedback = "Muy débil";
         color = "#FF5350"; // Rojo
@@ -86,7 +86,7 @@ export default function Register() {
       default:
         feedback = "";
     }
-    
+
     setPasswordStrength({ score, feedback, color });
   };
 
@@ -148,7 +148,7 @@ export default function Register() {
 
     try {
       const response = await register({ username, email, password });
-      
+
       if (response.message) {
         // Mostrar mensaje de éxito con SweetAlert2
         Swal.fire({
@@ -193,7 +193,7 @@ export default function Register() {
     } catch (err) {
       console.error("Error en registro:", err);
       setError(err.message || "Error al conectar con el servidor");
-      
+
       // Mostrar error de excepción
       Swal.fire({
         title: 'Error de conexión',
@@ -252,7 +252,7 @@ export default function Register() {
             onClick={() => setShowPassword(!showPassword)}
           />
         </div>
-        
+
         {/* Indicador de fortaleza de contraseña */}
         {password && (
           <div className="password-strength-container">
@@ -261,8 +261,8 @@ export default function Register() {
             </div>
             <div className="password-strength-meter">
               {Array(4).fill(0).map((_, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className={`strength-segment ${index < passwordStrength.score ? "active" : ""}`}
                   style={{ backgroundColor: index < passwordStrength.score ? passwordStrength.color : "" }}
                 ></div>
@@ -270,7 +270,7 @@ export default function Register() {
             </div>
           </div>
         )}
-        
+
         <div className="password-container">
           <input
             type={showConfirmPassword ? "text" : "password"}
@@ -285,14 +285,14 @@ export default function Register() {
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
           />
         </div>
-        
+
         {/* Mensaje que aparece cuando las contraseñas no coinciden */}
         {password && confirmPassword && password !== confirmPassword && (
           <div className="password-match-error">
             Las contraseñas no coinciden
           </div>
         )}
-        
+
         <button type="submit" disabled={isLoading}>
           {isLoading ? "Registrando..." : "Registrarse"}
         </button>
