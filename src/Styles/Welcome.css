@@ -267,173 +267,90 @@ a.welcome-button.secondary:active {
 }
 /* Agrega estas media queries al final del archivo */
 
-/* Móviles muy pequeños en landscape */
-@media (max-width: 480px) and (orientation: landscape) {
-  .welcome-container {
-    padding: 1px !important;
-    overflow-y: auto !important; /* Permitir scroll vertical */
-    height: auto !important; /* Altura adaptable al contenido */
-    min-height: 0 !important;
-  }
-  
+/* Pantallas pequeñas - móviles (menos de 480px) */
+@media (max-width: 480px) {
   .welcome-content {
-    padding: 6px !important; /* Reducido de 10px */
-    max-width: 95vw !important;
-    max-height: none !important; /* Quitar límite de altura */
-    overflow-y: auto !important;
-    border-radius: 10px !important; /* Reducir el radio de borde */
+    max-width: 95vw;
+    padding: 20px;
+    max-height: 80vh;
   }
-  
+
   .welcome-title {
-    font-size: 1.3rem !important; /* Reducido de 1.5rem */
-    margin-bottom: 1px !important;
+    font-size: 2rem;
   }
-  
+
   .welcome-subtitle {
-    font-size: 0.8rem !important; /* Reducido de 0.9rem */
+    font-size: 1rem;
   }
-  
+
   .welcome-text {
-    font-size: 0.7rem !important; /* Reducido de 0.8rem */
-    margin-bottom: 8px !important;
-    line-height: 1.2 !important;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
   }
-  
+
   .welcome-features {
-    gap: 3px !important; /* Reducido de 5px */
-    margin: 3px 0 !important;
+    gap: 10px;
   }
-  
+
   .feature {
-    width: 60px !important; /* Reducido de 70px */
+    width: 100px;
   }
-  
+
   .feature-icon {
-    font-size: 1.3rem !important; /* Reducido de 1.5rem */
-    margin-bottom: 1px !important;
+    font-size: 1.8rem;
   }
-  
-  .feature-text {
-    font-size: 0.6rem !important; /* Reducido de 0.7rem */
-  }
-  
-  .welcome-actions {
-    gap: 8px !important; /* Reducido de 10px */
-    margin-bottom: 8px !important;
-  }
-  
+
   .welcome-button {
-    padding: 6px 12px !important; /* Reducido de 8px 15px */
-    font-size: 0.7rem !important; /* Reducido de 0.8rem */
-    min-width: 100px !important; /* Reducido de 120px */
+    min-width: 140px;
+    padding: 12px 20px;
+    font-size: 0.95rem;
   }
-  
+
   .welcome-footer {
-    font-size: 0.6rem !important; /* Reducido de 0.7rem */
-    margin-top: 3px !important;
-  }
-  
-  /* Reducir aún más las decoraciones */
-  .pokeball-decoration {
-    width: 80px !important; /* Reducido de 120px */
-    height: 80px !important;
-    opacity: 0.15 !important; /* Más transparente */
-  }
-  
-  /* Arreglar botones */
-  .button-text {
-    margin-right: 5px !important;
-  }
-  
-  .button-icon {
-    font-size: 0.9rem !important;
+    font-size: 0.7rem;
   }
 }
 
-/* Móviles pequeños y medianos en landscape */
-@media (min-width: 481px) and (max-width: 600px) and (orientation: landscape) {
-  .welcome-container {
-    padding: 3px !important;
-  }
+/* Tablets y móviles grandes (481px a 900px) */
+@media (min-width: 481px) and (max-width: 900px) {
   .welcome-content {
-    padding: 12px !important;
-    max-width: 95vw !important;
-    max-height: 95vh !important;
+    max-width: 90vw;
+    padding: 25px;
+    max-height: 85vh;
   }
+
   .welcome-title {
-    font-size: 1.7rem !important;
-    margin-bottom: 4px !important;
+    font-size: 2.5rem;
   }
+
   .welcome-subtitle {
-    font-size: 0.95rem !important;
+    font-size: 1.1rem;
   }
+
   .welcome-text {
-    font-size: 0.85rem !important;
-    margin-bottom: 12px !important;
-    line-height: 1.4 !important;
+    font-size: 1rem;
+    margin-bottom: 20px;
   }
-  .welcome-features {
-    gap: 8px !important;
-    margin: 8px 0 !important;
-  }
+
   .feature {
-    width: 80px !important;
+    width: 120px;
   }
+
   .feature-icon {
-    font-size: 1.7rem !important;
-    margin-bottom: 4px !important;
+    font-size: 2rem;
   }
-  .feature-text {
-    font-size: 0.75rem !important;
-  }
-  .welcome-actions {
-    gap: 12px !important;
-    margin-bottom: 12px !important;
-  }
+
   .welcome-button {
-    padding: 10px 18px !important;
-    font-size: 0.85rem !important;
-    min-width: 140px !important;
-  }
-  .welcome-footer {
-    font-size: 0.75rem !important;
-    margin-top: 8px !important;
+    min-width: 160px;
+    padding: 13px 22px;
+    font-size: 1rem;
   }
 }
 
-/* Móviles grandes en landscape */
-@media (min-width: 601px) and (max-width: 768px) and (orientation: landscape) {
-  .welcome-container {
-    padding: 5px !important;
-  }
+/* Landscape móvil pequeño (320px a 900px), opcional si quieres escalado */
+@media (max-width: 900px) and (orientation: landscape) {
   .welcome-content {
-    padding: 15px !important;
-    max-width: 95vw !important;
-  }
-  .welcome-title {
-    font-size: 2rem !important;
-    margin-bottom: 5px !important;
-  }
-  .welcome-subtitle {
-    font-size: 1rem !important;
-  }
-  .welcome-text {
-    font-size: 0.9rem !important;
-    margin-bottom: 15px !important;
-  }
-  .welcome-features {
-    gap: 10px !important;
-    margin: 10px 0 !important;
-  }
-  .feature {
-    width: 90px !important;
-  }
-  .feature-icon {
-    font-size: 1.8rem !important;
-  }
-  .welcome-button {
-    padding: 12px 20px !important;
-    min-width: 160px !important;
-    font-size: 0.9rem !important;
+    max-height: 75vh;
+    overflow-y: auto;
   }
 }
