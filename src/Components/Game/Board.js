@@ -225,7 +225,31 @@ export default function Board() {
   const handleClosePC = () => {
     setShowPC(false);
   };
-  
+
+  const handleMobileMove = (direction) => {
+    const { row, col } = playerPosition;
+    let newRow = row;
+    let newCol = col;
+
+    switch(direction) {
+      case 'up': newRow--; break;
+      case 'down': newRow++; break;
+      case 'left': newCol--; break;
+      case 'right': newCol++; break;
+      default: return;
+    }
+
+    if (
+      newRow >= 0 &&
+      newRow < grid.length &&
+      newCol >= 0 &&
+      newCol < grid[0].length &&
+      grid[newRow][newCol] !== "wall"
+    ) {
+      setPlayerPosition({ row: newRow, col: newCol });
+    }
+  };
+
   return (
     <div className="game-container">
       {/* Indicadores de nivel y progreso - Sin mostrar PokeDollars */}
@@ -258,16 +282,60 @@ export default function Board() {
         ))}
       </div>
 
-      {/* Botón PC Pokémon (sin contenedor toolbar) */}
-      <button
-        className="pc-button"
-        onClick={handleOpenPC}
-        title="PC Pokémon"
-      >
-        PC Pokémon
-      </button>
+      {/* CONJUNTO DE 5 BOTONES: PC EN EL CENTRO + DIRECCIONES */}
+      <div className="button-group">
+        {/* Fila superior: Solo UP */}
+        <div className="button-row">
+          <div className="button-spacer"></div>
+          <button 
+            className="control-btn direction-btn"
+            onClick={() => handleMobileMove('up')}
+            aria-label="Mover arriba"
+          >
+            ▲
+          </button>
+          <div className="button-spacer"></div>
+        </div>
+        
+        {/* Fila central: LEFT + PC + RIGHT */}
+        <div className="button-row">
+          <button 
+            className="control-btn direction-btn"
+            onClick={() => handleMobileMove('left')}
+            aria-label="Mover izquierda"
+          >
+            ◀
+          </button>
+          <button
+            className="control-btn pc-button-center"
+            onClick={handleOpenPC}
+            title="PC Pokémon"
+          >
+            🖥️
+          </button>
+          <button 
+            className="control-btn direction-btn"
+            onClick={() => handleMobileMove('right')}
+            aria-label="Mover derecha"
+          >
+            ▶
+          </button>
+        </div>
+        
+        {/* Fila inferior: Solo DOWN */}
+        <div className="button-row">
+          <div className="button-spacer"></div>
+          <button 
+            className="control-btn direction-btn"
+            onClick={() => handleMobileMove('down')}
+            aria-label="Mover abajo"
+          >
+            ▼
+          </button>
+          <div className="button-spacer"></div>
+        </div>
+      </div>
 
-      {/* Modal del PC Pokémon */}
       {showPC && (
         <PokemonPC
           onClose={handleClosePC}

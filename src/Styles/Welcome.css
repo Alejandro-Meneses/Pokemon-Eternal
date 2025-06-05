@@ -265,92 +265,146 @@ a.welcome-button.secondary:active {
     transform: translateY(0);
   }
 }
-/* Agrega estas media queries al final del archivo */
 
-/* Pantallas pequeñas - móviles (menos de 480px) */
+/* MÓVIL PORTRAIT */
 @media (max-width: 480px) {
-  .welcome-content {
-    max-width: 95vw;
-    padding: 20px;
-    max-height: 80vh;
+  .welcome-container {
+    padding: var(--mobile-padding);
+    height: 100vh;
+    overflow-y: auto;
   }
-
+  
+  .welcome-content {
+    max-width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: var(--mobile-border-radius);
+    max-height: none;
+  }
+  
   .welcome-title {
     font-size: 2rem;
+    margin-bottom: 15px;
   }
-
+  
   .welcome-subtitle {
     font-size: 1rem;
   }
-
+  
   .welcome-text {
     font-size: 0.9rem;
-    margin-bottom: 15px;
+    line-height: 1.4;
+    margin-bottom: 20px;
   }
-
+  
   .welcome-features {
-    gap: 10px;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
   }
+  
+  .feature {
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+  }
+  
+  .feature-icon {
+    font-size: 2rem;
+  }
+  
+  .welcome-actions {
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .welcome-button {
+    width: 100%;
+    max-width: 250px;
+    min-height: var(--mobile-touch-target);
+    font-size: 1rem;
+    padding: 12px 20px;
+  }
+  
+  .pokeball-decoration {
+    width: 150px;
+    height: 150px;
+  }
+}
 
+/* MÓVIL LANDSCAPE */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+  .welcome-container {
+    padding: var(--landscape-padding);
+  }
+  
+  .welcome-content {
+    padding: 20px;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  
+  .welcome-title {
+    font-size: 1.8rem;
+  }
+  
+  .welcome-features {
+    flex-direction: row;
+    justify-content: space-around;
+    margin: 15px 0;
+  }
+  
   .feature {
     width: 100px;
   }
-
-  .feature-icon {
-    font-size: 1.8rem;
+  
+  .welcome-actions {
+    flex-direction: row;
+    justify-content: center;
+    gap: 15px;
   }
-
+  
   .welcome-button {
-    min-width: 140px;
-    padding: 12px 20px;
-    font-size: 0.95rem;
-  }
-
-  .welcome-footer {
-    font-size: 0.7rem;
+    width: auto;
+    min-width: 120px;
   }
 }
 
-/* Tablets y móviles grandes (481px a 900px) */
-@media (min-width: 481px) and (max-width: 900px) {
+/* TABLET PORTRAIT */
+@media (min-width: 481px) and (max-width: 768px) {
   .welcome-content {
-    max-width: 90vw;
+    max-width: 90%;
     padding: 25px;
-    max-height: 85vh;
   }
-
+  
   .welcome-title {
     font-size: 2.5rem;
   }
-
-  .welcome-subtitle {
-    font-size: 1.1rem;
+  
+  .welcome-features {
+    flex-direction: row;
+    justify-content: space-around;
   }
-
-  .welcome-text {
-    font-size: 1rem;
-    margin-bottom: 20px;
-  }
-
+  
   .feature {
     width: 120px;
   }
+}
 
-  .feature-icon {
-    font-size: 2rem;
+/* AJUSTES ESPECÍFICOS PARA DISPOSITIVOS PEQUEÑOS */
+@media (max-width: 375px) {
+  .welcome-title {
+    font-size: 1.8rem;
   }
-
+  
   .welcome-button {
-    min-width: 160px;
-    padding: 13px 22px;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    padding: 10px 15px;
+  }
+  
+  .feature-icon {
+    font-size: 1.8rem;
   }
 }
 
-/* Landscape móvil pequeño (320px a 900px), opcional si quieres escalado */
-@media (max-width: 900px) and (orientation: landscape) {
-  .welcome-content {
-    max-height: 75vh;
-    overflow-y: auto;
-  }
-}

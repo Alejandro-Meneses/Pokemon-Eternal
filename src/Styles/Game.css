@@ -135,21 +135,216 @@
 .header .toggle-button:hover {
   background-color: var(--primary-color-dark, #1a4a7a); /* Usar la variable con fallback */
 }
-
-/* Media queries */
-@media (max-width: 768px) {
+/* MÓVIL PORTRAIT */
+@media (max-width: 480px) {
   .game-container {
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    padding: var(--mobile-padding);
+    gap: var(--mobile-gap);
+    overflow-x: visible;
+    overflow-y: auto;
   }
   
   .game-container .pokemon-card {
-    width: 170px;
-    max-width: 100%;
+    width: 100%;
+    max-width: none;
+    padding: var(--mobile-padding);
+    border-radius: var(--mobile-border-radius);
+    margin: 0;
+  }
+  
+  .game-container .pokemon-name {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    text-align: center;
   }
   
   .game-container .pokemon-image {
     width: 100px;
     height: 100px;
+    margin: 0 auto 10px;
+    display: block;
+  }
+  
+  .game-container .pokemon-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    margin: 10px 0;
+  }
+  
+  .game-container .pokemon-stat {
+    flex-direction: column;
+    text-align: center;
+    padding: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+  }
+  
+  .game-container .pokemon-stats li {
+    font-size: 0.8rem;
+    margin: 2px 0;
+  }
+  
+  .game-container .pokemon-types {
+    justify-content: center;
+    gap: 8px;
+    margin: 12px 0;
+  }
+  
+  .game-container .pokemon-types li {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+    border-radius: var(--mobile-border-radius);
+  }
+  
+  .header .toggle-button {
+    width: 100%;
+    max-width: 250px;
+    height: var(--mobile-touch-target);
+    margin: 15px auto;
+    font-size: 1rem;
+    border-radius: var(--mobile-border-radius);
+  }
+}
+
+/* MÓVIL LANDSCAPE */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+  .game-container {
+    flex-direction: row;
+    height: 100vh;
+    padding: 8px;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  
+  .game-container .pokemon-card {
+    width: 140px;
+    max-width: 140px;
+    min-width: 140px;
+    padding: 8px;
+    flex-shrink: 0;
+  }
+  
+  .game-container .pokemon-name {
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+  
+  .game-container .pokemon-image {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 6px;
+  }
+  
+  .game-container .pokemon-stats li {
+    font-size: 0.65rem;
+    margin: 1px 0;
+  }
+  
+  .game-container .pokemon-types li {
+    padding: 2px 4px;
+    font-size: 0.6rem;
+  }
+  
+  .header .toggle-button {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: auto;
+    height: 30px;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    margin: 0;
+  }
+}
+
+/* TABLET PORTRAIT */
+@media (min-width: 481px) and (max-width: 768px) {
+  .game-container {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+    gap: 15px;
+  }
+  
+  .game-container .pokemon-card {
+    width: 180px;
+    max-width: 180px;
+  }
+  
+  .game-container .pokemon-image {
+    width: 110px;
+    height: 110px;
+  }
+  
+  .header .toggle-button {
+    max-width: 300px;
+    height: 45px;
+  }
+}
+
+/* DISPOSITIVOS MUY PEQUEÑOS */
+@media (max-width: 375px) {
+  .game-container {
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .game-container .pokemon-name {
+    font-size: 1rem;
+  }
+  
+  .game-container .pokemon-image {
+    width: 85px;
+    height: 85px;
+  }
+  
+  .game-container .pokemon-stats li {
+    font-size: 0.75rem;
+  }
+  
+  .game-container .pokemon-types li {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+  
+  .header .toggle-button {
+    font-size: 0.9rem;
+    height: 42px;
+  }
+}
+
+/* PANTALLAS EXTRA PEQUEÑAS */
+@media (max-width: 320px) {
+  .game-container {
+    padding: 8px;
+    gap: 8px;
+  }
+  
+  .game-container .pokemon-name {
+    font-size: 0.95rem;
+  }
+  
+  .game-container .pokemon-image {
+    width: 75px;
+    height: 75px;
+  }
+  
+  .game-container .pokemon-stats li {
+    font-size: 0.7rem;
+  }
+  
+  .game-container .pokemon-types li {
+    padding: 3px 6px;
+    font-size: 0.65rem;
+  }
+  
+  .header .toggle-button {
+    font-size: 0.8rem;
+    height: 40px;
   }
 }

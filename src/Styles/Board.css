@@ -1,4 +1,15 @@
 /* Estilo para centrar el tablero */
+@import url('../Styles/Variables.css');
+
+/* VARIABLES MÓVILES */
+:root {
+  --mobile-padding: 10px;
+  --mobile-border-radius: 8px;
+  --mobile-touch-target: 44px;
+  --landscape-padding: 8px;
+
+}
+
 .board {
     display: flex;
     flex-direction: column;
@@ -10,13 +21,12 @@
     max-width: 100%;
     box-sizing: border-box;
     position: relative;
-    overflow: hidden; /* Evita cualquier scroll dentro del tablero */
-    touch-action: none; /* Previene gestos táctiles de desplazamiento */
-    user-select: none; /* Evita selección de texto que podría causar scroll */
-    overscroll-behavior: none; /* Previene el "rebote" en algunos navegadores */
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+    overscroll-behavior: none;
 }
 
-/* Contenedor para el tablero en sí */
 .board-content {
     display: flex;
     flex-direction: column;
@@ -34,7 +44,7 @@
     image-rendering: pixelated;
 }
   
-/* Tipos de terreno - hacerlos más específicos */
+/* Tipos de terreno */
 .board .grass-terrain {
     background-image: url('../images/Grass.jpeg');
     background-size: 100% 100%;
@@ -70,39 +80,32 @@
     z-index: 5;
 }
 
-/* Estilos para el contenedor principal */
+/* Contenedor principal */
 .game-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     padding: 20px;
     position: relative;
-    overflow: hidden; /* Desactiva cualquier scroll */
-    touch-action: none; /* Previene gestos táctiles */
-    overscroll-behavior: none; /* Previene el "rebote" en algunos navegadores */
+    overflow: hidden;
+    touch-action: none;
+    overscroll-behavior: none;
 }
 
-/* Corrección de los estilos para el Board */
-
-/* Corregido para usar exactamente las variables correctas y posicionamiento adecuado */
-
-/* Estadísticas del juego (nivel y dinero) - en la esquina superior derecha como en la imagen */
+/* Estadísticas del juego */
 .game-stats {
   position: absolute;
   top: 15px;
   right: 15px;
-  left: auto;
-  transform: none;
   display: flex;
   align-items: center;
   background-color: rgba(29, 28, 44, 0.9);
   border-radius: 50px;
   padding: 8px 15px;
   z-index: 100;
-  border: 2px solid var(--primary-color); /* Azul Pokémon de variables */
+  border: 2px solid var(--primary-color);
 }
 
-/* Estilizar el nivel como se muestra en la imagen */
 .level-indicator {
   display: flex;
   align-items: center;
@@ -129,25 +132,58 @@
   font-size: 0.9rem;
 }
 
+.victories-indicator {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
 
-/* Botón PC Pokémon - posicionado debajo del board */
-.pc-button {
-  position: relative; /* Cambiado de fixed a relative para seguir el flujo del documento */
-  display: block;
-  margin: 20px auto 0; /* Margen superior de 20px, centrado horizontalmente */
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); /* Usando variables de color */
-  color: white;
-  border: none;
-  border-radius: 30px;
-  padding: 12px 25px; /* Aumentado el padding para hacerlo más grande */
-  font-size: 1.1rem; /* Aumentado el tamaño de la fuente */
+.victories-value {
+  background-color: #9370db;
+  color: #fff;
   font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 3px 0 var(--primary-color-dark), 0 4px 8px rgba(0, 0, 0, 0.3);
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.victories-label {
+  color: #9370db;
+  font-size: 0.9rem;
+  margin-left: 5px;
+}
+
+/* BOTONES COMBINADOS - Base común para todos los botones */
+.pc-button,
+.control-btn,
+.mobile-btn {
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+/* Botón PC principal */
+.pc-button {
+  position: relative;
+  margin: 20px auto 0;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  border-radius: 30px;
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  box-shadow: 0 3px 0 var(--primary-color-dark), 0 4px 8px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.3);
   z-index: 100;
 }
@@ -163,46 +199,460 @@
 
 .pc-button::before {
   content: "🖥️";
-  margin-right: 10px; /* Aumentado el espacio para el ícono */
-  font-size: 1.2rem; /* Aumentado el tamaño del ícono */
+  margin-right: 10px;
+  font-size: 1.2rem;
 }
 
+/* SISTEMA DE BOTONES UNIFICADO */
+.button-group,
+.mobile-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px; /* Reducido de 8px a 4px */
+  margin-top: 0; /* Eliminado margin-top */
+  position: relative;
+  z-index: 100;
+}
 
+.mobile-controls {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  margin-top: 0;
+}
 
-/* Media queries para móviles */
+.button-row,
+.mobile-dpad {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* Reducido de 8px a 4px */
+}
+
+.mobile-dpad {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr;
+  gap: 5px;
+  width: 120px;
+  height: 120px;
+  z-index: 1000;
+}
+
+.mobile-btn-middle {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 5px;
+  align-items: center;
+}
+
+.button-spacer {
+  width: 35px; /* Reducido de 50px a 35px */
+  height: 35px; /* Reducido de 50px a 35px */
+}
+
+/* Botones de control y móviles */
+.control-btn,
+.mobile-btn {
+  width: 35px; /* Reducido de 50px a 35px */
+  height: 35px; /* Reducido de 50px a 35px */
+  border-radius: 8px; /* Reducido de 12px a 8px */
+  font-size: 1rem; /* Reducido de 1.2rem a 1rem */
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3), 0 3px 6px rgba(0, 0, 0, 0.2); /* Reducido */
+}
+
+.mobile-btn {
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn:active,
+.mobile-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.mobile-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos específicos de botones */
+.pc-button-center,
+.mobile-btn {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+.pc-button-center {
+  font-size: 1.1rem; /* Reducido de 1.4rem a 1.1rem */
+}
+
+.pc-button-center:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3), 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.direction-btn {
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.direction-btn:hover {
+  background: linear-gradient(135deg, #5f3dc4, #845ec2);
+}
+
+.mobile-btn:active {
+  background: linear-gradient(135deg, var(--primary-color-dark), var(--secondary-color-dark));
+}
+
+/* Posicionamiento específico móvil */
+.mobile-btn-up {
+  grid-column: 1;
+  justify-self: center;
+}
+
+.mobile-btn-left {
+  grid-column: 1;
+}
+
+.mobile-btn-center {
+  grid-column: 2;
+  width: 35px;
+  height: 35px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.mobile-btn-right {
+  grid-column: 3;
+}
+
+.mobile-btn-down {
+  grid-column: 1;
+  justify-self: center;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+  .mobile-controls {
+    display: block;
+  }
+}
+
 @media (max-width: 480px) {
+  .game-container {
+    padding: var(--mobile-padding);
+    overflow-y: auto;
+  }
+  
+  .board {
+    width: 100%;
+    height: auto;
+    margin: 10px auto;
+    padding: 10px;
+  }
+  
+  .board .cell {
+    width: calc((100vw - 60px) / 10);
+    height: calc((100vw - 60px) / 10);
+    max-width: 35px;
+    max-height: 35px;
+    min-width: 25px;
+    min-height: 25px;
+  }
+  
   .game-stats {
+    position: relative;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-radius: var(--mobile-border-radius);
+    background-color: rgba(29, 28, 44, 0.95);
+  }
+  
+  .level-indicator,
+  .victories-indicator {
+    font-size: 0.9rem;
+  }
+  
+  .level-value,
+  .victories-value {
     padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    min-width: 30px;
+    text-align: center;
   }
   
   .pc-button {
-    padding: 8px 15px;
-    font-size: 0.9rem;
+    width: 100%;
+    max-width: 200px;
+    margin: 15px auto 0;
+    padding: 12px 20px;
+    font-size: 1rem;
+    height: var(--mobile-touch-target);
+    border-radius: var(--mobile-border-radius);
+    margin-bottom: 140px;
+  }
+  
+  .pc-button::before {
+    font-size: 1.1rem;
+    margin-right: 8px;
+  }
+
+  /* Ajustes botones móviles */
+  .mobile-dpad {
+    width: 110px;
+    height: 110px;
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  .mobile-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1.1rem;
+  }
+  
+  .mobile-btn-center {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Ajustes botones de control */
+  .button-group {
+    margin-top: 15px;
+    gap: 6px;
+  }
+  
+  .button-row {
+    gap: 6px;
+  }
+  
+  .control-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 1.1rem;
+  }
+  
+  .button-spacer {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .pc-button-center {
+    font-size: 1.2rem;
   }
 }
 
-/* Añadir estilo correcto para victories-indicator */
-.victories-indicator {
-  display: flex;
-  align-items: center;
-  margin-right: 10px;
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+  .game-container {
+    padding: var(--landscape-padding);
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .board {
+    height: 60vh;
+    margin: 5px auto;
+  }
+  
+  .board .cell {
+    width: calc(min(60vh, 80vw) / 10);
+    height: calc(min(60vh, 80vw) / 10);
+    max-width: 40px;
+    max-height: 40px;
+  }
+  
+  .game-stats {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: auto;
+    flex-direction: column;
+    gap: 5px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .pc-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: auto;
+    min-width: 120px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    height: 35px;
+  }
+
+  .mobile-dpad {
+    width: 90px;
+    height: 90px;
+    bottom: 10px;
+    left: 10px;
+    right: auto;
+  }
+  
+  .mobile-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 0.9rem;
+  }
+  
+  .mobile-btn-center {
+    width: 26px;
+    height: 26px;
+  }
 }
 
-.victories-value {
-  background-color: #9370db; /* Color morado/violeta */
-  color: #fff;
-  font-weight: bold;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
+@media (min-width: 481px) and (max-width: 768px) {
+  .board .cell {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .game-stats {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto 20px;
+    justify-content: space-around;
+  }
+  
+  .pc-button {
+    max-width: 250px;
+  }
 }
 
-.victories-label {
-  color: #9370db; /* Color morado/violeta */
-  font-size: 0.9rem;
-  margin-left: 5px;
+@media (max-width: 375px) {
+  .board .cell {
+    width: calc((100vw - 40px) / 10);
+    height: calc((100vw - 40px) / 10);
+    max-width: 32px;
+    max-height: 32px;
+  }
+  
+  .game-stats {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+  
+  .level-indicator,
+  .victories-indicator {
+    justify-content: center;
+    font-size: 0.85rem;
+  }
+  
+  .pc-button {
+    font-size: 0.9rem;
+    padding: 10px 15px;
+    margin-bottom: 120px;
+  }
+
+  .mobile-dpad {
+    width: 100px;
+    height: 100px;
+    bottom: 12px;
+    right: 12px;
+  }
+  
+  .mobile-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+  }
+  
+  .mobile-btn-center {
+    width: 30px;
+    height: 30px;
+  }
+
+  .control-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  .button-spacer {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .pc-button-center {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .board {
+    padding: 5px;
+  }
+  
+  .board .cell {
+    width: calc((100vw - 30px) / 10);
+    height: calc((100vw - 30px) / 10);
+    max-width: 28px;
+    max-height: 28px;
+  }
+  
+  .game-stats {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+  
+  .pc-button {
+    font-size: 0.8rem;
+    padding: 8px 12px;
+    margin-bottom: 110px;
+  }
+
+  .mobile-dpad {
+    width: 90px;
+    height: 90px;
+    bottom: 10px;
+    right: 10px;
+  }
+  
+  .mobile-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 0.9rem;
+  }
+  
+  .mobile-btn-center {
+    width: 26px;
+    height: 26px;
+  }
+
+  .button-group {
+    gap: 4px;
+  }
+  
+  .button-row {
+    gap: 4px;
+  }
+  
+  .control-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+  
+  .button-spacer {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .pc-button-center {
+    font-size: 1rem;
+  }
 }

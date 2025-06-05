@@ -933,47 +933,273 @@
     50% { transform: scale(1.2); opacity: 0.8; }
     100% { transform: scale(1); opacity: 1; }
 }
-/* Diseño responsivo */
-@media (max-width: 576px) {
-    .pokemon-team-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
 
-    .pokemon-selector-modal {
-        padding: 15px;
-        width: 95%;
-    }
-    
-    .pokemon-team-sprite {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .pokemon-selector-modal h3 {
-        font-size: 1.5rem;
-    }
+/* MÓVIL PORTRAIT */
+@media (max-width: 480px) {
+  .battle-container {
+    width: 100%;
+    height: 100vh;
+    max-width: none;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    position: relative;
+  }
+  
+  .rival-section {
+    top: 10vh;
+    right: 5vw;
+    width: 35vw;
+  }
+  
+  .rival-sprite {
+    width: 25vw;
+    height: 25vw;
+    max-width: 120px;
+    max-height: 120px;
+  }
+  
+  .rival-info {
+    width: 35vw;
+    max-width: 150px;
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+  
+  .player-section {
+    bottom: 25vh;
+    left: 5vw;
+    width: 35vw;
+  }
+  
+  .player-sprite {
+    width: 25vw;
+    height: 25vw;
+    max-width: 120px;
+    max-height: 120px;
+  }
+  
+  .player-info {
+    width: 35vw;
+    max-width: 150px;
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+  
+  .hp-bar {
+    height: 8px;
+    border-radius: 4px;
+  }
+  
+  .hp-text {
+    font-size: 0.7rem;
+    margin-top: 4px;
+  }
+  
+  .battle-info-group {
+    bottom: 2vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90vw;
+    max-width: none;
+  }
+  
+  .action-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .battle-btn {
+    min-height: var(--mobile-touch-target);
+    font-size: 0.9rem;
+    padding: 10px 8px;
+    border-radius: var(--mobile-border-radius);
+  }
+  
+  .battle-log {
+    width: 90vw;
+    height: 12vh;
+    bottom: 18vh;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    padding: 8px;
+    border-radius: var(--mobile-border-radius);
+  }
+  
+  .battle-log .log-entry {
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
 }
 
-/* Para pantallas muy pequeñas */
-@media (max-width: 360px) {
-    .pokemon-team-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .pokemon-team-item {
-        display: flex;
-        align-items: center;
-        text-align: left;
-        padding: 8px;
-    }
-    
-    .pokemon-team-sprite {
-        width: 50px;
-        height: 50px;
-        margin-right: 10px;
-    }
-    
-    .pokemon-team-info {
-        flex: 1;
-    }
+/* MÓVIL LANDSCAPE */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+  .battle-container {
+    width: 100%;
+    height: 100vh;
+    border: none;
+    border-radius: 0;
+  }
+  
+  .rival-section {
+    top: 5vh;
+    right: 8vw;
+    width: 25vw;
+  }
+  
+  .rival-sprite {
+    width: 18vw;
+    height: 18vw;
+    max-width: 80px;
+    max-height: 80px;
+  }
+  
+  .rival-info {
+    width: 25vw;
+    max-width: 120px;
+    padding: 5px;
+    font-size: 0.7rem;
+  }
+  
+  .player-section {
+    bottom: 15vh;
+    left: 8vw;
+    width: 25vw;
+  }
+  
+  .player-sprite {
+    width: 18vw;
+    height: 18vw;
+    max-width: 80px;
+    max-height: 80px;
+  }
+  
+  .player-info {
+    width: 25vw;
+    max-width: 120px;
+    padding: 5px;
+    font-size: 0.7rem;
+  }
+  
+  .battle-info-group {
+    bottom: 2vh;
+    right: 2vw;
+    left: auto;
+    transform: none;
+    width: 45vw;
+  }
+  
+  .action-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+  
+  .battle-btn {
+    min-height: 35px;
+    font-size: 0.8rem;
+    padding: 8px 6px;
+  }
+  
+  .battle-log {
+    width: 35vw;
+    height: 25vh;
+    bottom: 2vh;
+    left: 35vw;
+    transform: none;
+    font-size: 0.7rem;
+    padding: 5px;
+  }
+}
+
+/* TABLET PORTRAIT */
+@media (min-width: 481px) and (max-width: 768px) {
+  .battle-container {
+    width: 95%;
+    height: 85vh;
+    margin: 7.5vh auto;
+    border-radius: 15px;
+  }
+  
+  .rival-section {
+    top: 8vh;
+    right: 4vw;
+  }
+  
+  .player-section {
+    bottom: 20vh;
+    left: 4vw;
+  }
+  
+  .battle-info-group {
+    bottom: 3vh;
+    width: 85vw;
+  }
+  
+  .battle-log {
+    width: 85vw;
+    height: 10vh;
+    bottom: 15vh;
+  }
+}
+
+/* AJUSTES PARA PANTALLAS MUY PEQUEÑAS */
+@media (max-width: 375px) {
+  .rival-sprite, .player-sprite {
+    width: 30vw;
+    height: 30vw;
+    max-width: 100px;
+    max-height: 100px;
+  }
+  
+  .rival-info, .player-info {
+    width: 40vw;
+    font-size: 0.75rem;
+    padding: 6px;
+  }
+  
+  .battle-btn {
+    font-size: 0.8rem;
+    padding: 8px 5px;
+  }
+  
+  .battle-log {
+    font-size: 0.75rem;
+    height: 10vh;
+  }
+}
+
+/* SELECTOR DE POKÉMON MODAL */
+@media (max-width: 480px) {
+  .pokemon-selector-modal {
+    width: 95%;
+    max-width: none;
+    height: 80vh;
+    padding: 15px;
+    border-radius: var(--mobile-border-radius);
+  }
+  
+  .pokemon-team-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  
+  .pokemon-team-item {
+    padding: 10px;
+    border-radius: var(--mobile-border-radius);
+  }
+  
+  .pokemon-team-sprite {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .pokemon-team-name {
+    font-size: 0.9rem;
+  }
+  
+  .pokemon-team-hp {
+    font-size: 0.8rem;
+  }
 }

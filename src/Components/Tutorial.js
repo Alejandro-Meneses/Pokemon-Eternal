@@ -16,7 +16,7 @@ const Tutorial = () => {
   }, []);
 
   const nextSection = () => {
-    if (activeSection < 5) {
+    if (activeSection < 6) { // CAMBIADO DE 5 A 6
       setActiveSection(activeSection + 1);
     }
   };
@@ -36,7 +36,7 @@ const Tutorial = () => {
 
         <div className="tutorial-navigation">
           <div className="nav-dots">
-            {[1, 2, 3, 4, 5].map((num) => (
+            {[1, 2, 3, 4, 5, 6].map((num) => ( // AGREGADO EL 6
               <div
                 key={num}
                 className={`nav-dot ${activeSection === num ? 'active' : ''}`}
@@ -47,7 +47,7 @@ const Tutorial = () => {
         </div>
 
         <div className="tutorial-sections">
-          {/* Sección 1: Introducción - Versión más compacta */}
+          {/* Sección 1: Introducción */}
           {activeSection === 1 && (
             <div className="tutorial-section">
               <h2>Bienvenido a Pokémon Eternal</h2>
@@ -72,6 +72,8 @@ const Tutorial = () => {
               </div>
             </div>
           )}
+
+          {/* Sección 2: Controles */}
           {activeSection === 2 && (
             <div className="tutorial-section">
               <h2 className="centered-title">Controles y Movimiento</h2>
@@ -80,7 +82,8 @@ const Tutorial = () => {
                   <h3>Teclado:</h3>
                   <ul>
                     <li><strong>↑↓←→</strong> o <strong>WASD:</strong></li>
-                    <span>Mover personaje</span>                  </ul>
+                    <span>Mover personaje</span>
+                  </ul>
                 </div>
                 <div className="tutorial-text">
                   <h3>Dispositivos táctiles:</h3>
@@ -88,18 +91,16 @@ const Tutorial = () => {
                     <li>Botones direccionales en pantalla</li>
                     <li>Toca para interactuar</li>
                   </ul>
-
                 </div>
-                
               </div>
               <br />
               <p className="centered-paragraph">
-                  Puedes jugar cómodamente tanto en PC como en dispositivos móviles. ¡Elige el método que prefieras y explora el mundo Pokémon a tu ritmo!
-                </p>
+                Puedes jugar cómodamente tanto en PC como en dispositivos móviles. ¡Elige el método que prefieras y explora el mundo Pokémon a tu ritmo!
+              </p>
             </div>
           )}
 
-          {/* Sección 3: Encuentros Pokémon - Versión más compacta */}
+          {/* Sección 3: Encuentros Pokémon */}
           {activeSection === 3 && (
             <div className="tutorial-section">
               <h2>Encuentros Pokémon</h2>
@@ -125,7 +126,7 @@ const Tutorial = () => {
             </div>
           )}
 
-          {/* Sección 4: Sistema de Combate - Versión más compacta */}
+          {/* Sección 4: Sistema de Combate */}
           {activeSection === 4 && (
             <div className="tutorial-section">
               <h2>Sistema de Combate</h2>
@@ -157,8 +158,43 @@ const Tutorial = () => {
             </div>
           )}
 
-          {/* Sección 5: Tips - Versión más compacta */}
-          {activeSection === 5 && (
+       {/* NUEVA SECCIÓN 5: Sistema Gacha */}
+{/* NUEVA SECCIÓN 5: Sistema Gacha */}
+{activeSection === 5 && (
+  <div className="tutorial-section">
+    <h2>Sistema Gacha</h2>
+    <div className="tutorial-grid">
+      <div className="tutorial-text">
+        <h3>¿Cómo conseguir Pokémon?</h3>
+        <ul>
+          <li><strong>Gana puntos</strong> derrotando Pokémon salvajes</li>
+          <li><strong>Usa los puntos</strong> en el sistema Gacha</li>
+          <li><strong>Obtén Pokémon aleatorios</strong> para tu colección</li>
+        </ul>
+        
+        {/* MOVER LA TARJETA AQUÍ DENTRO */}
+        <div className="gacha-features">
+          <div className="feature-card">
+            <div className="feature-icon">⭐</div>
+            <h4>Pokémon Raros</h4>
+            <p>Posibilidad de obtener legendarios</p>
+          </div>
+        </div>
+      </div>
+      
+      <div className="tutorial-image">
+        <img
+          src="/images/Gacha.png"
+          alt="Sistema Gacha"
+          className="tutorial-img"
+        />
+        <p className="image-caption">Sistema de invocación Gacha</p>
+      </div>
+    </div>
+  </div>
+)}
+          {/* Sección 6: Tips (antes era la 5) */}
+          {activeSection === 6 && (
             <div className="tutorial-section">
               <h2>Tips para Maestros Pokémon</h2>
               <div className="tutorial-tips">
@@ -180,7 +216,8 @@ const Tutorial = () => {
                       </a>
                     </strong>
                     {" "}las ventajas de tipo.
-                  </p>                </div>
+                  </p>
+                </div>
                 <div className="tips-card">
                   <div className="tip-icon">☁️</div>
                   <p><strong>Tu partida</strong> está segura, ¡se guarda automáticamente!</p>
@@ -213,7 +250,7 @@ const Tutorial = () => {
             <span className="button-icon">🏠</span>
           </Link>
 
-          {activeSection < 5 ? (
+          {activeSection < 6 ? ( // CAMBIADO DE 5 A 6
             <button className="tutorial-button secondary" onClick={nextSection}>
               <span className="button-text">Siguiente</span>
               <span className="button-icon">→</span>

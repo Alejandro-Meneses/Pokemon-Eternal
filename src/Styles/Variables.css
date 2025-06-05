@@ -1,5 +1,14 @@
 :root {
-
+/* Configuración de scroll móvil */
+  --scroll-behavior: smooth;
+  --mobile-scroll: auto;
+  --desktop-scroll: hidden;
+  
+  /* Touch actions */
+  --touch-pan-y: pan-y;
+  --touch-manipulation: manipulation;
+  --touch-none: none;
+  
   /* Colores principales */
   --primary-color: #3D7DCA; /* Azul Pokémon */
   --secondary-color: #8A2BE2; /* Blue Violet (tu elección de púrpura) */
@@ -85,6 +94,29 @@
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
   
+  /* BREAKPOINTS MÓVILES ESPECÍFICOS */
+  --mobile-xs: 320px;
+  --mobile-sm: 375px;
+  --mobile-md: 414px;
+  --mobile-lg: 480px;
+  --tablet-sm: 768px;
+  --tablet-md: 900px;
+  --tablet-lg: 1024px;
+  --desktop-sm: 1200px;
+  
+  /* VARIABLES RESPONSIVE ESPECÍFICAS */
+  --mobile-padding: 10px;
+  --mobile-margin: 8px;
+  --mobile-border-radius: 8px;
+  --mobile-font-size: 0.8rem;
+  --mobile-button-height: 44px;
+  --mobile-touch-target: 44px;
+  
+  /* LANDSCAPE ESPECÍFICAS */
+  --landscape-height-adjustment: 0.8;
+  --landscape-padding: 5px;
+  --landscape-margin: 5px;
+
   --primary-font: 'Poppins', sans-serif;
   --body-font: 'Inter', sans-serif;
 }

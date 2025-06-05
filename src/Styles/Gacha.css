@@ -671,82 +671,261 @@ body:not(.constellation-container) .pokedollar-icon {
     text-shadow: 0 0 15px gold, 0 0 20px yellow;
   }
 }
+/* MÓVIL PORTRAIT */
+@media (max-width: 480px) {
+  .constellation-container {
+    padding: var(--mobile-padding);
+    height: 100vh;
+    overflow-y: auto;
+  }
+  
+  .constellation-ui {
+    position: relative;
+    bottom: auto;
+    width: 100%;
+    max-width: none;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: var(--mobile-border-radius);
+  }
+  
+  .constellation-title {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+  
+  .constellation-description {
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+  }
+  
+  .constellation-controls {
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .constellation-button {
+    min-height: var(--mobile-touch-target);
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    border-radius: var(--mobile-border-radius);
+    flex: 1;
+    min-width: 120px;
+  }
+  
+  .dream-ball {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .dream-ball::after {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .pokemon-popup {
+    width: 90%;
+    max-width: 300px;
+    padding: 20px;
+    border-radius: var(--mobile-border-radius);
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .popup-title {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+  
+  .pokemon-image-container {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 15px;
+  }
+  
+  .pokemon-image {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .pokemon-name {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+  
+  .pokemon-sprite {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .pokemon-sprite img {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .popup-buttons {
+    gap: 10px;
+    margin-top: 15px;
+    flex-direction: column;
+  }
+  
+  .popup-buttons button {
+    width: 100%;
+    height: var(--mobile-touch-target);
+    font-size: 0.9rem;
+    border-radius: var(--mobile-border-radius);
+  }
+  
+  .pokedollar-display {
+    padding: 10px 15px;
+    font-size: 1rem;
+    border-radius: var(--mobile-border-radius);
+    margin-bottom: 15px;
+  }
+}
 
-/* ====================================================
-   RESPONSIVE - ACTUALIZADO PARA ELEMENTOS MÁS PEQUEÑOS
-   ==================================================== */
-@media (max-width: 768px) {
-  .constellation-container .dream-ball {
+/* MÓVIL LANDSCAPE */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+  .constellation-container {
+    padding: var(--landscape-padding);
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .constellation-ui {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 500px;
+    padding: 10px;
+  }
+  
+  .constellation-title {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  
+  .constellation-description {
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+  }
+  
+  .constellation-controls {
+    gap: 8px;
+    margin-top: 10px;
+  }
+  
+  .constellation-button {
+    min-height: 35px;
+    padding: 8px 15px;
+    font-size: 0.8rem;
+  }
+  
+  .dream-ball {
     width: 25px;
     height: 25px;
   }
   
-  .constellation-container .dream-ball::after {
-    width: 10px;
-    height: 10px;
+  .pokemon-popup {
+    width: 70%;
+    max-width: 400px;
+    padding: 15px;
   }
   
-  .constellation-container .constellation-ui {
-    width: 325px; /* Aún más reducido para móviles */
+  .popup-title {
+    font-size: 1.1rem;
+  }
+  
+  .pokemon-image-container {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .popup-buttons {
+    flex-direction: row;
+    gap: 10px;
+  }
+  
+  .popup-buttons button {
+    height: 35px;
+    font-size: 0.8rem;
+  }
+}
+
+/* TABLET PORTRAIT */
+@media (min-width: 481px) and (max-width: 768px) {
+  .constellation-ui {
+    width: 85%;
+    max-width: 400px;
+  }
+  
+  .dream-ball {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .pokemon-popup {
+    width: 80%;
+    max-width: 350px;
+  }
+}
+
+/* DISPOSITIVOS MUY PEQUEÑOS */
+@media (max-width: 375px) {
+  .constellation-title {
+    font-size: 1rem;
+  }
+  
+  .constellation-button {
+    font-size: 0.8rem;
+    padding: 10px 15px;
+    min-width: 100px;
+  }
+  
+  .pokemon-popup {
+    width: 95%;
+    padding: 15px;
+  }
+  
+  .pokemon-image-container {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .pokemon-image {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+/* PANTALLAS EXTRA PEQUEÑAS */
+@media (max-width: 320px) {
+  .constellation-ui {
+    padding: 10px;
+  }
+  
+  .constellation-button {
+    font-size: 0.75rem;
+    padding: 8px 12px;
+    min-width: 90px;
+  }
+  
+  .dream-ball {
+    width: 25px;
+    height: 25px;
+  }
+  
+  .pokemon-popup {
     padding: 12px;
   }
   
-  .constellation-container .constellation-title {
-    font-size: 1.1rem;
-  }
-  
-  .constellation-container .constellation-description {
-    font-size: 0.75rem;
-  }
-  
-  .constellation-container .pokemon-popup {
-    padding: 12px; /* Reducido aún más para dispositivos móviles */
-    width: 200px; /* Reducido de 280px */
-  }
-  
-  .constellation-container .popup-title {
-    font-size: 1.1rem; /* Reducido para móviles */
-  }
-  
-  .constellation-container .pokemon-image-container {
-    width: 100px; /* Reducido para móviles */
-    height: 100px; /* Reducido para móviles */
-    margin-bottom: 8px;
-  }
-  
-  .constellation-container .pokemon-image, 
-  .constellation-container .pokemon-image-loading {
-    width: 80px; /* Reducido para móviles */
-    height: 80px; /* Reducido para móviles */
-  }
-  
-  .constellation-container .pokemon-name {
-    font-size: 1.1rem;
-  }
-  
-  .constellation-container .pokemon-sprite {
-    width: 45px; /* Reducido para móviles */
-    height: 45px; /* Reducido para móviles */
-  }
-  
-  .constellation-container .pokemon-sprite img {
-    width: 38px; /* Reducido para móviles */
-    height: 38px; /* Reducido para móviles */
-  }
-  
-  .constellation-container .pokedollar-display {
-    padding: 8px 12px;
-  }
-  
-  .constellation-container > .pokedollar-display > .pokedollar-icon {
-    font-size: 20px;
-  }
-  
-  .constellation-container .pokedollar-amount {
-    font-size: 16px;
-  }
-  
-  .constellation-container .gacha-cost {
-    font-size: 12px;
+  .popup-title {
+    font-size: 1rem;
   }
 }
+
